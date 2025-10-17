@@ -1,1 +1,1 @@
-# rails-next-nayami-note
+# rails-next-zenn-clone
