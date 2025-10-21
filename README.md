@@ -24,11 +24,10 @@
 - ✅ ヘルスチェックAPI（/api/v1/health_check）
 - ✅ RSpec導入
 - ✅ Rubocop設定
-- ⏳ 認証機能これから
 
 ## 開発メモ
-- RSpec動作確認用の足し算テストは削除予定
-- .DS_Store削除済み
+- RSpec動作確認用の足し算テストを削除
+- .DS_Store削除済み(.gitignoreに追加)
 - rubocopルールは書籍準拠『独学ポートフォリオ開発応援 Rails×Next.js×AWS ハンズオン解説』
 
 ## 今後
