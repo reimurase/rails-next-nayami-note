@@ -15,6 +15,10 @@
 - "rubocop-rails"
 - "rubocop-rspec"
 
+- Next.js: 15.5.6
+- React: 19.1.0
+- TypeScript: ~5.6.3
+
 - MySQL Ver 9.4.0 for macos15.4 on arm64 (Homebrew)
 - Docker 未実装
 - 起動方法　（現状）
