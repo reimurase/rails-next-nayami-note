@@ -68,6 +68,12 @@ Next：@next/next の Core Web Vitals セット
 
 Lint: npm run lint / 自動修正: npm run format
 
+### コードフォーマット
+- Prettierを導入し、ESLintと統合
+- `.prettierrc` に共通ルールを定義
+- VS Code設定 (`.vscode/settings.json`) で保存時に自動整形
+- 競合ルールは `eslint-config-prettier` で無効化
+
 ### フロントエンド環境
 - Next.js 15.5.6 / React 19.1.0 / TypeScript ~5.6.3
 - ESLint（Flat Config形式）でコード品質を統一

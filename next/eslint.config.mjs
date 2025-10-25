@@ -5,6 +5,8 @@ import tsParser from "@typescript-eslint/parser";
 import next from "@next/eslint-plugin-next";
 import reactHooks from "eslint-plugin-react-hooks";
 import importPlugin from "eslint-plugin-import";
+import prettierPlugin from "eslint-plugin-prettier";
+import prettierConfig from "eslint-config-prettier";
 
 export default [
   // JavaScriptの基本ルールセット
@@ -28,6 +30,7 @@ export default [
       "@next/next": next,
       "react-hooks": reactHooks,
       import: importPlugin,
+      prettier: prettierPlugin,
     },
     rules: {
       "no-undef": "off",
@@ -36,6 +39,8 @@ export default [
       "import/order": ["warn", { "newlines-between": "always" }],
       ...reactHooks.configs.recommended.rules,
       ...next.configs["core-web-vitals"].rules,
+      ...prettierConfig.rules,
+      "prettier/prettier": "warn",
     },
   },
 ];
