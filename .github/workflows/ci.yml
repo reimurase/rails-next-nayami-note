@@ -40,6 +40,7 @@ jobs:
         with:
           ruby-version: 3.4.6
           bundler-cache: true
+          working-directory: rails
 
       - name: Prepare DB (RAILS_ENV=test)
         env:
@@ -68,6 +69,7 @@ jobs:
         with:
           ruby-version: 3.4.6
           bundler-cache: true
+          working-directory: rails
 
       - name: RuboCop
         run: bundle exec rubocop
