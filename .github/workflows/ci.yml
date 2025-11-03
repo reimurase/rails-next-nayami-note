@@ -1,14 +1,18 @@
-# テスト(rspec)、コードルール(rubocop, eslint, prettier)のチェックを行う
 name: Continuous Integration
 
-# 当 workflow の実行タイミング
-# ブランチへの push 時
 on:
   push:
+    branches:
+      - "**"
+  pull_request:
+    branches:
+      - "**"
 
-# 当 workflow が行う処理
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  # 処理① rspec がオールグリーンであることをチェック
   rspec:
     runs-on: ubuntu-latest
     defaults:
@@ -16,81 +20,117 @@ jobs:
         working-directory: rails
     services:
       mysql:
-        image: mysql:9.4.0
-        ports:
-          - 3306:3306
+        image: mysql:8.4
         env:
-          MYSQL_ALLOW_EMPTY_PASSWORD: yes
-        options: --health-cmd "mysqladmin ping" --health-interval 10s --health-timeout 5s --health-retries 10
-
+          MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+        options: >-
+          --health-cmd "mysqladmin ping -h 127.0.0.1 --silent"
+          --health-interval 10s --health-timeout 5s --health-retries 10
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Ruby
+      - name: System deps for mysql2
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libmysqlclient-dev
+
+      - name: Set up Ruby 3.4.6 (bundle cache ON)
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4.6
           bundler-cache: true
 
-      - name: Cache node modules
-        uses: actions/cache@v3
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('**/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Bundler and gem install
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3 --path vendor/bundle
-
-      - name: Database create and migrate
+      - name: Prepare DB (RAILS_ENV=test)
+        env:
+          RAILS_ENV: test
         run: |
           cp config/database.yml.ci config/database.yml
-          bundle exec rails db:create RAILS_ENV=test
-          bundle exec rails db:migrate RAILS_ENV=test
+          bundle exec rails db:create
+          bundle exec rails db:migrate
 
-      - name: Run rspec
+      - name: Run RSpec
+        env:
+          RAILS_ENV: test
         run: bundle exec rspec
 
-  # 処理② rubocop のルール違反がないことをチェック
   rubocop:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: rails
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up Ruby
+      - name: Set up Ruby 3.4.6 (bundle cache ON)
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: 3.4.6
           bundler-cache: true
 
-      - name: Bundler and gem install
-        run: |
-          gem install bundler
-          bundle install --jobs 4 --retry 3 --path vendor/bundle
-
-      - name: Run rubocop
+      - name: RuboCop
         run: bundle exec rubocop
 
-  # 処理③ eslint(& prettier) のルール違反がないことをチェック
+  # フロントの Lint / TypeCheck / Build を分けて実行（必要に応じて取捨選択）
   eslint:
     runs-on: ubuntu-latest
     defaults:
       run:
         working-directory: next
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Install packages
-        run: npm install
+      - name: Set up Node 20.18.0 (npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.18.0"
+          cache: "npm"
+          cache-dependency-path: next/package-lock.json
 
-      - name: Run lint
+      - name: Install deps
+        run: npm ci
+
+      - name: ESLint
         run: npm run lint
+
+  typecheck:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: next
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 20.18.0 (npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.18.0"
+          cache: "npm"
+          cache-dependency-path: next/package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: TypeScript typecheck
+        run: npm run typecheck --if-present
+
+  next-build:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: next
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 20.18.0 (npm cache)
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.18.0"
+          cache: "npm"
+          cache-dependency-path: next/package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: Build (no telemetry)
+        env:
+          NEXT_TELEMETRY_DISABLED: 1
+        run: npm run build
