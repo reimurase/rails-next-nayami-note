@@ -74,6 +74,11 @@ Lint: npm run lint / 自動修正: npm run format
 - VS Code設定 (`.vscode/settings.json`) で保存時に自動整形
 - 競合ルールは `eslint-config-prettier` で無効化
 
+### GitHub Actionsの設定
+- GitHub Actions では MySQL の root 接続を許可するため
+MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
+- rails,nextでフォルダが別構成のため、working-directoryでジョブの動く環境を明示しています。
+
 ### フロントエンド環境
 - Next.js 15.5.6 / React 19.1.0 / TypeScript ~5.6.3
 - ESLint（Flat Config形式）でコード品質を統一
