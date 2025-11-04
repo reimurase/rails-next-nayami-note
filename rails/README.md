@@ -1,24 +1,9 @@
-# README
+## 開発環境メモ
+- Ruby 3.4.6
+- Rails 8.0.3
+- "puma", "~> 6.4"
+- "mysql2", "~> 0.5.7"
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
-
-Things you may want to cover:
-
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+## 開発メモ
+- RSpec動作確認用の足し算テストを削除
+- rubocopルールは書籍準拠『独学ポートフォリオ開発応援 Rails×Next.js×AWS ハンズオン解説』
