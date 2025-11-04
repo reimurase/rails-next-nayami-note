@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## 開発環境メモ
+- バージョン固定方針：
+  - メジャー・マイナーは固定、patchのみ更新許可
+  - Node.js 20.18.0（LTS）を nvm で管理
 
-## Getting Started
+- Node.js: 20.18.0 (LTS)
+- Next.js: 15.5.6
+- React: 19.1.0
+- TypeScript: ~5.6.3
+- ESlint (flat config): 9.38.0
+- @typescript-eslint: 8.46.2
 
-First, run the development server:
+## 開発メモ
+### Node.js
+- Version: 20.18.0（LTS）
+- 理由: Next.js 15 / ESLint 9 系との互換性を保つため固定
+- `.nvmrc` に明記し、ローカル・CI環境の差異を防止
+### ESlintルール方針
+目的
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+破壊的なバグの予防と、読みやすさの最低限の統一を両立する（開発の手を止めない）
+構成
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Flat Config 形式（eslint.config.js）
+技術スタック対応：TypeScript / React Hooks / Next.js（Core Web Vitals）
+Node: 20.18.0（nvm / .nvmrc で固定）
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+適用範囲
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+src/ 配下の *.{ts,tsx,js,jsx}
+node_modules/, .next/, dist/, out/ は除外
 
-## Learn More
+主なルール
 
-To learn more about Next.js, take a look at the following resources:
+ベース：eslint:recommended（JSの安全網）
+Hooks：react-hooks/rules-of-hooks, react-hooks/exhaustive-deps
+Next：@next/next の Core Web Vitals セット
+使い勝手：no-console: warn (warn/errorのみ許可), no-debugger: warn
+整形：import/order: warn（グループ間は改行）
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+厳しさ（Severity）
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+原則 warn。開発速度を優先し、重大なもの（ビルド阻害・セキュリティ起因）以外は警告止まり。
 
-## Deploy on Vercel
+開発コマンド
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Lint: npm run lint / 自動修正: npm run format
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+### コードフォーマット
+- Prettierを導入し、ESLintと統合
+- `.prettierrc` に共通ルールを定義
+- VS Code設定 (`.vscode/settings.json`) で保存時に自動整形
+- 競合ルールは `eslint-config-prettier` で無効化
