@@ -10,6 +10,12 @@
 - ESlint (flat config): 9.38.0
 - @typescript-eslint: 8.46.2
 
+TypeScript 構成
+App Router 構成（app/ ディレクトリ）
+src/ ディレクトリを採用して、責務を明確化
+.gitignore を更新（ビルド成果物や環境依存ファイルを除外）
+tsconfig.json に @/* エイリアスを設定し、モジュールの可読性を向上
+
 ## 開発メモ
 ### Node.js
 - Version: 20.18.0（LTS）
@@ -51,3 +57,13 @@ Lint: npm run lint / 自動修正: npm run format
 - `.prettierrc` に共通ルールを定義
 - VS Code設定 (`.vscode/settings.json`) で保存時に自動整形
 - 競合ルールは `eslint-config-prettier` で無効化
+
+### MUI
+- Robotoフォントを採用
+- 現状、muiのUI部品はrobotoに、それ以外はGeistになる
+- ThemeProviderはクライアントコンポーネントなのでサーバーコンポーネント内に書けない。なので、MuiProvider.tsxに分ける
+- サーバー側で生成したcssとクライアント側で再描画するcssを同じにするためmaterial-nextjsを導入
+- cssの使い分けのルール
+  - 現状「MUIのsxプロパティ」、「emotionのcssメソッド」が存在する
+  - 原則、sxプロパティでスタイル定義を行う。
+  - 複数の React コンポーネントで共通利用することが想定される一部スタイルのみ、emotionを利用する。
