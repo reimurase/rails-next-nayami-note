@@ -2,9 +2,22 @@ import { Button, Typography, Box } from "@mui/material";
 
 import { ClientHealthCheck } from "@/components/ClientHealthCheck";
 
+const API_BASE_URL = "http://localhost:3000";
+
 export default async function HomePage() {
-  const res = await fetch("http://localhost:3000/api/v1/health_check");
-  const data = await res.json();
+  let message;
+
+  if (process.env.NODE_ENV === "development") {
+    try {
+      const res = await fetch(`${API_BASE_URL}/api/v1/health_check`, {
+        cache: "no-store",
+      });
+      const data = await res.json();
+      message = data.message;
+    } catch {
+      message = "開発中にfetch失敗しました";
+    }
+  }
 
   return (
     <Box sx={{ p: 3 }}>
@@ -16,7 +29,7 @@ export default async function HomePage() {
       </Button>
       <main>
         <h1>疎通チェック</h1>
-        <p>Server fetch: {data.message}</p>
+        <p>Server fetch: {message}</p>
         <ClientHealthCheck />
       </main>
     </Box>
