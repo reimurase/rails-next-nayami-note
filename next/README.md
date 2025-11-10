@@ -67,3 +67,6 @@ Lint: npm run lint / 自動修正: npm run format
   - 現状「MUIのsxプロパティ」、「emotionのcssメソッド」が存在する
   - 原則、sxプロパティでスタイル定義を行う。
   - 複数の React コンポーネントで共通利用することが想定される一部スタイルのみ、emotionを利用する。
+
+### rails-next疎通確認
+- axios, swrを利用して、railsから情報を取得

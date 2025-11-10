@@ -37,7 +37,10 @@
 MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - rails,nextでフォルダが別構成のため、working-directoryでジョブの動く環境を明示しています。
 
+### rails-next疎通確認
+- サーバーコンポーネントの疎通はトップページに表示し、一時的な確認とする
+- クライアントコンポーネントの疎通はコード参考の観点から残す
+
 ## 今後
-- Material-UI v5 と emotion の導入
 - APIとNext.js接続を確認
 - 認証（devise-token-auth）導入
