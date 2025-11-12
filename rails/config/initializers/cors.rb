@@ -7,7 +7,9 @@
 
 Rails.application.config.middleware.insert_before 0, Rack::Cors do
   allow do
-    origins Settings.front_domain
+    allowed_origins = Array(Settings.front_domain).compact.uniq
+
+    origins(*allowed_origins)
 
     resource "*",
              headers: :any,
