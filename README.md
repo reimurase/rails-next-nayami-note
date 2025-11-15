@@ -22,14 +22,6 @@
   - `rails s`でlocalhost:3000で確認
   - `npm run dev`でlocalhost:3001で確認
 
-## 実装メモ
-- ✅ ヘルスチェックAPI（/api/v1/health_check）
-- ✅ RSpec導入
-- ✅ Rubocop設定
-- ✅ next.jsをインストール
-- ✅ ESlintを導入
-- ✅ GitHub ActionsでCI自動化設定を追加
-
 ## 開発メモ
 
 ### GitHub Actionsの設定
@@ -41,6 +33,17 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - サーバーコンポーネントの疎通はトップページに表示し、一時的な確認とする
 - クライアントコンポーネントの疎通はコード参考の観点から残す
 
+## 実装メモ
+- ✅ ヘルスチェックAPI（/api/v1/health_check）
+- ✅ RSpec導入
+- ✅ Rubocop設定
+- ✅ next.jsをインストール
+- ✅ ESlintを導入
+- ✅ prettierを導入
+- ✅ GitHub ActionsでCI自動化設定を追加
+- ✅ MUIの導入
+- ✅ rails, next.js の疎通確認
+- ✅ Renderへ初回デプロイを実施
+
 ## 今後
-- APIとNext.js接続を確認
 - 認証（devise-token-auth）導入
