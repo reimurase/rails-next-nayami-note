@@ -13,3 +13,5 @@ export function ClientHealthCheck() {
 
   return <div>Client fetch: {data.message}</div>;
 }
+
+export default ClientHealthCheck;
