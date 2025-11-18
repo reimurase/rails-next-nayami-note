@@ -139,3 +139,23 @@ jobs:
         env:
           NEXT_TELEMETRY_DISABLED: 1
         run: npm run build
+
+  jest:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: next
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+      - name: Set up Node 20.18.0
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20.18.0"
+          cache: "npm"
+          cache-dependency-path: next/package-lock.json
+      - name: Install deps
+        run: npm ci
+      - name: Run Jest
+        run: npm test
+
