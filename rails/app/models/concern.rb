@@ -1,0 +1,2 @@
+class Concern < ApplicationRecord
+end
