@@ -1,46 +1,42 @@
-require 'rails_helper'
+require "rails_helper"
 
 RSpec.describe "Api::V1::Concerns", type: :request do
-  describe "GET /index" do
-    it "returns http success" do
-      get "/api/v1/concerns/index"
-      expect(response).to have_http_status(:success)
+  describe "POST api/v1/concerns" do
+    let(:valid_params) do
+      {
+        concern: {
+          content: "テストの悩み",
+        },
+      }
     end
-  end
 
-  describe "GET /show" do
-    it "returns http success" do
-      get "/api/v1/concerns/show"
-      expect(response).to have_http_status(:success)
+    it "レコードを1件作成し、201を返す" do
+      expect {
+        post "/api/v1/concerns", params: valid_params
+      }.to change { Concern.count }.by(1)
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+      expect(json["content"]).to eq "テストの悩み"
     end
-  end
 
-  describe "GET /new" do
-    it "returns http success" do
-      get "/api/v1/concerns/new"
-      expect(response).to have_http_status(:success)
+    context "パラメータが不正なとき" do
+      let(:invalid_params) do
+        {
+          concern: {
+            content: "", # バリデーションに引っかかる値
+          },
+        }
+      end
+
+      it "レコードを作成せず、422を返す" do
+        expect {
+          post "/api/v1/concerns", params: invalid_params
+        }.not_to change { Concern.count }
+
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
     end
+    # subject { post(api_v1_concerns_path, headers: ) }
   end
-
-  describe "GET /edit" do
-    it "returns http success" do
-      get "/api/v1/concerns/edit"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
-  describe "GET /create" do
-    it "returns http success" do
-      get "/api/v1/concerns/create"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
-  describe "GET /delete" do
-    it "returns http success" do
-      get "/api/v1/concerns/delete"
-      expect(response).to have_http_status(:success)
-    end
-  end
-
 end
