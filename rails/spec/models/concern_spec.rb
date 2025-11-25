@@ -1,13 +1,19 @@
 require "rails_helper"
 
 RSpec.describe Concern, type: :model do
-  context "concernの新規作成" do
-    it "factoryが有効であること" do
-      expect(build(:concern)).to be_valid
+  describe "validations" do
+    context "content が正しい場合" do
+      it "valid であること" do
+        concern = build(:concern)
+        expect(concern).to be_valid
+      end
     end
 
-    it "concernsテーブルに正常に新規作成できる" do
-      expect { create(:concern) }.to change { Concern.count }.by(1)
+    context "content が空の場合" do
+      it "invalid であること" do
+        concern = build(:concern, content: "")
+        expect(concern).not_to be_valid
+      end
     end
   end
 end
