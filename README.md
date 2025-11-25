@@ -44,6 +44,14 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - ✅ MUIの導入
 - ✅ rails, next.js の疎通確認
 - ✅ Renderへ初回デプロイを実施
+- ✅ Jest + React Testing Library の導入
+- ✅ FactoryBot / Faker の導入
+- ✅ i18n rails全体に日本語設定導入
+- ✅ concernのcreate API を実装（簡易）
 
 ## 今後
-- 認証（devise-token-auth）導入
+- 簡易的な悩みlistを作成
+  - フロントエンドでtodolistを作成
+  - バックエンドでDBの作成
+  - 接続関係を整備と接続
+- ログイン機能の実装
