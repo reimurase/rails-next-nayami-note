@@ -24,7 +24,7 @@ class Api::V1::ConcernsController < ApplicationController
 
   private
 
-    def concern_params
-      params.require(:concern).permit(:content)
-    end
+  def concern_params
+    params.require(:concern).permit(:content)
+  end
 end
