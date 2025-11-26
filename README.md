@@ -48,6 +48,7 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - ✅ FactoryBot / Faker の導入
 - ✅ i18n rails全体に日本語設定導入
 - ✅ concernのcreate API を実装（簡易）
+- ✅ concernのフォームを実装
 
 ## 今後
 - 簡易的な悩みlistを作成

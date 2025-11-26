@@ -1,5 +1,5 @@
-import ConcernPage from "@/components/ConcernPage";
+import ConcernForm from "@/components/ConcernForm";
 
 export default function Page() {
-  return <ConcernPage />;
+  return <ConcernForm />;
 }

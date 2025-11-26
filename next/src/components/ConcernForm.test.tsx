@@ -1,19 +1,19 @@
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import axios from "axios";
 
-import ConcernPage from "./ConcernPage";
+import ConcernForm from "./ConcernForm";
 
 jest.mock("axios");
 const mockedAxios = axios as jest.Mocked<typeof axios>;
 
-describe("ConcernPage API 呼び出し", () => {
+describe("ConcernForm API 呼び出し", () => {
   test("フォーム送信で axios.post が呼ばれること", async () => {
     // API成功時のレスポンスをモック
     mockedAxios.post.mockResolvedValue({
       data: { message: "success" },
     });
 
-    render(<ConcernPage />);
+    render(<ConcernForm />);
 
     // 入力
     fireEvent.change(screen.getByPlaceholderText("悩みを入力"), {

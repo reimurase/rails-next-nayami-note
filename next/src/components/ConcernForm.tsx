@@ -3,7 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-export default function ConcernPage() {
+export default function ConcernForm() {
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("");
 
