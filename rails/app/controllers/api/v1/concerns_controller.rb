@@ -1,7 +1,7 @@
 class Api::V1::ConcernsController < ApplicationController
   def index
-    # concerns = Concern.all
-    # render json: concerns
+    concerns = Concern.all
+    render json: concerns
   end
 
   def show
