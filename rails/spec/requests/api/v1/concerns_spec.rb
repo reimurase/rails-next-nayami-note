@@ -47,6 +47,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     subject(:request_api) { get "/api/v1/concerns" }
 
     let!(:concerns) { create_list(:concern, 3) }
+    let(:json)      { JSON.parse(response.body) }
 
     before do
       request_api
@@ -57,16 +58,13 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
 
     it "concerns が期待した件数返ること" do
-      json = JSON.parse(response.body)
       expect(json.length).to eq(3)
     end
 
     it "各 concern の内容が正しいこと" do
-      json = JSON.parse(response.body)
-
-      expect(json[0]["content"]).to eq(concerns[0].content)
-      expect(json[1]["content"]).to eq(concerns[1].content)
-      expect(json[2]["content"]).to eq(concerns[2].content)
+      json.each_with_index do |item, i|
+        expect(item["content"]).to eq(concerns[i].content)
+      end
     end
   end
 end
