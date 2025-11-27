@@ -46,24 +46,39 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   describe "GET api/v1/concerns" do
     subject(:request_api) { get "/api/v1/concerns" }
 
-    let!(:concerns) { create_list(:concern, 3) }
-    let(:json)      { JSON.parse(response.body) }
+    let(:json) { JSON.parse(response.body) }
 
-    before do
-      request_api
+    context "concernが0件の場合" do
+      before do
+        Concern.delete_all   # 明示的に0件にする
+        request_api          # ここで初めてリクエスト
+      end
+
+      it "レコードが0件の場合でも空配列が返ること" do
+        expect(json).to eq([])
+        expect(response).to have_http_status(:ok)
+      end
     end
 
-    it "200 OK が返ること" do
-      expect(response).to have_http_status(:ok)
-    end
+    context "concernが複数件の場合" do
+      let!(:concerns) { create_list(:concern, 3) }
 
-    it "concerns が期待した件数返ること" do
-      expect(json.length).to eq(3)
-    end
+      before do
+        request_api
+      end
 
-    it "各 concern の内容が正しいこと" do
-      json.each_with_index do |item, i|
-        expect(item["content"]).to eq(concerns[i].content)
+      it "200 OK が返ること" do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "concerns が期待した件数返ること" do
+        expect(json.length).to eq(3)
+      end
+
+      it "各 concern の内容が正しいこと" do
+        json.each_with_index do |item, i|
+          expect(item["content"]).to eq(concerns[i].content)
+        end
       end
     end
   end
