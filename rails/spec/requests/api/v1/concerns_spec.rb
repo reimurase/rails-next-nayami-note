@@ -23,7 +23,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     context "パラメータが正しいとき" do
       let(:params) { valid_params }
 
-      it "レコードを1件作成し、201を返す" do
+      it "レコードを1件作成し、200を返す" do
         expect { subject }.to change { Concern.count }.by(1)
 
         expect(response).to have_http_status(:ok)
@@ -40,6 +40,33 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
         expect(response).to have_http_status(:unprocessable_entity)
       end
+    end
+  end
+
+  describe "GET api/v1/concerns" do
+    subject(:request_api) { get "/api/v1/concerns" }
+
+    let!(:concerns) { create_list(:concern, 3) }
+
+    before do
+      request_api
+    end
+
+    it "200 OK が返ること" do
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "concerns が期待した件数返ること" do
+      json = JSON.parse(response.body)
+      expect(json.length).to eq(3)
+    end
+
+    it "各 concern の内容が正しいこと" do
+      json = JSON.parse(response.body)
+
+      expect(json[0]["content"]).to eq(concerns[0].content)
+      expect(json[1]["content"]).to eq(concerns[1].content)
+      expect(json[2]["content"]).to eq(concerns[2].content)
     end
   end
 end
