@@ -71,7 +71,7 @@ Lint: npm run lint / 自動修正: npm run format
 ### rails-next疎通確認
 - axios, swrを利用して、railsから情報を取得
 
-## 劣後メモ
+## 後回しメモ
 - 機能に応じたページの区分け
 - コンポーネントの名前
 - UIをわかりやすい形にする
