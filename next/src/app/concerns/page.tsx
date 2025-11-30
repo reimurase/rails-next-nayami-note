@@ -1,5 +1,11 @@
-import ConcernForm from "@/components/ConcernForm";
+import ConcernForm from "@/components/concerns/ConcernForm";
+import ConcernIndex from "@/components/concerns/ConcernIndex";
 
 export default function Page() {
-  return <ConcernForm />;
+  return (
+    <div>
+      <ConcernIndex />
+      <ConcernForm />
+    </div>
+  );
 }
