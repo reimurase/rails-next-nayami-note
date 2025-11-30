@@ -27,6 +27,7 @@ export default function ConcernIndex() {
   }
 
   if (error) {
+    console.error(error);
     return (
       <div>
         <h2>悩み一覧</h2>
