@@ -11,7 +11,29 @@ type Concern = {
 const fetcher = (url: string) => axios.get<Concern[]>(url).then((res) => res.data);
 
 export default function ConcernIndex() {
-  const { data: concerns } = useSWR("http://localhost:3000/api/v1/concerns", fetcher);
+  const {
+    data: concerns,
+    error,
+    isLoading,
+  } = useSWR("http://localhost:3000/api/v1/concerns", fetcher);
+
+  if (isLoading) {
+    return (
+      <div>
+        <h2>悩み一覧</h2>
+        <p>読み込み中...</p>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div>
+        <h2>悩み一覧</h2>
+        <p>エラーが発生しました</p>
+      </div>
+    );
+  }
 
   if (!concerns) {
     return (
