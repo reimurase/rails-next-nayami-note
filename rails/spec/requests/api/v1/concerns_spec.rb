@@ -84,7 +84,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
   end
 
-  describe "GET api/v1/concerns/[:id]" do
+  describe "GET api/v1/concerns/:id" do
     subject(:request_api) { get "/api/v1/concerns/#{concern_id}" }
 
     context "指定したIDのconcernが存在する場合" do
