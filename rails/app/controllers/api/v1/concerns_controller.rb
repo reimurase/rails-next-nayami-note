@@ -5,6 +5,8 @@ class Api::V1::ConcernsController < ApplicationController
   end
 
   def show
+    concern = Concern.find(params[:id])
+    render json: concern
   end
 
   def edit

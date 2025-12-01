@@ -1,3 +1,4 @@
+# spec/requests/api/v1/concerns_spec.rb
 require "rails_helper"
 
 RSpec.describe "Api::V1::Concerns", type: :request do
@@ -80,6 +81,25 @@ RSpec.describe "Api::V1::Concerns", type: :request do
           expect(item["content"]).to eq(concerns[i].content)
         end
       end
+    end
+  end
+
+  describe "GET api/v1/concerns/[:id]" do
+    subject(:request_api) { get "/api/v1/concerns/#{concern_id}" }
+
+    let!(:concern) { create(:concern) }
+    let(:concern_id) { concern.id }
+
+    before { request_api }
+
+    it "200 OK が返ること" do
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "指定したidのデータが返ること" do
+      json = JSON.parse(response.body)
+      expect(json["id"]).to eq(concern_id)
+      expect(json["content"]).to eq(concern.content)
     end
   end
 end
