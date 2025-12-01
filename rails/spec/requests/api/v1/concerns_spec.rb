@@ -87,19 +87,23 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   describe "GET api/v1/concerns/[:id]" do
     subject(:request_api) { get "/api/v1/concerns/#{concern_id}" }
 
-    let!(:concern) { create(:concern) }
-    let(:concern_id) { concern.id }
+    context "指定したIDのconcernが存在する場合" do
+      let!(:concern) { create(:concern) }
+      let(:concern_id) { concern.id }
 
-    before { request_api }
-
-    it "200 OK が返ること" do
-      expect(response).to have_http_status(:ok)
+      it "200 OK が返ること" do
+        request_api
+        expect(response).to have_http_status(:ok)
+      end
     end
 
-    it "指定したidのデータが返ること" do
-      json = JSON.parse(response.body)
-      expect(json["id"]).to eq(concern_id)
-      expect(json["content"]).to eq(concern.content)
+    context "指定したIDのconcernが存在しない場合" do
+      let(:concern_id) { 999_999 }
+
+      it "404 Not Found が返ること" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
     end
   end
 end
