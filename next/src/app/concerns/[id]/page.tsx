@@ -1,4 +1,4 @@
-import ConcernShow from "@/components/concerns/ConcernShow";
+import ConcernDetail from "@/components/concerns/ConcernDetail";
 
 type Props = {
   params: { id: string };
@@ -7,5 +7,5 @@ type Props = {
 export default function ConcernDetailPage({ params }: Props) {
   const id = Number(params.id);
 
-  return <ConcernShow id={id} />;
+  return <ConcernDetail id={id} />;
 }

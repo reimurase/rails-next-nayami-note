@@ -14,7 +14,7 @@ type Props = {
   id: number;
 };
 
-export default function ConcernShow({ id }: Props) {
+export default function ConcernDetail({ id }: Props) {
   const {
     data: concern,
     error,
