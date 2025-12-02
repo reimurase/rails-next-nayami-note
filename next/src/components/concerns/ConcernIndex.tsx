@@ -2,6 +2,7 @@
 
 import axios from "axios";
 import useSWR from "swr";
+import Link from "next/link";
 
 type Concern = {
   id: number;
@@ -50,7 +51,9 @@ export default function ConcernIndex() {
       <h2>悩み一覧</h2>
       <ul>
         {concerns.map((concern) => (
-          <li key={concern.id}>{concern.content}</li>
+          <li key={concern.id}>
+            <Link href={`/concerns/${concern.id}`}>{concern.content}</Link>
+          </li>
         ))}
       </ul>
     </div>
