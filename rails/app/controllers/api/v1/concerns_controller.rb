@@ -19,6 +19,9 @@ class Api::V1::ConcernsController < ApplicationController
   end
 
   def update
+    concern = Concern.find(params[:id])
+    concern.update!(concern_params)
+    render json: concern
   end
 
   def delete
