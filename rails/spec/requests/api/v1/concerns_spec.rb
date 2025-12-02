@@ -106,4 +106,79 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       end
     end
   end
+
+  describe "PATCH api/v1/concerns/:id" do
+    subject(:request_api) { patch "/api/v1/concerns/#{concern_id}", params: params }
+
+    let!(:concern) { create(:concern, content: "元の内容") }
+    let(:concern_id) { concern.id }
+
+    # 共通で使う JSON パース用ヘルパ（既に定義済なら不要）
+    let(:body) { JSON.parse(response.body) }
+
+    context "指定したIDのconcernが存在し、有効なパラメータを送信した場合" do
+      let(:params) do
+        {
+          concern: {
+            content: "更新後の内容",
+          },
+        }
+      end
+
+      it "200 OK が返ること" do
+        request_api
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "指定したconcernの内容が更新されること" do
+        expect {
+          request_api
+        }.to change { concern.reload.content }.from("元の内容").to("更新後の内容")
+      end
+
+      it "レスポンスに更新後のデータが含まれていること" do
+        request_api
+
+        expect(body["id"]).to eq(concern.id)
+        expect(body["content"]).to eq("更新後の内容")
+      end
+    end
+
+    # context "指定したIDのconcernが存在しない場合" do
+    #   let(:concern_id) { 999_999 } # 存在しないIDを想定
+    #   let(:params) do
+    #     {
+    #       concern: {
+    #         content: "更新後の内容"
+    #       }
+    #     }
+    #   end
+
+    #   it "404 Not Found が返ること" do
+    #     request_api
+    #     expect(response).to have_http_status(:not_found)
+    #   end
+    # end
+
+    # context "パラメータが不正な場合（例: content が空）" do
+    #   let(:params) do
+    #     {
+    #       concern: {
+    #         content: ""
+    #       }
+    #     }
+    #   end
+
+    #   it "422 Unprocessable Entity が返ること" do
+    #     request_api
+    #     expect(response).to have_http_status(:unprocessable_entity)
+    #   end
+
+    #   it "データが更新されないこと" do
+    #     expect {
+    #       request_api
+    #     }.not_to change { concern.reload.content }
+    #   end
+    # end
+  end
 end
