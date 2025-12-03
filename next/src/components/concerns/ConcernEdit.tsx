@@ -30,13 +30,6 @@ export default function ConcernEdit({ id }: Props) {
     },
   });
 
-  // // concern が取得できたらフォームの初期値としてセット
-  // useEffect(() => {
-  //   if (concern) {
-  //     setContent(concern.content);
-  //   }
-  // }, [concern]);
-
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
