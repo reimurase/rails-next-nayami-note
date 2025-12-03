@@ -53,6 +53,7 @@ export default function ConcernIndex() {
         {concerns.map((concern) => (
           <li key={concern.id}>
             <Link href={`/concerns/${concern.id}`}>{concern.content}</Link>
+            <Link href={`/concerns/${concern.id}/edit`}>編集</Link>
           </li>
         ))}
       </ul>
