@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import axios from "axios";
 import useSWR from "swr";
 
@@ -54,6 +55,9 @@ export default function ConcernDetail({ id }: Props) {
       <ul>
         <li>ID: {concern.id}</li>
         <li>内容: {concern.content}</li>
+        <li>
+          <Link href={`/concerns/${concern.id}/edit`}>編集</Link>
+        </li>
       </ul>
     </div>
   );
