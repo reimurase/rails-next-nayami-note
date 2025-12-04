@@ -181,4 +181,23 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     #   end
     # end
   end
+
+  describe "DELETE api/v1/concerns/:id" do
+    subject(:request_api) { delete "/api/v1/concerns/#{concern_id}" }
+
+    let!(:concern) { create(:concern) }
+    let(:concern_id) { concern.id }
+
+    context "指定したIDのconcernが存在する場合" do
+      it "200 OK が返ること" do
+        request_api
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "指定したconcernが削除されること" do
+        expect { request_api }.to change { Concern.count }.by(-1)
+      end
+    end
+    # 異常系はCRUDの強化の段階で導入予定
+  end
 end
