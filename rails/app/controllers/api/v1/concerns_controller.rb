@@ -9,9 +9,6 @@ class Api::V1::ConcernsController < ApplicationController
     render json: concern
   end
 
-  def edit
-  end
-
   def create
     concern = Concern.new(concern_params)
     concern.save!
@@ -24,7 +21,10 @@ class Api::V1::ConcernsController < ApplicationController
     render json: concern
   end
 
-  def delete
+  def destroy
+    concern = Concern.find(params[:id])
+    concern.destroy!
+    head :no_content
   end
 
   private
