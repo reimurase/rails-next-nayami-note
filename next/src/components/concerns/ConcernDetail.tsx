@@ -3,6 +3,9 @@
 import Link from "next/link";
 import axios from "axios";
 import useSWR from "swr";
+import { useRouter } from "next/navigation";
+
+import ConcernDeleteButton from "./ConcernDeleteButton";
 
 export type Concern = {
   id: number;
@@ -16,6 +19,7 @@ type Props = {
 };
 
 export default function ConcernDetail({ id }: Props) {
+  const router = useRouter();
   const {
     data: concern,
     error,
@@ -57,6 +61,13 @@ export default function ConcernDetail({ id }: Props) {
         <li>内容: {concern.content}</li>
         <li>
           <Link href={`/concerns/${concern.id}/edit`}>編集</Link>
+          <ConcernDeleteButton
+            id={id}
+            onDeleted={() => {
+              // 正常系：削除成功したら一覧に戻る
+              router.push("/concerns");
+            }}
+          />
         </li>
       </ul>
     </div>

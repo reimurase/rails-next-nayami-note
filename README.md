@@ -52,6 +52,7 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - ✅ concernの一覧表示を実装
 - ✅ concernの詳細表示を実装
 - ✅ concernの編集機能を実装
+- ✅ concernの削除機能を実装
 
 
 ## 今後
