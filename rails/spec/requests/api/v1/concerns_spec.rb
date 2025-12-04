@@ -189,7 +189,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     let(:concern_id) { concern.id }
 
     context "指定したIDのconcernが存在する場合" do
-      it "200 OK が返ること" do
+      it "204 No Content が返ること" do
         request_api
         expect(response).to have_http_status(:no_content)
       end
