@@ -191,7 +191,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     context "指定したIDのconcernが存在する場合" do
       it "200 OK が返ること" do
         request_api
-        expect(response).to have_http_status(:ok)
+        expect(response).to have_http_status(:no_content)
       end
 
       it "指定したconcernが削除されること" do

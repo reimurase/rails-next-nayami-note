@@ -24,7 +24,7 @@ class Api::V1::ConcernsController < ApplicationController
   def destroy
     concern = Concern.find(params[:id])
     concern.destroy!
-    render json: concern
+    head :no_content
   end
 
   private
