@@ -7,6 +7,16 @@ import ConcernDetail from "./ConcernDetail";
 jest.mock("swr");
 const mockedUseSWR = jest.mocked(useSWR);
 
+jest.mock("next/navigation", () => ({
+  // useRouter をダミー実装に差し替える
+  useRouter: () => ({
+    push: jest.fn(),
+    back: jest.fn(),
+    replace: jest.fn(),
+    prefetch: jest.fn(),
+  }),
+}));
+
 describe("ConcernDetail", () => {
   beforeEach(() => {
     jest.clearAllMocks();

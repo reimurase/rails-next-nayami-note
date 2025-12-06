@@ -4,6 +4,8 @@ import axios from "axios";
 import useSWR from "swr";
 import Link from "next/link";
 
+import ConcernDeleteButton from "./ConcernDeleteButton";
+
 type Concern = {
   id: number;
   content: string;
@@ -16,6 +18,7 @@ export default function ConcernIndex() {
     data: concerns,
     error,
     isLoading,
+    mutate,
   } = useSWR("http://localhost:3000/api/v1/concerns", fetcher);
 
   if (isLoading) {
@@ -54,6 +57,13 @@ export default function ConcernIndex() {
           <li key={concern.id}>
             <Link href={`/concerns/${concern.id}`}>{concern.content}</Link>
             <Link href={`/concerns/${concern.id}/edit`}>編集</Link>
+            <ConcernDeleteButton
+              id={concern.id}
+              onDeleted={() => {
+                // 正常系：削除後に一覧を更新する
+                mutate();
+              }}
+            />
           </li>
         ))}
       </ul>
