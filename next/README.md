@@ -80,3 +80,4 @@ Lint: npm run lint / 自動修正: npm run format
 - フォームなどをコンポーネント化
 - エラーメッセージの表示
 - if文のリファクタリング
+- function宣言の関数と関数式の整理
