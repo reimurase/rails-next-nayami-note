@@ -38,7 +38,12 @@ export default function ConcernPage() {
         </button>
       </header>
 
-      <ConcernIndex concerns={data} isLoading={isLoading} error={error} onChanged={mutate} />
+      <ConcernIndex
+        concerns={data}
+        isLoading={isLoading}
+        error={error}
+        onChanged={() => mutate()}
+      />
 
       <ConcernCreateSheet
         isOpen={isSheetOpen}
