@@ -3,7 +3,11 @@
 import { useState } from "react";
 import axios from "axios";
 
-export default function ConcernForm() {
+type ConcernFormProps = {
+  onCreated: () => void;
+};
+
+export default function ConcernForm({ onCreated }: ConcernFormProps) {
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("");
 
@@ -18,6 +22,7 @@ export default function ConcernForm() {
 
       setStatus("登録成功！");
       setContent("");
+      onCreated();
       console.warn(res.data);
     } catch (error) {
       console.error(error);
