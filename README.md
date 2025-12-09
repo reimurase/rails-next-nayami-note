@@ -56,6 +56,7 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - ✅ concernの削除機能を実装
 - ✅ ConcernRowの機能を実装
 - ✅ 一覧ページでCRUDを完結させる
+- ✅ concernの詳細機能APIを残す
 
 
 ## 今後

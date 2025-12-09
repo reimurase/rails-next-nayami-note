@@ -84,6 +84,29 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
   end
 
+  describe "GET api/v1/concerns/:id" do
+    subject(:request_api) { get "/api/v1/concerns/#{concern_id}" }
+
+    context "指定したIDのconcernが存在する場合" do
+      let!(:concern) { create(:concern) }
+      let(:concern_id) { concern.id }
+
+      it "200 OK が返ること" do
+        request_api
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "指定したIDのconcernが存在しない場合" do
+      let(:concern_id) { 999_999 }
+
+      it "404 Not Found が返ること" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
   describe "PATCH api/v1/concerns/:id" do
     subject(:request_api) { patch "/api/v1/concerns/#{concern_id}", params: params }
 
