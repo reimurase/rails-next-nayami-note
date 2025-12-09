@@ -4,11 +4,6 @@ class Api::V1::ConcernsController < ApplicationController
     render json: concerns
   end
 
-  def show
-    concern = Concern.find(params[:id])
-    render json: concern
-  end
-
   def create
     concern = Concern.new(concern_params)
     concern.save!
