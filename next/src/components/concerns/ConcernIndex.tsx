@@ -1,8 +1,5 @@
 "use client";
 
-import axios from "axios";
-import useSWR from "swr";
-
 import ConcernRow from "./ConcernRow";
 
 export type Concern = {
@@ -10,16 +7,14 @@ export type Concern = {
   content: string;
 };
 
-const fetcher = (url: string) => axios.get<Concern[]>(url).then((res) => res.data);
+type ConcernIndexProps = {
+  concerns?: Concern[];
+  isLoading: boolean;
+  error?: Error | null;
+  onChanged?: () => void;
+};
 
-export default function ConcernIndex() {
-  const {
-    data: concerns,
-    error,
-    isLoading,
-    mutate,
-  } = useSWR("http://localhost:3000/api/v1/concerns", fetcher);
-
+export default function ConcernIndex({ concerns, isLoading, error, onChanged }: ConcernIndexProps) {
   if (isLoading) {
     return (
       <div>
@@ -54,7 +49,7 @@ export default function ConcernIndex() {
       <ul style={{ display: "flex", flexDirection: "column", gap: 8, padding: 0 }}>
         {concerns.map((concern) => (
           <li key={concern.id} style={{ listStyle: "none" }}>
-            <ConcernRow concern={concern} onChanged={() => mutate()} />
+            <ConcernRow concern={concern} onChanged={onChanged} />
           </li>
         ))}
       </ul>

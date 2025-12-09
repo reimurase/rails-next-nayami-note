@@ -13,7 +13,8 @@ describe("ConcernForm API 呼び出し", () => {
       data: { message: "success" },
     });
 
-    render(<ConcernForm />);
+    const mockOnCreated = jest.fn();
+    render(<ConcernForm onCreated={mockOnCreated} />);
 
     // 入力
     fireEvent.change(screen.getByPlaceholderText("悩みを入力"), {

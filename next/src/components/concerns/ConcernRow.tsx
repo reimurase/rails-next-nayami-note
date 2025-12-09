@@ -1,4 +1,3 @@
-// components/concerns/ConcernRow.tsx
 "use client";
 
 import { useState } from "react";
