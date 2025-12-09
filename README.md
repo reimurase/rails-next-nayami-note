@@ -1,6 +1,8 @@
 # rails-next-nayami-note
 
 ## 概要
+書いて発見。書いて発展。
+そして、さっさと忘れよう。
 なやみノート。RailsとNext.jsで構成するポートフォリオ用アプリ。
 
 ## 開発環境メモ
@@ -50,9 +52,11 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - ✅ concernのcreate API を実装（簡易）
 - ✅ concernのフォームを実装
 - ✅ concernの一覧表示を実装
-- ✅ concernの詳細表示を実装
 - ✅ concernの編集機能を実装
 - ✅ concernの削除機能を実装
+- ✅ ConcernRowの機能を実装
+- ✅ 一覧ページでCRUDを完結させる
+- ✅ concernの詳細機能APIを残す
 
 
 ## 今後
