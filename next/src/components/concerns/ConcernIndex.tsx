@@ -4,6 +4,7 @@ import ConcernRow from "./ConcernRow";
 
 export type Concern = {
   id: number;
+  trigger_event: string;
   content: string;
 };
 
