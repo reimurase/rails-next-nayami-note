@@ -30,6 +30,6 @@ class Api::V1::ConcernsController < ApplicationController
   private
 
     def concern_params
-      params.require(:concern).permit(:content)
+      params.require(:concern).permit(:trigger_event, :content)
     end
 end
