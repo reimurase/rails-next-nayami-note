@@ -8,6 +8,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     let(:valid_params) do
       {
         concern: {
+          trigger_event: "テストのきっかけ",
           content: "テストの悩み",
         },
       }
@@ -29,6 +30,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
         expect(response).to have_http_status(:ok)
         json = JSON.parse(response.body)
+        expect(json["trigger_event"]).to eq "テストのきっかけ"
         expect(json["content"]).to eq "テストの悩み"
       end
     end
@@ -78,6 +80,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
       it "各 concern の内容が正しいこと" do
         json.each_with_index do |item, i|
+          expect(item["trigger_event"]).to eq(concerns[i].trigger_event)
           expect(item["content"]).to eq(concerns[i].content)
         end
       end
@@ -110,7 +113,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   describe "PATCH api/v1/concerns/:id" do
     subject(:request_api) { patch "/api/v1/concerns/#{concern_id}", params: params }
 
-    let!(:concern) { create(:concern, content: "元の内容") }
+    let!(:concern) { create(:concern, trigger_event: "元のきっかけ", content: "元の内容") }
     let(:concern_id) { concern.id }
 
     # 共通で使う JSON パース用ヘルパ（既に定義済なら不要）
@@ -120,6 +123,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       let(:params) do
         {
           concern: {
+            trigger_event: "更新後のきっかけ",
             content: "更新後の内容",
           },
         }
@@ -133,13 +137,15 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       it "指定したconcernの内容が更新されること" do
         expect {
           request_api
-        }.to change { concern.reload.content }.from("元の内容").to("更新後の内容")
+        }.to change { concern.reload.trigger_event }.from("元のきっかけ").to("更新後のきっかけ").
+               and change { concern.reload.content }.from("元の内容").to("更新後の内容")
       end
 
       it "レスポンスに更新後のデータが含まれていること" do
         request_api
 
         expect(body["id"]).to eq(concern.id)
+        expect(body["trigger_event"]).to eq("更新後のきっかけ")
         expect(body["content"]).to eq("更新後の内容")
       end
     end
