@@ -52,7 +52,7 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       />
       <input
         type="text"
-        placeholder="悩みを入力"
+        placeholder="なやみを入力"
         value={content}
         onChange={(e) => setContent(e.target.value)}
         style={{

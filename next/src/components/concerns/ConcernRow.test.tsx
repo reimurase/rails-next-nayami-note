@@ -29,11 +29,18 @@ describe("ConcernRow 正常系", () => {
     fireEvent.click(screen.getByRole("button", { name: "編集" }));
 
     // 5. input と保存ボタンが表示される
-    const input = screen.getByRole("textbox");
-    expect(input).toBeInTheDocument();
+    const inputs = screen.getAllByRole("textbox");
+    expect(inputs).toHaveLength(2);
 
-    fireEvent.change(input, { target: { value: "更新後の内容" } });
-    expect(input).toHaveValue("更新後の内容");
+    const [triggerInput, contentInput] = inputs;
+
+    // きっかけを変更
+    fireEvent.change(triggerInput, { target: { value: "更新後のきっかけ" } });
+    expect(triggerInput).toHaveValue("更新後のきっかけ");
+
+    // 内容を変更
+    fireEvent.change(contentInput, { target: { value: "更新後の内容" } });
+    expect(contentInput).toHaveValue("更新後の内容");
 
     // 6. 保存をクリック
     const saveButton = screen.getByRole("button", { name: "保存" });

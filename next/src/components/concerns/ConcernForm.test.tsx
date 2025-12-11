@@ -1,3 +1,4 @@
+// src/components/concerns/ConcernForm.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 import axios from "axios";
 
@@ -16,9 +17,14 @@ describe("ConcernForm API 呼び出し", () => {
     const mockOnCreated = jest.fn();
     render(<ConcernForm onCreated={mockOnCreated} />);
 
-    // 入力
-    fireEvent.change(screen.getByPlaceholderText("悩みを入力"), {
-      target: { value: "テストの悩み" },
+    // きっかけを入力
+    fireEvent.change(screen.getByPlaceholderText("きっかけを入力"), {
+      target: { value: "テストのきっかけ" },
+    });
+
+    // なやみを入力
+    fireEvent.change(screen.getByPlaceholderText("なやみを入力"), {
+      target: { value: "テストのなやみ" },
     });
 
     // 送信クリック
@@ -29,7 +35,7 @@ describe("ConcernForm API 呼び出し", () => {
       expect(mockedAxios.post).toHaveBeenCalledTimes(1);
     });
     expect(mockedAxios.post).toHaveBeenCalledWith("http://localhost:3000/api/v1/concerns", {
-      concern: { content: "テストの悩み" },
+      concern: { trigger_event: "テストのきっかけ", content: "テストのなやみ" },
     });
   });
 });
