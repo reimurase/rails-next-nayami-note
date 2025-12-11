@@ -8,6 +8,7 @@ type ConcernFormProps = {
 };
 
 export default function ConcernForm({ onCreated }: ConcernFormProps) {
+  const [triggerEvent, setTriggerEvent] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -21,10 +22,11 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
 
     try {
       await axios.post("http://localhost:3000/api/v1/concerns", {
-        concern: { content },
+        concern: { trigger_event: triggerEvent, content },
       });
 
       setStatus("登録成功！");
+      setTriggerEvent("");
       setContent("");
       onCreated();
     } catch (error) {
@@ -37,6 +39,17 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
+      <input
+        type="text"
+        placeholder="きっかけを入力"
+        value={triggerEvent}
+        onChange={(e) => setTriggerEvent(e.target.value)}
+        style={{
+          width: "300px",
+          padding: "8px",
+          fontSize: "16px",
+        }}
+      />
       <input
         type="text"
         placeholder="悩みを入力"
