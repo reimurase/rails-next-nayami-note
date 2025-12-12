@@ -13,14 +13,15 @@ type Props = {
 
 const ConcernRow = ({ concern, onChanged }: Props) => {
   const [isEditing, setIsEditing] = useState(false); // 編集モードかどうか
-  const [value, setValue] = useState(concern.content); // 入力中の値
+  const [triggerEvent, setTriggerEvent] = useState(concern.trigger_event);
+  const [content, setContent] = useState(concern.content); // 入力中の値
   const [isSaving, setIsSaving] = useState(false); // 保存中フラグ
 
   const handleSave = async () => {
     try {
       setIsSaving(true);
       await axios.patch(`http://localhost:3000/api/v1/concerns/${concern.id}`, {
-        concern: { content: value },
+        concern: { trigger_event: triggerEvent, content: content },
       });
 
       setIsEditing(false);
@@ -36,14 +37,20 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setValue(concern.content); // 元の内容に戻す
+    setTriggerEvent(concern.trigger_event);
+    setContent(concern.content); // 元の内容に戻す
   };
 
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
       {isEditing ? (
         <>
-          <input value={value} onChange={(e) => setValue(e.target.value)} disabled={isSaving} />
+          <input
+            value={triggerEvent}
+            onChange={(e) => setTriggerEvent(e.target.value)}
+            disabled={isSaving}
+          />
+          <input value={content} onChange={(e) => setContent(e.target.value)} disabled={isSaving} />
           <button onClick={handleSave} disabled={isSaving}>
             {isSaving ? "保存中..." : "保存"}
           </button>
@@ -53,6 +60,7 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
         </>
       ) : (
         <>
+          <span>{concern.trigger_event}</span>
           <span>{concern.content}</span>
           <button onClick={() => setIsEditing(true)}>編集</button>
         </>

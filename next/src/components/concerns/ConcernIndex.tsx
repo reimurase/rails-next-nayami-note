@@ -4,6 +4,7 @@ import ConcernRow from "./ConcernRow";
 
 export type Concern = {
   id: number;
+  trigger_event: string;
   content: string;
 };
 
@@ -18,7 +19,7 @@ export default function ConcernIndex({ concerns, isLoading, error, onChanged }: 
   if (isLoading) {
     return (
       <div>
-        <h2>悩み一覧</h2>
+        <h2>なやみ一覧</h2>
         <p>読み込み中...</p>
       </div>
     );
@@ -28,7 +29,7 @@ export default function ConcernIndex({ concerns, isLoading, error, onChanged }: 
     console.error(error);
     return (
       <div>
-        <h2>悩み一覧</h2>
+        <h2>なやみ一覧</h2>
         <p>エラーが発生しました</p>
       </div>
     );
@@ -37,7 +38,7 @@ export default function ConcernIndex({ concerns, isLoading, error, onChanged }: 
   if (!concerns) {
     return (
       <div>
-        <h2>悩み一覧</h2>
+        <h2>なやみ一覧</h2>
         <p>読み込み中...</p>
       </div>
     );
@@ -45,7 +46,7 @@ export default function ConcernIndex({ concerns, isLoading, error, onChanged }: 
 
   return (
     <div>
-      <h2>concern 一覧</h2>
+      <h2>なやみ一覧</h2>
       <ul style={{ display: "flex", flexDirection: "column", gap: 8, padding: 0 }}>
         {concerns.map((concern) => (
           <li key={concern.id} style={{ listStyle: "none" }}>
