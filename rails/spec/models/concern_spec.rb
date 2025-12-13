@@ -31,16 +31,16 @@ RSpec.describe Concern, type: :model do
       end
     end
 
-    context "trigger_event が255文字の場合" do
+    context "trigger_event が120文字の場合" do
       it "valid であること" do
-        concern = build(:concern, trigger_event: "a" * 255)
+        concern = build(:concern, trigger_event: "a" * 120)
         expect(concern).to be_valid
       end
     end
 
-    context "trigger_event が256文字の場合" do
+    context "trigger_event が121文字の場合" do
       it "invalid であること" do
-        concern = build(:concern, trigger_event: "a" * 256)
+        concern = build(:concern, trigger_event: "a" * 121)
         expect(concern).not_to be_valid
       end
     end
