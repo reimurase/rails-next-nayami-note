@@ -12,7 +12,7 @@ class Api::V1::ConcernsController < ApplicationController
   def create
     concern = Concern.new(concern_params)
     concern.save!
-    render json: concern
+    render json: concern, status: :created
   end
 
   def update
