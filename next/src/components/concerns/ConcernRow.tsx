@@ -6,6 +6,8 @@ import axios from "axios";
 import type { Concern } from "./ConcernIndex";
 import ConcernDeleteButton from "./ConcernDeleteButton";
 
+import { validateConcern, isValidConcern } from "@/lib/concernValidation";
+
 type Props = {
   concern: Concern;
   onChanged?: () => void; // 更新 or 削除が成功したときに一覧を更新する用
@@ -16,8 +18,18 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
   const [triggerEvent, setTriggerEvent] = useState(concern.trigger_event);
   const [content, setContent] = useState(concern.content); // 入力中の値
   const [isSaving, setIsSaving] = useState(false); // 保存中フラグ
+  const [submitted, setSubmitted] = useState(false);
+  const [touched, setTouched] = useState<{ trigger_event: Boolean; content: boolean }>({
+    trigger_event: false,
+    content: false,
+  });
 
   const handleSave = async () => {
+    setSubmitted(true);
+
+    const nextErrors = validateConcern({ trigger_event: triggerEvent, content });
+    if (!isValidConcern(nextErrors)) return;
+
     try {
       setIsSaving(true);
       await axios.patch(`http://localhost:3000/api/v1/concerns/${concern.id}`, {
@@ -25,6 +37,9 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
       });
 
       setIsEditing(false);
+      setSubmitted(false);
+      setTouched({ trigger_event: false, content: false });
+
       // 一覧の再取得
       if (onChanged) onChanged();
     } catch (e) {
@@ -39,8 +54,16 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
     setIsEditing(false);
     setTriggerEvent(concern.trigger_event);
     setContent(concern.content); // 元の内容に戻す
+    setSubmitted(false);
+    setTouched({ trigger_event: false, content: false });
   };
 
+  const currentErrors = validateConcern({ trigger_event: triggerEvent, content });
+  const overTrigger = triggerEvent.trim().length > 120;
+  const overContent = content.trim().length > 1000;
+
+  const showRequiredTrigger = !triggerEvent.trim() && (submitted || touched.trigger_event);
+  const showRequiredContent = !content.trim() && (submitted || touched.content);
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
       {isEditing ? (
@@ -48,10 +71,26 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
           <input
             value={triggerEvent}
             onChange={(e) => setTriggerEvent(e.target.value)}
+            onBlur={() => setTouched((p) => ({ ...p, trigger_event: true }))}
             disabled={isSaving}
           />
-          <input value={content} onChange={(e) => setContent(e.target.value)} disabled={isSaving} />
-          <button onClick={handleSave} disabled={isSaving}>
+          {(showRequiredTrigger || overTrigger) && (
+            <p style={{ color: overTrigger || submitted ? "tomato" : "#888", fontSize: 12 }}>
+              {currentErrors.trigger_event}
+            </p>
+          )}
+          <input
+            value={content}
+            onChange={(e) => setContent(e.target.value)}
+            onBlur={() => setTouched((p) => ({ ...p, content: true }))}
+            disabled={isSaving}
+          />
+          {(showRequiredContent || overContent) && (
+            <p style={{ color: overContent || submitted ? "tomato" : "#888", fontSize: 12 }}>
+              {currentErrors.content}
+            </p>
+          )}
+          <button onClick={handleSave} disabled={isSaving || overTrigger || overContent}>
             {isSaving ? "保存中..." : "保存"}
           </button>
           <button onClick={handleCancel} disabled={isSaving}>
@@ -62,7 +101,15 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
         <>
           <span>{concern.trigger_event}</span>
           <span>{concern.content}</span>
-          <button onClick={() => setIsEditing(true)}>編集</button>
+          <button
+            onClick={() => {
+              setIsEditing(true);
+              setSubmitted(false);
+              setTouched({ trigger_event: false, content: false });
+            }}
+          >
+            編集
+          </button>
         </>
       )}
 
