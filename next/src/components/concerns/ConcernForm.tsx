@@ -35,6 +35,8 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       setStatus("登録成功！");
       setTriggerEvent("");
       setContent("");
+      setSubmitted(false);
+      setTouched({ trigger_event: false, content: false });
       onCreated();
     } catch (error) {
       console.error(error);
