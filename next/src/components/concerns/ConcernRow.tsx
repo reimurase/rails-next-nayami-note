@@ -6,7 +6,13 @@ import axios from "axios";
 import type { Concern } from "./ConcernIndex";
 import ConcernDeleteButton from "./ConcernDeleteButton";
 
-import { validateConcern, isValidConcern } from "@/lib/concernValidation";
+import {
+  hasErrors,
+  validateLength,
+  validateOnSubmit,
+  validateRequired,
+  CONCERN_LIMITS,
+} from "@/lib/concernValidation";
 
 type Props = {
   concern: Concern;
@@ -23,8 +29,8 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
   const handleSave = async () => {
     setSubmitted(true);
 
-    const nextErrors = validateConcern({ trigger_event: triggerEvent, content });
-    if (!isValidConcern(nextErrors)) return;
+    const nextErrors = validateOnSubmit({ trigger_event: triggerEvent, content });
+    if (hasErrors(nextErrors)) return;
 
     try {
       setIsSaving(true);
@@ -52,12 +58,13 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
     setSubmitted(false);
   };
 
-  const currentErrors = validateConcern({ trigger_event: triggerEvent, content });
-  const overTrigger = triggerEvent.trim().length > 120;
-  const overContent = content.trim().length > 1000;
+  const values = { trigger_event: triggerEvent, content };
 
-  const showRequiredTrigger = !triggerEvent.trim() && submitted;
-  const showRequiredContent = !content.trim() && submitted;
+  const lengthErrors = validateLength(values);
+  const requiredErrors = submitted ? validateRequired(values) : {};
+
+  const overTrigger = Boolean(lengthErrors.trigger_event);
+  const overContent = Boolean(lengthErrors.content);
 
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -69,18 +76,33 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
             onChange={(e) => setTriggerEvent(e.target.value)}
             disabled={isSaving}
           />
-          {(showRequiredTrigger || overTrigger) && (
-            <p style={{ color: "tomato", fontSize: 12 }}>{currentErrors.trigger_event}</p>
+          {(requiredErrors.trigger_event || lengthErrors.trigger_event) && (
+            <p style={{ color: "tomato", fontSize: 12 }}>
+              {/* 基本 requiredErrors.trigger_event は出ません。必須になれば拡張可能 */}
+              {requiredErrors.trigger_event ?? lengthErrors.trigger_event}
+            </p>
           )}
+          <p style={{ fontSize: 12, opacity: 0.8 }}>
+            {triggerEvent.length}/{CONCERN_LIMITS.trigger_event}
+          </p>
           <input
             value={content}
             placeholder="とりあえず、今のなやみを書いてみよう（必須）"
             onChange={(e) => setContent(e.target.value)}
             disabled={isSaving}
           />
-          {(showRequiredContent || overContent) && (
-            <p style={{ color: "tomato", fontSize: 12 }}>{currentErrors.content}</p>
+          {(requiredErrors.content || lengthErrors.content) && (
+            <p style={{ color: "tomato", fontSize: 12 }}>
+              {requiredErrors.content ?? lengthErrors.content}
+            </p>
           )}
+          <p style={{ fontSize: 12, opacity: 0.8 }}>
+            {content.length}/{CONCERN_LIMITS.content}
+            {content.length >= CONCERN_LIMITS.contentWarn &&
+              content.length <= CONCERN_LIMITS.content && (
+                <span style={{ marginLeft: 8 }}>けっこう進んだなあ…。この感じでいけるかな。</span>
+              )}
+          </p>
           <button onClick={handleSave} disabled={isSaving || overTrigger || overContent}>
             {isSaving ? "保存中..." : "保存"}
           </button>

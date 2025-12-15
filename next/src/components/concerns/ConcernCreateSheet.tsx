@@ -20,7 +20,7 @@ export default function ConcernCreateSheet({ isOpen, onClose, onCreated }: Props
         bottom: 0,
         padding: "16px",
         borderTop: "1px solid #ddd",
-        backgroundColor: "#1a1a1a", // 夜モード風
+        // backgroundColor: "#71b2efff", // 夜モード風
         boxShadow: "0 -4px 12px rgba(0,0,0,0.4)",
         animation: "slideUp 0.25s ease-out",
       }}
@@ -35,7 +35,7 @@ export default function ConcernCreateSheet({ isOpen, onClose, onCreated }: Props
       </style>
 
       <div style={{ display: "flex", justifyContent: "space-between", marginBottom: 8 }}>
-        <strong style={{ color: "white" }}>悩みを追加</strong>
+        <strong>なやみを追加</strong>
         <button onClick={onClose}>✕</button>
       </div>
 
