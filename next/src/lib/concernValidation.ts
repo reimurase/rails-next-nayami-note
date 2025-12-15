@@ -26,7 +26,7 @@ export const validateConcern = (v: ConcernValues): ConcernErrors => {
   }
 
   if (content.length > CONCERN_LIMITS.content) {
-    errors.content = `きっかけは${CONCERN_LIMITS.content}文字以内です`;
+    errors.content = `なやみは${CONCERN_LIMITS.content}文字以内です`;
   }
 
   return errors;

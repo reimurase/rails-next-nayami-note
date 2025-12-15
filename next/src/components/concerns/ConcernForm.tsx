@@ -15,10 +15,6 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
   const [status, setStatus] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
-  const [touched, setTouched] = useState<{ trigger_event: boolean; content: boolean }>({
-    trigger_event: false,
-    content: false,
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,7 +32,6 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       setTriggerEvent("");
       setContent("");
       setSubmitted(false);
-      setTouched({ trigger_event: false, content: false });
       onCreated();
     } catch (error) {
       console.error(error);
@@ -47,8 +42,8 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
   };
 
   const currentErrors = validateConcern({ trigger_event: triggerEvent, content });
-  const showRequiredTrigger = !triggerEvent.trim() && (submitted || touched.trigger_event);
-  const showRequiredContent = !content.trim() && (submitted || touched.content);
+  const showRequiredTrigger = !triggerEvent.trim() && submitted;
+  const showRequiredContent = !content.trim() && submitted;
   const overTrigger = triggerEvent.trim().length > 120;
   const overContent = content.trim().length > 1000;
   return (
@@ -58,7 +53,6 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
         placeholder="きっかけを入力"
         value={triggerEvent}
         onChange={(e) => setTriggerEvent(e.target.value)}
-        onBlur={() => setTouched((p) => ({ ...p, trigger_event: true }))}
         style={{
           width: "300px",
           padding: "8px",
@@ -66,21 +60,13 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
         }}
       />
       {(showRequiredTrigger || overTrigger) && (
-        <p
-          style={{
-            color: overTrigger || submitted ? "tomato" : "#888",
-            fontSize: 12,
-          }}
-        >
-          {currentErrors.trigger_event}
-        </p>
+        <p style={{ color: "tomato", fontSize: 12 }}>{currentErrors.trigger_event}</p>
       )}
       <input
         type="text"
         placeholder="なやみを入力"
         value={content}
         onChange={(e) => setContent(e.target.value)}
-        onBlur={() => setTouched((p) => ({ ...p, content: true }))}
         style={{
           width: "300px",
           padding: "8px",
@@ -88,14 +74,7 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
         }}
       />
       {(showRequiredContent || overContent) && (
-        <p
-          style={{
-            color: overContent || submitted ? "tomato" : "#888",
-            fontSize: 12,
-          }}
-        >
-          {currentErrors.content}
-        </p>
+        <p style={{ color: "tomato", fontSize: 12 }}>{currentErrors.content}</p>
       )}
       <button
         type="submit"
