@@ -19,10 +19,6 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
   const [content, setContent] = useState(concern.content); // 入力中の値
   const [isSaving, setIsSaving] = useState(false); // 保存中フラグ
   const [submitted, setSubmitted] = useState(false);
-  const [touched, setTouched] = useState<{ trigger_event: Boolean; content: boolean }>({
-    trigger_event: false,
-    content: false,
-  });
 
   const handleSave = async () => {
     setSubmitted(true);
@@ -38,7 +34,6 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
 
       setIsEditing(false);
       setSubmitted(false);
-      setTouched({ trigger_event: false, content: false });
 
       // 一覧の再取得
       if (onChanged) onChanged();
@@ -55,15 +50,15 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
     setTriggerEvent(concern.trigger_event);
     setContent(concern.content); // 元の内容に戻す
     setSubmitted(false);
-    setTouched({ trigger_event: false, content: false });
   };
 
   const currentErrors = validateConcern({ trigger_event: triggerEvent, content });
   const overTrigger = triggerEvent.trim().length > 120;
   const overContent = content.trim().length > 1000;
 
-  const showRequiredTrigger = !triggerEvent.trim() && (submitted || touched.trigger_event);
-  const showRequiredContent = !content.trim() && (submitted || touched.content);
+  const showRequiredTrigger = !triggerEvent.trim() && submitted;
+  const showRequiredContent = !content.trim() && submitted;
+
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
       {isEditing ? (
@@ -71,24 +66,14 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
           <input
             value={triggerEvent}
             onChange={(e) => setTriggerEvent(e.target.value)}
-            onBlur={() => setTouched((p) => ({ ...p, trigger_event: true }))}
             disabled={isSaving}
           />
           {(showRequiredTrigger || overTrigger) && (
-            <p style={{ color: overTrigger || submitted ? "tomato" : "#888", fontSize: 12 }}>
-              {currentErrors.trigger_event}
-            </p>
+            <p style={{ color: "tomato", fontSize: 12 }}>{currentErrors.trigger_event}</p>
           )}
-          <input
-            value={content}
-            onChange={(e) => setContent(e.target.value)}
-            onBlur={() => setTouched((p) => ({ ...p, content: true }))}
-            disabled={isSaving}
-          />
+          <input value={content} onChange={(e) => setContent(e.target.value)} disabled={isSaving} />
           {(showRequiredContent || overContent) && (
-            <p style={{ color: overContent || submitted ? "tomato" : "#888", fontSize: 12 }}>
-              {currentErrors.content}
-            </p>
+            <p style={{ color: "tomato", fontSize: 12 }}>{currentErrors.content}</p>
           )}
           <button onClick={handleSave} disabled={isSaving || overTrigger || overContent}>
             {isSaving ? "保存中..." : "保存"}
@@ -105,7 +90,6 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
             onClick={() => {
               setIsEditing(true);
               setSubmitted(false);
-              setTouched({ trigger_event: false, content: false });
             }}
           >
             編集
