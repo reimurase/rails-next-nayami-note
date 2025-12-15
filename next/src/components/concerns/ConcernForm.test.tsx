@@ -18,12 +18,12 @@ describe("ConcernForm API 呼び出し", () => {
     render(<ConcernForm onCreated={mockOnCreated} />);
 
     // きっかけを入力
-    fireEvent.change(screen.getByPlaceholderText("きっかけを入力"), {
+    fireEvent.change(screen.getByPlaceholderText("何があって、どう感じたんだろう。（任意）"), {
       target: { value: "テストのきっかけ" },
     });
 
     // なやみを入力
-    fireEvent.change(screen.getByPlaceholderText("なやみを入力"), {
+    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう（必須）"), {
       target: { value: "テストのなやみ" },
     });
 

@@ -62,7 +62,7 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
     <form onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder="なやみのきっかけになった出来事は何だっただろう？（任意）"
+        placeholder="何があって、どう感じたんだろう。（任意）"
         value={triggerEvent}
         onChange={(e) => setTriggerEvent(e.target.value)}
         style={{
