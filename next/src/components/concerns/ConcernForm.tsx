@@ -3,7 +3,7 @@
 import { useState } from "react";
 import axios from "axios";
 
-import { validateConcern } from "@/lib/concernValidation";
+import { validateConcern, isValidConcern } from "@/lib/concernValidation";
 
 type ConcernFormProps = {
   onCreated: () => void;
@@ -22,6 +22,9 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
 
     setStatus("送信中...");
     setIsSubmitting(true);
+
+    const nextErrors = validateConcern({ trigger_event: triggerEvent, content });
+    if (!isValidConcern(nextErrors)) return;
 
     try {
       await axios.post("http://localhost:3000/api/v1/concerns", {
@@ -50,7 +53,7 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
     <form onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder="きっかけを入力"
+        placeholder="なやみのきっかけになった出来事は何だっただろう？（任意）"
         value={triggerEvent}
         onChange={(e) => setTriggerEvent(e.target.value)}
         style={{
@@ -64,7 +67,7 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       )}
       <input
         type="text"
-        placeholder="なやみを入力"
+        placeholder="とりあえず、今のなやみを書いてみよう（必須）"
         value={content}
         onChange={(e) => setContent(e.target.value)}
         style={{

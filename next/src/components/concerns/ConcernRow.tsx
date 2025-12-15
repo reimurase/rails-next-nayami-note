@@ -65,13 +65,19 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
         <>
           <input
             value={triggerEvent}
+            placeholder="なやみのきっかけになった出来事は何だっただろう？（任意"
             onChange={(e) => setTriggerEvent(e.target.value)}
             disabled={isSaving}
           />
           {(showRequiredTrigger || overTrigger) && (
             <p style={{ color: "tomato", fontSize: 12 }}>{currentErrors.trigger_event}</p>
           )}
-          <input value={content} onChange={(e) => setContent(e.target.value)} disabled={isSaving} />
+          <input
+            value={content}
+            placeholder="とりあえず、今のなやみを書いてみよう（必須）"
+            onChange={(e) => setContent(e.target.value)}
+            disabled={isSaving}
+          />
           {(showRequiredContent || overContent) && (
             <p style={{ color: "tomato", fontSize: 12 }}>{currentErrors.content}</p>
           )}
