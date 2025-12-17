@@ -18,7 +18,7 @@ describe("ConcernForm API 呼び出し", () => {
     render(<ConcernForm onCreated={mockOnCreated} />);
 
     // きっかけを入力
-    fireEvent.change(screen.getByPlaceholderText("何があって、どう感じたんだろう。（任意）"), {
+    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう。（任意）"), {
       target: { value: "テストのきっかけ" },
     });
 

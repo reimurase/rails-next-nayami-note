@@ -62,7 +62,7 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
     <form onSubmit={handleSubmit}>
       <input
         type="text"
-        placeholder="何があって、どう感じたんだろう。（任意）"
+        placeholder="何があって、どう思ったんだろう。（任意）"
         value={triggerEvent}
         onChange={(e) => setTriggerEvent(e.target.value)}
         style={{
@@ -98,10 +98,10 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       )}
       <p style={{ fontSize: 12, opacity: 0.8 }}>
         {content.length}/{CONCERN_LIMITS.content}
-        {content.length >= CONCERN_LIMITS.contentWarn &&
+        {/* {content.length >= CONCERN_LIMITS.contentWarn &&
           content.length <= CONCERN_LIMITS.content && (
             <span style={{ marginLeft: 8 }}>けっこう進んだなあ…。この感じでいけるかな。</span>
-          )}
+          )} */}
       </p>
       <button
         type="submit"

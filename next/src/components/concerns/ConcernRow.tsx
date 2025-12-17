@@ -72,7 +72,7 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
         <>
           <input
             value={triggerEvent}
-            placeholder="なやみのきっかけになった出来事は何だっただろう？（任意"
+            placeholder="何があって、どう思ったんだろう。（任意）"
             onChange={(e) => setTriggerEvent(e.target.value)}
             disabled={isSaving}
           />
@@ -98,10 +98,6 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
           )}
           <p style={{ fontSize: 12, opacity: 0.8 }}>
             {content.length}/{CONCERN_LIMITS.content}
-            {content.length >= CONCERN_LIMITS.contentWarn &&
-              content.length <= CONCERN_LIMITS.content && (
-                <span style={{ marginLeft: 8 }}>けっこう進んだなあ…。この感じでいけるかな。</span>
-              )}
           </p>
           <button onClick={handleSave} disabled={isSaving || overTrigger || overContent}>
             {isSaving ? "保存中..." : "保存"}
