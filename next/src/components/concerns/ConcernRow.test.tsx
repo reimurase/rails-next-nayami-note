@@ -8,6 +8,9 @@ jest.mock("axios");
 const mockedAxios = jest.mocked(axios);
 
 describe("ConcernRow 正常系", () => {
+  beforeEach(() => {
+    mockedAxios.patch.mockReset();
+  });
   test("編集して保存すると PATCH が呼ばれ、onChanged も呼ばれる", async () => {
     // 1. props を準備
     const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
@@ -61,5 +64,69 @@ describe("ConcernRow 正常系", () => {
       // input が消えている（＝通常モードに戻った）
       expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     });
+  });
+
+  test("content を空にして保存すると必須エラーが出て PATCH は呼ばれない", async () => {
+    const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
+    const onChanged = jest.fn();
+
+    mockedAxios.patch.mockResolvedValue({ data: {} });
+
+    render(<ConcernRow concern={concern} onChanged={onChanged} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "編集" }));
+
+    const inputs = screen.getAllByRole("textbox");
+    const [, contentInput] = inputs;
+
+    // content を空にする
+    fireEvent.change(contentInput, { target: { value: "" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "保存" }));
+
+    // 必須エラーが出る
+    expect(await screen.findByText("なやみは必須です")).toBeInTheDocument();
+
+    // PATCH は呼ばれない
+    expect(mockedAxios.patch).not.toHaveBeenCalled();
+    expect(onChanged).not.toHaveBeenCalled();
+  });
+
+  test("content が1001文字だと文字数エラーが出て保存ボタンが押せない", () => {
+    const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
+    const onChanged = jest.fn();
+
+    render(<ConcernRow concern={concern} onChanged={onChanged} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "編集" }));
+
+    const inputs = screen.getAllByRole("textbox");
+    const [, contentInput] = inputs;
+
+    const longText = "a".repeat(1001);
+    fireEvent.change(contentInput, { target: { value: longText } });
+
+    expect(screen.getByText("なやみは1000文字以内です")).toBeInTheDocument();
+
+    // 超過中は保存が disabled（今回仕様）
+    expect(screen.getByRole("button", { name: "保存" })).toBeDisabled();
+  });
+
+  test("trigger_event が121文字だと文字数エラーが出て保存ボタンが押せない", () => {
+    const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
+    const onChanged = jest.fn();
+
+    render(<ConcernRow concern={concern} onChanged={onChanged} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "編集" }));
+
+    const inputs = screen.getAllByRole("textbox");
+    const [triggerInput] = inputs;
+
+    const longText = "a".repeat(121);
+    fireEvent.change(triggerInput, { target: { value: longText } });
+
+    expect(screen.getByText("きっかけは120文字以内です")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "保存" })).toBeDisabled();
   });
 });

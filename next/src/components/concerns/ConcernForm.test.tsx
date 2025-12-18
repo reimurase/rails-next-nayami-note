@@ -94,8 +94,6 @@ describe("ConcernForm API 呼び出し", () => {
     });
 
     expect(screen.getByText("きっかけは120文字以内です")).toBeInTheDocument();
-
-    // 超過中はボタンが押せない（disabled）
     expect(screen.getByRole("button", { name: "追加" })).toBeDisabled();
   });
 });
