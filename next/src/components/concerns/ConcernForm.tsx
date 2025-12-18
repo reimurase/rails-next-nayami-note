@@ -98,10 +98,6 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       )}
       <p style={{ fontSize: 12, opacity: 0.8 }}>
         {content.length}/{CONCERN_LIMITS.content}
-        {/* {content.length >= CONCERN_LIMITS.contentWarn &&
-          content.length <= CONCERN_LIMITS.content && (
-            <span style={{ marginLeft: 8 }}>けっこう進んだなあ…。この感じでいけるかな。</span>
-          )} */}
       </p>
       <button
         type="submit"
