@@ -19,14 +19,14 @@ describe("ConcernCreateSheet", () => {
     render(<ConcernCreateSheet isOpen={false} onClose={jest.fn()} onCreated={jest.fn()} />);
 
     // 見出しが表示されていないことを確認
-    expect(screen.queryByText("悩みを追加")).not.toBeInTheDocument();
+    expect(screen.queryByText("なやみを追加")).not.toBeInTheDocument();
   });
 
   test("isOpen=true のときは見出しとフォームが表示される", () => {
     render(<ConcernCreateSheet isOpen={true} onClose={jest.fn()} onCreated={jest.fn()} />);
 
     // 見出しが表示される
-    expect(screen.getByText("悩みを追加")).toBeInTheDocument();
+    expect(screen.getByText("なやみを追加")).toBeInTheDocument();
     // モック化した ConcernForm が表示される
     expect(screen.getByTestId("concern-form")).toBeInTheDocument();
   });

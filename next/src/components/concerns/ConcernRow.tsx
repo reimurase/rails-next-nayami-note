@@ -6,6 +6,14 @@ import axios from "axios";
 import type { Concern } from "./ConcernIndex";
 import ConcernDeleteButton from "./ConcernDeleteButton";
 
+import {
+  hasErrors,
+  validateLength,
+  validateOnSubmit,
+  validateRequired,
+  CONCERN_LIMITS,
+} from "@/lib/concernValidation";
+
 type Props = {
   concern: Concern;
   onChanged?: () => void; // 更新 or 削除が成功したときに一覧を更新する用
@@ -16,8 +24,14 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
   const [triggerEvent, setTriggerEvent] = useState(concern.trigger_event);
   const [content, setContent] = useState(concern.content); // 入力中の値
   const [isSaving, setIsSaving] = useState(false); // 保存中フラグ
+  const [submitted, setSubmitted] = useState(false);
 
   const handleSave = async () => {
+    setSubmitted(true);
+
+    const nextErrors = validateOnSubmit({ trigger_event: triggerEvent, content });
+    if (hasErrors(nextErrors)) return;
+
     try {
       setIsSaving(true);
       await axios.patch(`http://localhost:3000/api/v1/concerns/${concern.id}`, {
@@ -25,6 +39,8 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
       });
 
       setIsEditing(false);
+      setSubmitted(false);
+
       // 一覧の再取得
       if (onChanged) onChanged();
     } catch (e) {
@@ -39,7 +55,16 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
     setIsEditing(false);
     setTriggerEvent(concern.trigger_event);
     setContent(concern.content); // 元の内容に戻す
+    setSubmitted(false);
   };
+
+  const values = { trigger_event: triggerEvent, content };
+
+  const lengthErrors = validateLength(values);
+  const requiredErrors = submitted ? validateRequired(values) : {};
+
+  const overTrigger = Boolean(lengthErrors.trigger_event);
+  const overContent = Boolean(lengthErrors.content);
 
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
@@ -47,11 +72,34 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
         <>
           <input
             value={triggerEvent}
+            placeholder="何があって、どう思ったんだろう。（任意）"
             onChange={(e) => setTriggerEvent(e.target.value)}
             disabled={isSaving}
           />
-          <input value={content} onChange={(e) => setContent(e.target.value)} disabled={isSaving} />
-          <button onClick={handleSave} disabled={isSaving}>
+          {(requiredErrors.trigger_event || lengthErrors.trigger_event) && (
+            <p style={{ color: "tomato", fontSize: 12 }}>
+              {/* 基本 requiredErrors.trigger_event は出ません。必須になれば拡張可能 */}
+              {requiredErrors.trigger_event ?? lengthErrors.trigger_event}
+            </p>
+          )}
+          <p style={{ fontSize: 12, opacity: 0.8 }}>
+            {triggerEvent.length}/{CONCERN_LIMITS.trigger_event}
+          </p>
+          <input
+            value={content}
+            placeholder="とりあえず、今のなやみを書いてみよう（必須）"
+            onChange={(e) => setContent(e.target.value)}
+            disabled={isSaving}
+          />
+          {(requiredErrors.content || lengthErrors.content) && (
+            <p style={{ color: "tomato", fontSize: 12 }}>
+              {requiredErrors.content ?? lengthErrors.content}
+            </p>
+          )}
+          <p style={{ fontSize: 12, opacity: 0.8 }}>
+            {content.length}/{CONCERN_LIMITS.content}
+          </p>
+          <button onClick={handleSave} disabled={isSaving || overTrigger || overContent}>
             {isSaving ? "保存中..." : "保存"}
           </button>
           <button onClick={handleCancel} disabled={isSaving}>
@@ -62,7 +110,14 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
         <>
           <span>{concern.trigger_event}</span>
           <span>{concern.content}</span>
-          <button onClick={() => setIsEditing(true)}>編集</button>
+          <button
+            onClick={() => {
+              setIsEditing(true);
+              setSubmitted(false);
+            }}
+          >
+            編集
+          </button>
         </>
       )}
 

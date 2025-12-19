@@ -23,8 +23,6 @@ export default function ConcernPage() {
   return (
     <div style={{ paddingBottom: isSheetOpen ? 160 : 0 }}>
       <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <h1>悩み一覧</h1>
-
         <button
           onClick={() => setIsSheetOpen(true)}
           style={{
