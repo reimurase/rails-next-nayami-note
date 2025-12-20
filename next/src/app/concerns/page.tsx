@@ -8,9 +8,8 @@ import ConcernIndex from "@/components/concerns/ConcernIndex";
 import ConcernCreateSheet from "@/components/concerns/ConcernCreateSheet";
 
 export default function ConcernPage() {
-  const { data, isLoading, error, mutate } = useSWR(
-    "http://localhost:3000/api/v1/concerns",
-    (url) => axios.get(url).then((res) => res.data)
+  const { data, mutate } = useSWR("http://localhost:3000/api/v1/concerns", (url) =>
+    axios.get(url).then((res) => res.data)
   );
 
   const [isSheetOpen, setIsSheetOpen] = useState(false);
@@ -36,12 +35,7 @@ export default function ConcernPage() {
         </button>
       </header>
 
-      <ConcernIndex
-        concerns={data}
-        isLoading={isLoading}
-        error={error}
-        onChanged={() => mutate()}
-      />
+      <ConcernIndex concerns={data ?? []} onChanged={() => mutate()} />
 
       <ConcernCreateSheet
         isOpen={isSheetOpen}
