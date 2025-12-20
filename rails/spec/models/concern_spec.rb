@@ -46,11 +46,10 @@ RSpec.describe Concern, type: :model do
     end
 
     context "trigger_event が nil の場合" do
-      it "invalid であること" do
+      it "valid であり、空文字に正規化されること" do
         concern = build(:concern, trigger_event: nil)
 
         expect(concern).to be_valid
-        concern.validate
         expect(concern.trigger_event).to eq("")
       end
     end

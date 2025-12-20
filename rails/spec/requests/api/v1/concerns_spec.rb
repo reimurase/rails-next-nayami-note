@@ -40,8 +40,10 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
       it "レコードを作成せず、422を返す" do
         expect { subject }.not_to change { Concern.count }
-
         expect(response).to have_http_status(:unprocessable_entity)
+
+        json = JSON.parse(response.body)
+        expect(json["errors"]).to be_present
       end
     end
   end
@@ -150,42 +152,42 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       end
     end
 
-    # context "指定したIDのconcernが存在しない場合" do
-    #   let(:concern_id) { 999_999 } # 存在しないIDを想定
-    #   let(:params) do
-    #     {
-    #       concern: {
-    #         content: "更新後の内容"
-    #       }
-    #     }
-    #   end
+    context "指定したIDのconcernが存在しない場合" do
+      let(:concern_id) { 999_999 } # 存在しないIDを想定
+      let(:params) do
+        {
+          concern: {
+            content: "更新後の内容",
+          },
+        }
+      end
 
-    #   it "404 Not Found が返ること" do
-    #     request_api
-    #     expect(response).to have_http_status(:not_found)
-    #   end
-    # end
+      it "404 Not Found が返ること" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
 
-    # context "パラメータが不正な場合（例: content が空）" do
-    #   let(:params) do
-    #     {
-    #       concern: {
-    #         content: ""
-    #       }
-    #     }
-    #   end
+    context "パラメータが不正な場合（例: content が空）" do
+      let(:params) do
+        {
+          concern: {
+            content: "",
+          },
+        }
+      end
 
-    #   it "422 Unprocessable Entity が返ること" do
-    #     request_api
-    #     expect(response).to have_http_status(:unprocessable_entity)
-    #   end
+      it "422 Unprocessable Entity が返ること" do
+        request_api
+        expect(response).to have_http_status(:unprocessable_entity)
+      end
 
-    #   it "データが更新されないこと" do
-    #     expect {
-    #       request_api
-    #     }.not_to change { concern.reload.content }
-    #   end
-    # end
+      it "データが更新されないこと" do
+        before_value = concern.reload.content
+        request_api
+        expect(concern.reload.content).to eq(before_value)
+      end
+    end
   end
 
   describe "DELETE api/v1/concerns/:id" do
@@ -204,6 +206,14 @@ RSpec.describe "Api::V1::Concerns", type: :request do
         expect { request_api }.to change { Concern.count }.by(-1)
       end
     end
-    # 異常系はCRUDの強化の段階で導入予定
+
+    context "指定したIDのconcernが存在しない場合" do
+      let(:concern_id) { 999_999 }
+
+      it "404 Not Found が返ること" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 end
