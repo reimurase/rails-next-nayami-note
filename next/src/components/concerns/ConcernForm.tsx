@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { api } from "@/lib/api";
+import { concernApi } from "@/lib/concernApi";
 import {
   CONCERN_LIMITS,
   hasErrors,
@@ -33,9 +33,7 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
     if (hasErrors(nextErrors)) return;
 
     try {
-      await api.post("/api/v1/concerns", {
-        concern: { trigger_event: triggerEvent, content },
-      });
+      await concernApi.create({ triggerEvent, content });
 
       setStatus("登録成功！");
       setTriggerEvent("");
