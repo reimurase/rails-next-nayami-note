@@ -5,7 +5,7 @@ import { useState } from "react";
 import type { Concern } from "./ConcernIndex";
 import ConcernDeleteButton from "./ConcernDeleteButton";
 
-import { api } from "@/lib/api";
+import { concernApi } from "@/lib/concernApi";
 import {
   hasErrors,
   validateLength,
@@ -34,9 +34,7 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
 
     try {
       setIsSaving(true);
-      await api.patch(`/api/v1/concerns/${concern.id}`, {
-        concern: { trigger_event: triggerEvent, content: content },
-      });
+      await concernApi.update({ id: concern.id, triggerEvent, content });
 
       setIsEditing(false);
       setSubmitted(false);
