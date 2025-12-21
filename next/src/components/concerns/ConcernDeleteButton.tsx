@@ -1,7 +1,8 @@
 "use client";
 
-import axios from "axios";
 import { useState } from "react";
+
+import { api } from "@/lib/api";
 
 type Props = {
   id: number;
@@ -18,7 +19,7 @@ const ConcernDeleteButton = ({ id, onDeleted }: Props) => {
 
     try {
       setIsDeleting(true);
-      await axios.delete(`http://localhost:3000/api/v1/concerns/${id}`);
+      await api.delete(`/api/v1/concerns/${id}`);
 
       // 正常系でやりたいこと（一覧の再取得など）
       if (onDeleted) {
