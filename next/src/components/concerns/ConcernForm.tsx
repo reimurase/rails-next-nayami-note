@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 
+import { api } from "@/lib/api";
 import {
   CONCERN_LIMITS,
   hasErrors,
@@ -33,7 +33,7 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
     if (hasErrors(nextErrors)) return;
 
     try {
-      await axios.post("http://localhost:3000/api/v1/concerns", {
+      await api.post("/api/v1/concerns", {
         concern: { trigger_event: triggerEvent, content },
       });
 
