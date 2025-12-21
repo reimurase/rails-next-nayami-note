@@ -1,11 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import axios from "axios";
 
 import type { Concern } from "./ConcernIndex";
 import ConcernDeleteButton from "./ConcernDeleteButton";
 
+import { api } from "@/lib/api";
 import {
   hasErrors,
   validateLength,
@@ -34,7 +34,7 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
 
     try {
       setIsSaving(true);
-      await axios.patch(`http://localhost:3000/api/v1/concerns/${concern.id}`, {
+      await api.patch(`/api/v1/concerns/${concern.id}`, {
         concern: { trigger_event: triggerEvent, content: content },
       });
 
