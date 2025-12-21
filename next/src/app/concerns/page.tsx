@@ -1,9 +1,8 @@
 import ConcernPageClient from "./ConcernPageClient";
 
-import type { Concern } from "@/components/concerns/ConcernIndex";
-import { serverGet } from "@/lib/server/serverApi";
+import { getConcerns } from "@/lib/server/concernServer";
 
 export default async function Page() {
-  const concerns = await serverGet<Concern[]>("/api/v1/concerns");
+  const concerns = await getConcerns();
   return <ConcernPageClient initialConcerns={concerns} />;
 }
