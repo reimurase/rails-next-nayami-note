@@ -1,47 +1,16 @@
-"use client";
+import ConcernPageClient from "./ConcernPageClient";
 
-import { useState } from "react";
-import useSWR from "swr";
-import axios from "axios";
+import type { Concern } from "@/components/concerns/ConcernIndex";
 
-import ConcernIndex from "@/components/concerns/ConcernIndex";
-import ConcernCreateSheet from "@/components/concerns/ConcernCreateSheet";
+async function fetchConcerns(): Promise<Concern[]> {
+  const res = await fetch("http://localhost:3000/api/v1/concerns", {
+    cache: "no-store",
+  });
+  if (!res.ok) throw new Error("Failed to fetch concerns");
+  return res.json();
+}
 
-export default function ConcernPage() {
-  const { data, mutate } = useSWR("http://localhost:3000/api/v1/concerns", (url) =>
-    axios.get(url).then((res) => res.data)
-  );
-
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-
-  const handleCreated = () => {
-    mutate();
-    setIsSheetOpen(false);
-  };
-
-  return (
-    <div style={{ paddingBottom: isSheetOpen ? 160 : 0 }}>
-      <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <button
-          onClick={() => setIsSheetOpen(true)}
-          style={{
-            fontSize: 24,
-            width: 40,
-            height: 40,
-            borderRadius: "50%",
-          }}
-        >
-          +
-        </button>
-      </header>
-
-      <ConcernIndex concerns={data ?? []} onChanged={() => mutate()} />
-
-      <ConcernCreateSheet
-        isOpen={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
-        onCreated={handleCreated}
-      />
-    </div>
-  );
+export default async function Page() {
+  const concerns = await fetchConcerns();
+  return <ConcernPageClient initialConcerns={concerns} />;
 }
