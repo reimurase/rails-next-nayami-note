@@ -46,6 +46,12 @@ describe("ConcernForm API 呼び出し", () => {
       content: "テストのなやみ",
     });
   });
+});
+
+describe("ConcernForm 異常系", () => {
+  beforeEach(() => {
+    mockedConcernApi.create.mockReset();
+  });
 
   test("初期状態では必須エラーが表示されないこと", () => {
     const mockOnCreated = jest.fn();

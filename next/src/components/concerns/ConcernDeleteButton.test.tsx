@@ -59,7 +59,9 @@ describe("ConcernDeleteButton 正常系", () => {
       expect(screen.getByRole("button")).toHaveTextContent("削除");
     });
   });
+});
 
+describe("ConcernDeleteButton 異常系", () => {
   test("削除が失敗したらエラーが表示され、onDeleted は呼ばれず、ボタンは元に戻る", async () => {
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 

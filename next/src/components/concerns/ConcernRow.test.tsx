@@ -70,7 +70,12 @@ describe("ConcernRow 正常系", () => {
       expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
     });
   });
+});
 
+describe("ConcernRow 異常系", () => {
+  beforeEach(() => {
+    mockedConcernApi.update.mockReset();
+  });
   test("content を空にして保存すると必須エラーが出て update は呼ばれない", async () => {
     const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
     const onChanged = jest.fn();
