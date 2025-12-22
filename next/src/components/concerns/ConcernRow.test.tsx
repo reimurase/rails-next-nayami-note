@@ -134,4 +134,31 @@ describe("ConcernRow 正常系", () => {
     expect(screen.getByText("きっかけは120文字以内です")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "保存" })).toBeDisabled();
   });
+
+  test("更新が失敗したらエラーが表示され、編集モードのままで onChanged は呼ばれない", async () => {
+    const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
+    const onChanged = jest.fn();
+
+    mockedConcernApi.update.mockRejectedValueOnce(new Error("update failed"));
+
+    render(<ConcernRow concern={concern} onChanged={onChanged} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "編集" }));
+
+    const inputs = screen.getAllByRole("textbox");
+    const [, contentInput] = inputs;
+    fireEvent.change(contentInput, { target: { value: "更新後の内容" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "保存" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("更新に失敗しました");
+
+    expect(screen.getAllByRole("textbox")).toHaveLength(2);
+
+    expect(onChanged).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "保存" })).toBeEnabled();
+    });
+  });
 });
