@@ -4,12 +4,11 @@ import { render, screen } from "@testing-library/react";
 import ConcernIndex from "./ConcernIndex";
 
 describe("ConcernIndex", () => {
-  test("読み込み中の表示が出る", () => {
-    render(
-      <ConcernIndex concerns={undefined} isLoading={true} error={undefined} onChanged={jest.fn()} />
-    );
+  test("concernsが0件の場合のメッセージ表示が出る", () => {
+    render(<ConcernIndex concerns={[]} onChanged={jest.fn()} />);
 
-    expect(screen.getByText("読み込み中...")).toBeInTheDocument();
+    expect(screen.getByText("なやみ一覧")).toBeInTheDocument();
+    expect(screen.getByText("まだなやみはありません")).toBeInTheDocument();
   });
 
   test("concerns が取得できたら一覧を表示する", () => {
@@ -18,9 +17,7 @@ describe("ConcernIndex", () => {
       { id: 2, trigger_event: "きっかけB", content: "悩みB" },
     ];
 
-    render(
-      <ConcernIndex concerns={mockData} isLoading={false} error={undefined} onChanged={jest.fn()} />
-    );
+    render(<ConcernIndex concerns={mockData} onChanged={jest.fn()} />);
 
     expect(screen.getByText("きっかけA")).toBeInTheDocument();
     expect(screen.getByText("きっかけB")).toBeInTheDocument();

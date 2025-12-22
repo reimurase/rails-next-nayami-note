@@ -1,11 +1,16 @@
 // src/components/concerns/ConcernDeleteButton.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import axios from "axios";
 
 import ConcernDeleteButton from "./ConcernDeleteButton";
 
-jest.mock("axios");
-const mockedAxios = jest.mocked(axios);
+import { concernApi } from "@/lib/concernApi";
+
+jest.mock("@/lib/concernApi", () => ({
+  concernApi: {
+    remove: jest.fn(),
+  },
+}));
+const mockedConcernApi = concernApi as jest.Mocked<typeof concernApi>;
 
 describe("ConcernDeleteButton 正常系", () => {
   beforeEach(() => {
@@ -14,7 +19,7 @@ describe("ConcernDeleteButton 正常系", () => {
   });
 
   test("削除ボタンをクリックすると削除APIが呼ばれ、onDeletedも呼ばれる", async () => {
-    mockedAxios.delete.mockResolvedValue({ status: 204 });
+    mockedConcernApi.remove.mockResolvedValue({} as any);
 
     const onDeletedMock = jest.fn();
 
@@ -25,8 +30,10 @@ describe("ConcernDeleteButton 正常系", () => {
     // confirm が呼ばれる
     expect(window.confirm).toHaveBeenCalledWith("本当に削除しますか？");
 
-    // axios.delete が呼ばれる
-    expect(mockedAxios.delete).toHaveBeenCalledWith("http://localhost:3000/api/v1/concerns/1");
+    // ConcernApi.delete が呼ばれる
+    await waitFor(() => {
+      expect(mockedConcernApi.remove).toHaveBeenCalledWith({ id: 1 });
+    });
 
     // APIが終わって onDeleted が呼ばれる
     await waitFor(() => {
@@ -35,7 +42,7 @@ describe("ConcernDeleteButton 正常系", () => {
   });
 
   test("削除中はボタンが '削除中...' に変わる", async () => {
-    mockedAxios.delete.mockResolvedValue({ status: 204 });
+    mockedConcernApi.remove.mockResolvedValue({} as any);
     window.confirm = jest.fn().mockReturnValue(true);
 
     render(<ConcernDeleteButton id={1} />);
@@ -43,7 +50,9 @@ describe("ConcernDeleteButton 正常系", () => {
     fireEvent.click(screen.getByRole("button", { name: "削除" }));
 
     // 削除中表示になる
-    expect(screen.getByRole("button")).toHaveTextContent("削除中...");
+    await waitFor(() => {
+      expect(screen.getByRole("button")).toHaveTextContent("削除中...");
+    });
 
     // 削除が終わるまで待つ
     await waitFor(() => {
