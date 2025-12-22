@@ -59,4 +59,27 @@ describe("ConcernDeleteButton 正常系", () => {
       expect(screen.getByRole("button")).toHaveTextContent("削除");
     });
   });
+
+  test("削除が失敗したらエラーが表示され、onDeleted は呼ばれず、ボタンは元に戻る", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    mockedConcernApi.remove.mockRejectedValueOnce(new Error("remove failed"));
+
+    const onDeletedMock = jest.fn();
+    render(<ConcernDeleteButton id={1} onDeleted={onDeletedMock} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "削除" }));
+
+    // エラー表示
+    expect(await screen.findByRole("alert")).toHaveTextContent("削除に失敗しました");
+    // onDeleted は呼ばれない
+    expect(onDeletedMock).not.toHaveBeenCalled();
+
+    // ボタンが元に戻る（削除中...解除）
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "削除" })).toBeEnabled();
+    });
+
+    consoleSpy.mockRestore();
+  });
 });

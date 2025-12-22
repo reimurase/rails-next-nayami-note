@@ -11,6 +11,7 @@ type Props = {
 
 const ConcernDeleteButton = ({ id, onDeleted }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const handleClick = async () => {
     // 確認ダイアログ（あとで消してもOK）
@@ -26,19 +27,24 @@ const ConcernDeleteButton = ({ id, onDeleted }: Props) => {
         onDeleted();
       }
     } catch (error) {
-      // 異常系はとりあえずログだけ
       console.error(error);
-      // 余裕が出てきたらUIでエラー表示を足す
-      // alert("削除に失敗しました");
+      setApiError("削除に失敗しました");
     } finally {
       setIsDeleting(false);
     }
   };
 
   return (
-    <button onClick={handleClick} disabled={isDeleting}>
-      {isDeleting ? "削除中..." : "削除"}
-    </button>
+    <>
+      {apiError && (
+        <p role="alert" style={{ color: "tomato", fontSize: 12 }}>
+          {apiError}
+        </p>
+      )}
+      <button onClick={handleClick} disabled={isDeleting}>
+        {isDeleting ? "削除中..." : "削除"}
+      </button>
+    </>
   );
 };
 
