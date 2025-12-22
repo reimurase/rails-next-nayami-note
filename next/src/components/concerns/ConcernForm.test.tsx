@@ -114,6 +114,8 @@ describe("ConcernForm API 呼び出し", () => {
   });
 
   test("APIが失敗したらエラーが表示され、送信中状態が解除されること", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
     mockedConcernApi.create.mockRejectedValueOnce(new Error("API error"));
 
     const mockOnCreated = jest.fn();
@@ -140,5 +142,7 @@ describe("ConcernForm API 呼び出し", () => {
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "追加" })).toBeEnabled();
     });
+
+    consoleSpy.mockRestore();
   });
 });

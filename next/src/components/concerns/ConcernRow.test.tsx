@@ -136,6 +136,8 @@ describe("ConcernRow 正常系", () => {
   });
 
   test("更新が失敗したらエラーが表示され、編集モードのままで onChanged は呼ばれない", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
     const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
     const onChanged = jest.fn();
 
@@ -160,5 +162,7 @@ describe("ConcernRow 正常系", () => {
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "保存" })).toBeEnabled();
     });
+
+    consoleSpy.mockRestore();
   });
 });
