@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { api } from "@/lib/api";
+import { concernApi } from "@/lib/concernApi";
 
 type Props = {
   id: number;
@@ -19,7 +19,7 @@ const ConcernDeleteButton = ({ id, onDeleted }: Props) => {
 
     try {
       setIsDeleting(true);
-      await api.delete(`/api/v1/concerns/${id}`);
+      await concernApi.remove({ id });
 
       // 正常系でやりたいこと（一覧の再取得など）
       if (onDeleted) {
