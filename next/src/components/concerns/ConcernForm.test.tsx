@@ -1,22 +1,25 @@
 // src/components/concerns/ConcernForm.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import axios from "axios";
 
 import ConcernForm from "./ConcernForm";
 
-jest.mock("axios");
-const mockedAxios = axios as jest.Mocked<typeof axios>;
+import { concernApi } from "@/lib/concernApi";
+
+jest.mock("@/lib/concernApi", () => ({
+  concernApi: {
+    create: jest.fn(),
+  },
+}));
+const mockedConcernApi = concernApi as jest.Mocked<typeof concernApi>;
 
 describe("ConcernForm API 呼び出し", () => {
   beforeEach(() => {
-    mockedAxios.post.mockReset();
+    mockedConcernApi.create.mockReset();
   });
 
-  test("フォーム送信で axios.post が呼ばれること", async () => {
+  test("フォーム送信で ConcernApi.create が呼ばれること", async () => {
     // API成功時のレスポンスをモック
-    mockedAxios.post.mockResolvedValue({
-      data: { message: "success" },
-    });
+    mockedConcernApi.create.mockResolvedValue({} as any);
 
     const mockOnCreated = jest.fn();
     render(<ConcernForm onCreated={mockOnCreated} />);
@@ -34,12 +37,13 @@ describe("ConcernForm API 呼び出し", () => {
     // 送信クリック
     fireEvent.click(screen.getByRole("button", { name: "追加" }));
 
-    // axios.post が呼ばれるまで待つ
+    // ConcernApi.create が呼ばれるまで待つ
     await waitFor(() => {
-      expect(mockedAxios.post).toHaveBeenCalledTimes(1);
+      expect(mockedConcernApi.create).toHaveBeenCalledTimes(1);
     });
-    expect(mockedAxios.post).toHaveBeenCalledWith("http://localhost:3000/api/v1/concerns", {
-      concern: { trigger_event: "テストのきっかけ", content: "テストのなやみ" },
+    expect(mockedConcernApi.create).toHaveBeenCalledWith({
+      triggerEvent: "テストのきっかけ",
+      content: "テストのなやみ",
     });
   });
 
@@ -50,8 +54,8 @@ describe("ConcernForm API 呼び出し", () => {
     expect(screen.queryByText("なやみは必須です")).not.toBeInTheDocument();
   });
 
-  test("なやみが空のまま追加を押すと必須エラーが表示され、axios.post は呼ばれないこと", async () => {
-    mockedAxios.post.mockResolvedValue({ data: { message: "success" } });
+  test("なやみが空のまま追加を押すと必須エラーが表示され、ConcernApi.create は呼ばれないこと", async () => {
+    mockedConcernApi.create.mockResolvedValue({} as any);
 
     const mockOnCreated = jest.fn();
     render(<ConcernForm onCreated={mockOnCreated} />);
@@ -60,7 +64,7 @@ describe("ConcernForm API 呼び出し", () => {
     fireEvent.click(screen.getByRole("button", { name: "追加" }));
 
     expect(await screen.findByText("なやみは必須です")).toBeInTheDocument();
-    expect(mockedAxios.post).not.toHaveBeenCalled();
+    expect(mockedConcernApi.create).not.toHaveBeenCalled();
   });
 
   test("なやみが1001文字だと文字数エラーが表示され、送信できないこと", () => {

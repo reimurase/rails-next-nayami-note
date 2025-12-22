@@ -1,25 +1,28 @@
 // src/components/concerns/ConcernRow.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
-import axios from "axios";
 
 import ConcernRow from "./ConcernRow";
 
-jest.mock("axios");
-const mockedAxios = jest.mocked(axios);
+import { concernApi } from "@/lib/concernApi";
+
+jest.mock("@/lib/concernApi", () => ({
+  concernApi: {
+    update: jest.fn(),
+  },
+}));
+const mockedConcernApi = concernApi as jest.Mocked<typeof concernApi>;
 
 describe("ConcernRow 正常系", () => {
   beforeEach(() => {
-    mockedAxios.patch.mockReset();
+    mockedConcernApi.update.mockReset();
   });
-  test("編集して保存すると PATCH が呼ばれ、onChanged も呼ばれる", async () => {
+  test("編集して保存すると update が呼ばれ、onChanged も呼ばれる", async () => {
     // 1. props を準備
     const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
     const onChanged = jest.fn();
 
-    // 2. PATCH のモック成功レスポンス
-    mockedAxios.patch.mockResolvedValue({
-      data: { id: 1, trigger_event: "更新後のきっかけ", content: "更新後の内容" },
-    });
+    // 2. update のモック成功レスポンス
+    mockedConcernApi.update.mockResolvedValue({} as any);
 
     // 3. 描画
     render(<ConcernRow concern={concern} onChanged={onChanged} />);
@@ -49,10 +52,12 @@ describe("ConcernRow 正常系", () => {
     const saveButton = screen.getByRole("button", { name: "保存" });
     fireEvent.click(saveButton);
 
-    // 7. PATCH が正しい引数で呼ばれたか
+    // 7. update が正しい引数で呼ばれたか
     await waitFor(() => {
-      expect(mockedAxios.patch).toHaveBeenCalledWith("http://localhost:3000/api/v1/concerns/1", {
-        concern: { trigger_event: "更新後のきっかけ", content: "更新後の内容" },
+      expect(mockedConcernApi.update).toHaveBeenCalledWith({
+        id: 1,
+        triggerEvent: "更新後のきっかけ",
+        content: "更新後の内容",
       });
     });
 
@@ -66,11 +71,11 @@ describe("ConcernRow 正常系", () => {
     });
   });
 
-  test("content を空にして保存すると必須エラーが出て PATCH は呼ばれない", async () => {
+  test("content を空にして保存すると必須エラーが出て update は呼ばれない", async () => {
     const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
     const onChanged = jest.fn();
 
-    mockedAxios.patch.mockResolvedValue({ data: {} });
+    mockedConcernApi.update.mockResolvedValue({} as any);
 
     render(<ConcernRow concern={concern} onChanged={onChanged} />);
 
@@ -87,8 +92,8 @@ describe("ConcernRow 正常系", () => {
     // 必須エラーが出る
     expect(await screen.findByText("なやみは必須です")).toBeInTheDocument();
 
-    // PATCH は呼ばれない
-    expect(mockedAxios.patch).not.toHaveBeenCalled();
+    // update は呼ばれない
+    expect(mockedConcernApi.update).not.toHaveBeenCalled();
     expect(onChanged).not.toHaveBeenCalled();
   });
 
