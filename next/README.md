@@ -71,6 +71,10 @@ Lint: npm run lint / 自動修正: npm run format
 ### rails-next疎通確認
 - axios, swrを利用して、railsから情報を取得
 
+### 関数式とfunctionの統一
+- UIに密接に関わる処理は関数式で統一
+- ロジックやユーティリティなど、UIに依存しない処理は function を使用する方針とする
+
 ## 後回しメモ
 - 機能に応じたページの区分け
 - コンポーネントの名前
