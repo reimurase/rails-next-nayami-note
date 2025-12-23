@@ -25,9 +25,11 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
   const [content, setContent] = useState(concern.content); // 入力中の値
   const [isSaving, setIsSaving] = useState(false); // 保存中フラグ
   const [submitted, setSubmitted] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const handleSave = async () => {
     setSubmitted(true);
+    setApiError(null);
 
     const nextErrors = validateOnSubmit({ trigger_event: triggerEvent, content });
     if (hasErrors(nextErrors)) return;
@@ -43,7 +45,7 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
       if (onChanged) onChanged();
     } catch (e) {
       console.error(e);
-      alert("更新に失敗しました");
+      setApiError("更新に失敗しました");
     } finally {
       setIsSaving(false);
     }
@@ -68,6 +70,12 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
       {isEditing ? (
         <>
+          {apiError && (
+            <p role="alert" style={{ color: "tomato", fontSize: 12 }}>
+              {apiError}
+            </p>
+          )}
+
           <input
             value={triggerEvent}
             placeholder="何があって、どう思ったんだろう。（任意）"

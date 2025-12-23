@@ -46,6 +46,12 @@ describe("ConcernForm API 呼び出し", () => {
       content: "テストのなやみ",
     });
   });
+});
+
+describe("ConcernForm 異常系", () => {
+  beforeEach(() => {
+    mockedConcernApi.create.mockReset();
+  });
 
   test("初期状態では必須エラーが表示されないこと", () => {
     const mockOnCreated = jest.fn();
@@ -99,5 +105,50 @@ describe("ConcernForm API 呼び出し", () => {
 
     expect(screen.getByText("きっかけは120文字以内です")).toBeInTheDocument();
     expect(screen.getByRole("button", { name: "追加" })).toBeDisabled();
+  });
+
+  test("バリデーションで送信されない場合、送信中状態にならないこと", async () => {
+    const mockOnCreated = jest.fn();
+    render(<ConcernForm onCreated={mockOnCreated} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "追加" })); // content未入力
+
+    expect(await screen.findByText("なやみは必須です")).toBeInTheDocument();
+
+    // 送信中になってない（追加中...にならない / disabledになり続けない）
+    expect(screen.getByRole("button", { name: "追加" })).toBeEnabled();
+  });
+
+  test("APIが失敗したらエラーが表示され、送信中状態が解除されること", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    mockedConcernApi.create.mockRejectedValueOnce(new Error("API error"));
+
+    const mockOnCreated = jest.fn();
+    render(<ConcernForm onCreated={mockOnCreated} />);
+
+    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう。（任意）"), {
+      target: { value: "テストのきっかけ" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう（必須）"), {
+      target: { value: "テストのなやみ" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "追加" }));
+
+    // エラーが表示される
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "通信に失敗しました。時間を置いて再度お試しください。"
+    );
+
+    // 成功時コールバックは呼ばれない
+    expect(mockOnCreated).not.toHaveBeenCalled();
+
+    // 送信中表示が消えて、ボタンが通常表示に戻る（＝isSubmitting解除）
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "追加" })).toBeEnabled();
+    });
+
+    consoleSpy.mockRestore();
   });
 });

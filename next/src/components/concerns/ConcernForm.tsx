@@ -19,18 +19,20 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
   const [triggerEvent, setTriggerEvent] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("");
+  const [apiError, setApiError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
-
-    setStatus("送信中...");
-    setIsSubmitting(true);
+    setApiError(null);
 
     const nextErrors = validateOnSubmit({ trigger_event: triggerEvent, content });
     if (hasErrors(nextErrors)) return;
+
+    setStatus("送信中...");
+    setIsSubmitting(true);
 
     try {
       await concernApi.create({ triggerEvent, content });
@@ -42,7 +44,8 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       onCreated();
     } catch (error) {
       console.error(error);
-      setStatus("エラーが発生しました");
+      setApiError("通信に失敗しました。時間を置いて再度お試しください。");
+      setStatus("");
     } finally {
       setIsSubmitting(false);
     }
@@ -58,6 +61,12 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
 
   return (
     <form onSubmit={handleSubmit}>
+      {apiError && (
+        <p role="alert" style={{ color: "tomato", fontSize: 12 }}>
+          {apiError}
+        </p>
+      )}
+
       <input
         type="text"
         placeholder="何があって、どう思ったんだろう。（任意）"
