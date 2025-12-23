@@ -15,7 +15,7 @@ type ConcernFormProps = {
   onCreated: () => void;
 };
 
-export default function ConcernForm({ onCreated }: ConcernFormProps) {
+const ConcernForm = ({ onCreated }: ConcernFormProps) => {
   const [triggerEvent, setTriggerEvent] = useState("");
   const [content, setContent] = useState("");
   const [status, setStatus] = useState("");
@@ -121,4 +121,6 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       {status && <p>{status}</p>}
     </form>
   );
-}
+};
+
+export default ConcernForm;
