@@ -15,10 +15,9 @@ type ConcernFormProps = {
   onCreated: () => void;
 };
 
-export default function ConcernForm({ onCreated }: ConcernFormProps) {
+const ConcernForm = ({ onCreated }: ConcernFormProps) => {
   const [triggerEvent, setTriggerEvent] = useState("");
   const [content, setContent] = useState("");
-  const [status, setStatus] = useState("");
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -31,13 +30,11 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
     const nextErrors = validateOnSubmit({ trigger_event: triggerEvent, content });
     if (hasErrors(nextErrors)) return;
 
-    setStatus("送信中...");
     setIsSubmitting(true);
 
     try {
       await concernApi.create({ triggerEvent, content });
 
-      setStatus("登録成功！");
       setTriggerEvent("");
       setContent("");
       setSubmitted(false);
@@ -45,7 +42,6 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
     } catch (error) {
       console.error(error);
       setApiError("通信に失敗しました。時間を置いて再度お試しください。");
-      setStatus("");
     } finally {
       setIsSubmitting(false);
     }
@@ -67,13 +63,13 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
         </p>
       )}
 
-      <input
-        type="text"
+      <textarea
         placeholder="何があって、どう思ったんだろう。（任意）"
         value={triggerEvent}
         onChange={(e) => setTriggerEvent(e.target.value)}
+        rows={4}
         style={{
-          width: "300px",
+          width: "600px",
           padding: "8px",
           fontSize: "16px",
         }}
@@ -87,13 +83,13 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       <p style={{ fontSize: 12, opacity: 0.8 }}>
         {triggerEvent.length}/{CONCERN_LIMITS.trigger_event}
       </p>
-      <input
-        type="text"
+      <textarea
         placeholder="とりあえず、今のなやみを書いてみよう（必須）"
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        rows={4}
         style={{
-          width: "300px",
+          width: "600px",
           padding: "8px",
           fontSize: "16px",
         }}
@@ -117,8 +113,8 @@ export default function ConcernForm({ onCreated }: ConcernFormProps) {
       >
         {isSubmitting ? "追加中..." : "追加"}
       </button>
-
-      {status && <p>{status}</p>}
     </form>
   );
-}
+};
+
+export default ConcernForm;

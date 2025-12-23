@@ -11,7 +11,7 @@ type Props = {
   onChanged?: () => void;
 };
 
-export default function ConcernIndex({ concerns, onChanged }: Props) {
+const ConcernIndex = ({ concerns, onChanged }: Props) => {
   return (
     <div>
       <h2>なやみ一覧</h2>
@@ -29,4 +29,6 @@ export default function ConcernIndex({ concerns, onChanged }: Props) {
       )}
     </div>
   );
-}
+};
+
+export default ConcernIndex;

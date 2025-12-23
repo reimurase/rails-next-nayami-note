@@ -8,7 +8,7 @@ type Props = {
   onCreated: () => void;
 };
 
-export default function ConcernCreateSheet({ isOpen, onClose, onCreated }: Props) {
+const ConcernCreateSheet = ({ isOpen, onClose, onCreated }: Props) => {
   if (!isOpen) return null;
 
   return (
@@ -42,4 +42,6 @@ export default function ConcernCreateSheet({ isOpen, onClose, onCreated }: Props
       <ConcernForm onCreated={onCreated} />
     </div>
   );
-}
+};
+
+export default ConcernCreateSheet;
