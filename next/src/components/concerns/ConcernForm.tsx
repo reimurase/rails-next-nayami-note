@@ -18,7 +18,6 @@ type ConcernFormProps = {
 const ConcernForm = ({ onCreated }: ConcernFormProps) => {
   const [triggerEvent, setTriggerEvent] = useState("");
   const [content, setContent] = useState("");
-  const [status, setStatus] = useState("");
   const [apiError, setApiError] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
@@ -31,13 +30,11 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
     const nextErrors = validateOnSubmit({ trigger_event: triggerEvent, content });
     if (hasErrors(nextErrors)) return;
 
-    setStatus("送信中...");
     setIsSubmitting(true);
 
     try {
       await concernApi.create({ triggerEvent, content });
 
-      setStatus("登録成功！");
       setTriggerEvent("");
       setContent("");
       setSubmitted(false);
@@ -45,7 +42,6 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
     } catch (error) {
       console.error(error);
       setApiError("通信に失敗しました。時間を置いて再度お試しください。");
-      setStatus("");
     } finally {
       setIsSubmitting(false);
     }
@@ -117,8 +113,6 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
       >
         {isSubmitting ? "追加中..." : "追加"}
       </button>
-
-      {status && <p>{status}</p>}
     </form>
   );
 };
