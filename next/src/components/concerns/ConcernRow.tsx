@@ -76,7 +76,7 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
             </p>
           )}
 
-          <input
+          <textarea
             value={triggerEvent}
             placeholder="何があって、どう思ったんだろう。（任意）"
             onChange={(e) => setTriggerEvent(e.target.value)}
@@ -91,7 +91,7 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
           <p style={{ fontSize: 12, opacity: 0.8 }}>
             {triggerEvent.length}/{CONCERN_LIMITS.trigger_event}
           </p>
-          <input
+          <textarea
             value={content}
             placeholder="とりあえず、今のなやみを書いてみよう（必須）"
             onChange={(e) => setContent(e.target.value)}

@@ -67,13 +67,13 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
         </p>
       )}
 
-      <input
-        type="text"
+      <textarea
         placeholder="何があって、どう思ったんだろう。（任意）"
         value={triggerEvent}
         onChange={(e) => setTriggerEvent(e.target.value)}
+        rows={4}
         style={{
-          width: "300px",
+          width: "600px",
           padding: "8px",
           fontSize: "16px",
         }}
@@ -87,13 +87,13 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
       <p style={{ fontSize: 12, opacity: 0.8 }}>
         {triggerEvent.length}/{CONCERN_LIMITS.trigger_event}
       </p>
-      <input
-        type="text"
+      <textarea
         placeholder="とりあえず、今のなやみを書いてみよう（必須）"
         value={content}
         onChange={(e) => setContent(e.target.value)}
+        rows={4}
         style={{
-          width: "300px",
+          width: "600px",
           padding: "8px",
           fontSize: "16px",
         }}
