@@ -66,5 +66,15 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 
 ## 今後
 - ログイン機能の実装
-- issue, roadmap に拡張
+  - PR0 設計固定
+  - PR1 Userモデル（has_secure_password）
+  - PR2 サインアップAPI
+  - PR3 セッションAPI（ログイン/ログアウト/me）
+  - PR4 Concernをユーザーに紐付ける（重要）
+  - PR5 Cookieセッション + CSRF（正攻法）
+  - PR6 Next：APIクライアント統一
+  - PR7 Next：サインアップ/ログインUI
+  - PR8 Next：認証ガード（最小）
+  - PR9 AWS配備（CloudFront 1ドメイン）
+  - v2（対策フェーズ：必要になったら）
 - UIの強化
