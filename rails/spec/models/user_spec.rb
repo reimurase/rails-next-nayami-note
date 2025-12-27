@@ -16,9 +16,9 @@ RSpec.describe User, type: :model do
 
     it "emailが一意であること" do
       create(:user, email: "testA@email.com")
-      userB = build(:user, email: "testA@email.com")
-      expect(userB).not_to be_valid
-      expect(userB.errors[:email]).to be_present
+      duplicate_user = build(:user, email: "testA@email.com")
+      expect(duplicate_user).not_to be_valid
+      expect(duplicate_user.errors[:email]).to be_present
     end
 
     it "passwordが必須であること（作成時）" do
