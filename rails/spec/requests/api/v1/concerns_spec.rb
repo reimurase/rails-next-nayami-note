@@ -89,6 +89,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
   end
 
+  # 拡張予定なので、コメントアウトしています。
   # describe "GET api/v1/concerns/:id" do
   #   subject(:request_api) { get "/api/v1/concerns/#{concern_id}" }
 
