@@ -2,8 +2,8 @@ Rails.application.routes.draw do
   namespace :api do
     namespace :v1 do
       get "health_check", to: "health_check#index"
-      resources :users
-      resources :concerns
+      resources :users, only: [:create]
+      resources :concerns, only: [:index, :create, :update, :destroy]
     end
   end
 
