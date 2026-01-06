@@ -2,6 +2,12 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Concerns", type: :request do
+  let(:user) { create(:user) }
+
+  before do
+    login_as(user)
+  end
+
   describe "POST api/v1/concerns" do
     subject { post "/api/v1/concerns", params: params }
 

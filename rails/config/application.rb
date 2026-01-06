@@ -18,7 +18,7 @@ require "action_view/railtie"
 # you've limited to :test, :development, or :production.
 Bundler.require(*Rails.groups)
 
-module TempRails
+module RailsNextNayamiNote
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
     config.load_defaults 7.0
@@ -36,5 +36,9 @@ module TempRails
     # Skip views, helpers and assets when generating a new resource.
     config.api_only = true
     config.i18n.default_locale = :ja
+
+    config.middleware.use ActionDispatch::Cookies
+    config.middleware.use ActionDispatch::Session::CookieStore,
+                          key: "_rails_next_nayami_note_session"
   end
 end
