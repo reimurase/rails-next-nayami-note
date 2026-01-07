@@ -194,6 +194,25 @@ RSpec.describe "Api::V1::Concerns", type: :request do
         expect(concern.reload.content).to eq(before_value)
       end
     end
+
+    context "他人のconcernを更新しようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com", password: "password") }
+      let!(:other_concern) { create(:concern, user: other_user, content: "他人の内容") }
+      let(:concern_id) { other_concern.id }
+
+      let(:params) do
+        {
+          concern: {
+            content: "不正に更新",
+          },
+        }
+      end
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   describe "DELETE api/v1/concerns/:id" do
@@ -219,6 +238,23 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       it "404 Not Found が返ること" do
         request_api
         expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "他人のconcernを削除しようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com", password: "password") }
+      let!(:other_concern) { create(:concern, user: other_user) }
+      let(:concern_id) { other_concern.id }
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "他人のデータが削除されないこと" do
+        expect {
+          request_api
+        }.not_to change { Concern.count }
       end
     end
   end
