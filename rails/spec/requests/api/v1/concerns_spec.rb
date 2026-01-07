@@ -32,7 +32,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       let(:params) { valid_params }
 
       it "レコードを1件作成し、201を返す" do
-        expect { subject }.to change { Concern.count }.by(1)
+        expect { subject }.to change { user.concerns.count }.by(1)
 
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
@@ -45,7 +45,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       let(:params) { invalid_params }
 
       it "レコードを作成せず、422を返す" do
-        expect { subject }.not_to change { Concern.count }
+        expect { subject }.not_to change { user.concerns.count }
         expect(response).to have_http_status(:unprocessable_entity)
 
         json = JSON.parse(response.body)
@@ -61,8 +61,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
     context "concernが0件の場合" do
       before do
-        Concern.delete_all   # 明示的に0件にする
-        request_api          # ここで初めてリクエスト
+        request_api
       end
 
       it "レコードが0件の場合でも空配列が返ること" do
@@ -72,7 +71,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
 
     context "concernが複数件の場合" do
-      let!(:concerns) { create_list(:concern, 3) }
+      let!(:concerns) { create_list(:concern, 3, user: user) }
 
       before do
         request_api
@@ -122,10 +121,10 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   describe "PATCH api/v1/concerns/:id" do
     subject(:request_api) { patch "/api/v1/concerns/#{concern_id}", params: params }
 
-    let!(:concern) { create(:concern, trigger_event: "元のきっかけ", content: "元の内容") }
+    let!(:concern) { create(:concern, user: user, trigger_event: "元のきっかけ", content: "元の内容") }
     let(:concern_id) { concern.id }
 
-    # 共通で使う JSON パース用ヘルパ（既に定義済なら不要）
+    # 共通で使う JSON パース用ヘルパ
     let(:body) { JSON.parse(response.body) }
 
     context "指定したIDのconcernが存在し、有効なパラメータを送信した場合" do
@@ -200,7 +199,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   describe "DELETE api/v1/concerns/:id" do
     subject(:request_api) { delete "/api/v1/concerns/#{concern_id}" }
 
-    let!(:concern) { create(:concern) }
+    let!(:concern) { create(:concern, user: user) }
     let(:concern_id) { concern.id }
 
     context "指定したIDのconcernが存在する場合" do
