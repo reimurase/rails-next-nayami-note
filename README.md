@@ -84,6 +84,8 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - ✅ セッションAPI（ログイン/ログアウト/me）を実装
 - user / session / me の構造採用理由
 - クッキーの採用理由
+- ✅ userとconcernを関連付け
+- ✅ 一覧でCRUD完結のためshow削除
 
 ## 今後
 - ログイン機能の実装
