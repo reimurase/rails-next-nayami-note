@@ -9,7 +9,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   end
 
   describe "POST api/v1/concerns" do
-    subject { post "/api/v1/concerns", params: params }
+    subject(:request_api) { post "/api/v1/concerns", params: params }
 
     let(:valid_params) do
       {
@@ -32,7 +32,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       let(:params) { valid_params }
 
       it "レコードを1件作成し、201を返す" do
-        expect { subject }.to change { user.concerns.count }.by(1)
+        expect { request_api }.to change { user.concerns.count }.by(1)
 
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
@@ -45,7 +45,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       let(:params) { invalid_params }
 
       it "レコードを作成せず、422を返す" do
-        expect { subject }.not_to change { user.concerns.count }
+        expect { request_api }.not_to change { user.concerns.count }
         expect(response).to have_http_status(:unprocessable_entity)
 
         json = JSON.parse(response.body)
