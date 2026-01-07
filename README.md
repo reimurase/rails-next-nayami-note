@@ -81,9 +81,11 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - ✅ Userモデルの実装
 - ✅ Userのsignup機能の実装
 ----------ここまで以前は検証必要-----------
-- current_userのコードの採用理由
+- ✅ セッションAPI（ログイン/ログアウト/me）を実装
 - user / session / me の構造採用理由
 - クッキーの採用理由
+- ✅ userとconcernを関連付け
+- ✅ 一覧でCRUD完結のためshow削除
 
 ## 今後
 - ログイン機能の実装

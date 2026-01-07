@@ -9,7 +9,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   end
 
   describe "POST api/v1/concerns" do
-    subject { post "/api/v1/concerns", params: params }
+    subject(:request_api) { post "/api/v1/concerns", params: params }
 
     let(:valid_params) do
       {
@@ -32,7 +32,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       let(:params) { valid_params }
 
       it "レコードを1件作成し、201を返す" do
-        expect { subject }.to change { Concern.count }.by(1)
+        expect { request_api }.to change { user.concerns.count }.by(1)
 
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
@@ -45,7 +45,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       let(:params) { invalid_params }
 
       it "レコードを作成せず、422を返す" do
-        expect { subject }.not_to change { Concern.count }
+        expect { request_api }.not_to change { user.concerns.count }
         expect(response).to have_http_status(:unprocessable_entity)
 
         json = JSON.parse(response.body)
@@ -61,8 +61,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
     context "concernが0件の場合" do
       before do
-        Concern.delete_all   # 明示的に0件にする
-        request_api          # ここで初めてリクエスト
+        request_api
       end
 
       it "レコードが0件の場合でも空配列が返ること" do
@@ -72,7 +71,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
 
     context "concernが複数件の場合" do
-      let!(:concerns) { create_list(:concern, 3) }
+      let!(:concerns) { create_list(:concern, 3, user: user) }
 
       before do
         request_api
@@ -95,37 +94,13 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
   end
 
-  # 拡張予定なので、コメントアウトしています。
-  # describe "GET api/v1/concerns/:id" do
-  #   subject(:request_api) { get "/api/v1/concerns/#{concern_id}" }
-
-  #   context "指定したIDのconcernが存在する場合" do
-  #     let!(:concern) { create(:concern) }
-  #     let(:concern_id) { concern.id }
-
-  #     it "200 OK が返ること" do
-  #       request_api
-  #       expect(response).to have_http_status(:ok)
-  #     end
-  #   end
-
-  #   context "指定したIDのconcernが存在しない場合" do
-  #     let(:concern_id) { 999_999 }
-
-  #     it "404 Not Found が返ること" do
-  #       request_api
-  #       expect(response).to have_http_status(:not_found)
-  #     end
-  #   end
-  # end
-
   describe "PATCH api/v1/concerns/:id" do
     subject(:request_api) { patch "/api/v1/concerns/#{concern_id}", params: params }
 
-    let!(:concern) { create(:concern, trigger_event: "元のきっかけ", content: "元の内容") }
+    let!(:concern) { create(:concern, user: user, trigger_event: "元のきっかけ", content: "元の内容") }
     let(:concern_id) { concern.id }
 
-    # 共通で使う JSON パース用ヘルパ（既に定義済なら不要）
+    # 共通で使う JSON パース用ヘルパ
     let(:body) { JSON.parse(response.body) }
 
     context "指定したIDのconcernが存在し、有効なパラメータを送信した場合" do
@@ -195,12 +170,31 @@ RSpec.describe "Api::V1::Concerns", type: :request do
         expect(concern.reload.content).to eq(before_value)
       end
     end
+
+    context "他人のconcernを更新しようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com", password: "password") }
+      let!(:other_concern) { create(:concern, user: other_user, content: "他人の内容") }
+      let(:concern_id) { other_concern.id }
+
+      let(:params) do
+        {
+          concern: {
+            content: "不正に更新",
+          },
+        }
+      end
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   describe "DELETE api/v1/concerns/:id" do
     subject(:request_api) { delete "/api/v1/concerns/#{concern_id}" }
 
-    let!(:concern) { create(:concern) }
+    let!(:concern) { create(:concern, user: user) }
     let(:concern_id) { concern.id }
 
     context "指定したIDのconcernが存在する場合" do
@@ -220,6 +214,23 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       it "404 Not Found が返ること" do
         request_api
         expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "他人のconcernを削除しようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com", password: "password") }
+      let!(:other_concern) { create(:concern, user: other_user) }
+      let(:concern_id) { other_concern.id }
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "他人のデータが削除されないこと" do
+        expect {
+          request_api
+        }.not_to change { Concern.count }
       end
     end
   end

@@ -1,28 +1,23 @@
 class Api::V1::ConcernsController < ApplicationController
   def index
-    concerns = Concern.all
+    concerns = current_user.concerns
     render json: concerns
   end
 
-  def show
-    concern = Concern.find(params[:id])
-    render json: concern
-  end
-
   def create
-    concern = Concern.new(concern_params)
+    concern = current_user.concerns.new(concern_params)
     concern.save!
     render json: concern, status: :created
   end
 
   def update
-    concern = Concern.find(params[:id])
+    concern = current_user.concerns.find(params[:id])
     concern.update!(concern_params)
     render json: concern
   end
 
   def destroy
-    concern = Concern.find(params[:id])
+    concern = current_user.concerns.find(params[:id])
     concern.destroy!
     head :no_content
   end
