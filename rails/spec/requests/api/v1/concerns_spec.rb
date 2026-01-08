@@ -86,9 +86,13 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       end
 
       it "各 concern の内容が正しいこと" do
-        json.each_with_index do |item, i|
-          expect(item["trigger_event"]).to eq(concerns[i].trigger_event)
-          expect(item["content"]).to eq(concerns[i].content)
+        expected = concerns.index_by(&:id)
+
+        json.each do |item|
+          record = expected.fetch(item["id"])
+
+          expect(item["trigger_event"]).to eq(record.trigger_event)
+          expect(item["content"]).to eq(record.content)
         end
       end
     end
