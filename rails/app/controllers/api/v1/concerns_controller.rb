@@ -1,6 +1,6 @@
 class Api::V1::ConcernsController < ApplicationController
   def index
-    concerns = current_user.concerns
+    concerns = current_user.concerns.order(created_at: :desc, id: :desc)
     render json: concerns
   end
 
