@@ -5,9 +5,11 @@ RSpec.describe "Api::V1::Sessions", type: :request do
   describe "POST /api/v1/session" do
     context "認証情報が正しい場合" do
       it "200 を返す" do
-        post "/api/v1/session", params: {
-          session: { email: user.email, password: "password" },
-        }
+        post "/api/v1/session",
+             params: {
+               session: { email: user.email, password: "password" },
+             }.to_json,
+             headers: csrf_headers
 
         expect(response).to have_http_status(:ok)
       end
@@ -15,9 +17,11 @@ RSpec.describe "Api::V1::Sessions", type: :request do
 
     context "認証情報が不正な場合" do
       it "401 を返す" do
-        post "/api/v1/session", params: {
-          session: { email: user.email, password: "wrong" },
-        }
+        post "/api/v1/session",
+             params: {
+               session: { email: user.email, password: "wrong" },
+             }.to_json,
+             headers: csrf_headers
 
         expect(response).to have_http_status(:unauthorized)
       end
@@ -27,12 +31,10 @@ RSpec.describe "Api::V1::Sessions", type: :request do
   describe "DELETE /api/v1/session" do
     context "ログアウトする場合" do
       it "204 を返す" do
-        post "/api/v1/session", params: {
-          session: { email: user.email, password: "password" },
-        }
+        login_as(user)
         expect(response).to have_http_status(:ok)
 
-        delete "/api/v1/session"
+        delete "/api/v1/session", headers: csrf_headers
         expect(response).to have_http_status(:no_content)
       end
     end

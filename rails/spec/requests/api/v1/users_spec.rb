@@ -3,25 +3,25 @@ require "rails_helper"
 
 RSpec.describe "Api::V1::Users", type: :request do
   describe "POST api/v1/users" do
-    subject(:request_api) { post "/api/v1/users", params: params }
+    subject(:request_api) {
+      post "/api/v1/users",
+           params: { user: params }.to_json,
+           headers: csrf_headers
+    }
 
     let(:valid_params) do
       {
-        user: {
-          email: "test@email.com",
-          password: "password",
-          password_confirmation: "password",
-        },
+        email: "test@email.com",
+        password: "password",
+        password_confirmation: "password",
       }
     end
 
     let(:invalid_params) do
       {
-        user: {
-          email: "", # バリデーションに引っかかる値
-          password: "password",
-          password_confirmation: "wrong",
-        },
+        email: "",
+        password: "password",
+        password_confirmation: "wrong",
       }
     end
 

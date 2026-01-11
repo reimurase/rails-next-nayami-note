@@ -9,22 +9,22 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   end
 
   describe "POST api/v1/concerns" do
-    subject(:request_api) { post "/api/v1/concerns", params: params }
+    subject(:request_api) {
+      post "/api/v1/concerns",
+           params: { concern: params }.to_json,
+           headers: csrf_headers
+    }
 
     let(:valid_params) do
       {
-        concern: {
-          trigger_event: "テストのきっかけ",
-          content: "テストの悩み",
-        },
+        trigger_event: "テストのきっかけ",
+        content: "テストの悩み",
       }
     end
 
     let(:invalid_params) do
       {
-        concern: {
-          content: "", # バリデーションに引っかかる値
-        },
+        content: "", # バリデーションに引っかかる値
       }
     end
 
@@ -99,7 +99,11 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   end
 
   describe "PATCH api/v1/concerns/:id" do
-    subject(:request_api) { patch "/api/v1/concerns/#{concern_id}", params: params }
+    subject(:request_api) {
+      patch "/api/v1/concerns/#{concern_id}",
+            params: { concern: params }.to_json,
+            headers: csrf_headers
+    }
 
     let!(:concern) { create(:concern, user: user, trigger_event: "元のきっかけ", content: "元の内容") }
     let(:concern_id) { concern.id }
@@ -110,10 +114,8 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     context "指定したIDのconcernが存在し、有効なパラメータを送信した場合" do
       let(:params) do
         {
-          concern: {
-            trigger_event: "更新後のきっかけ",
-            content: "更新後の内容",
-          },
+          trigger_event: "更新後のきっかけ",
+          content: "更新後の内容",
         }
       end
 
@@ -142,9 +144,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       let(:concern_id) { 999_999 } # 存在しないIDを想定
       let(:params) do
         {
-          concern: {
-            content: "更新後の内容",
-          },
+          content: "更新後の内容",
         }
       end
 
@@ -157,9 +157,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     context "パラメータが不正な場合（例: content が空）" do
       let(:params) do
         {
-          concern: {
-            content: "",
-          },
+          content: "",
         }
       end
 
@@ -182,9 +180,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
       let(:params) do
         {
-          concern: {
-            content: "不正に更新",
-          },
+          content: "不正に更新",
         }
       end
 
@@ -196,7 +192,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
   end
 
   describe "DELETE api/v1/concerns/:id" do
-    subject(:request_api) { delete "/api/v1/concerns/#{concern_id}" }
+    subject(:request_api) { delete "/api/v1/concerns/#{concern_id}", headers: csrf_headers }
 
     let!(:concern) { create(:concern, user: user) }
     let(:concern_id) { concern.id }

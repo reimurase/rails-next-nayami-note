@@ -14,9 +14,8 @@ RSpec.describe "Api::V1::Me", type: :request do
       it "200 を返し、 id/email を返す" do
         user = create(:user)
 
-        post "/api/v1/session", params: {
-          session: { email: user.email, password: "password" },
-        }
+        login_as(user)
+
         expect(response).to have_http_status(:ok)
 
         get "/api/v1/me"
@@ -33,10 +32,8 @@ RSpec.describe "Api::V1::Me", type: :request do
       it "/me が 401 になる" do
         user = create(:user)
 
-        # login
-        post "/api/v1/session", params: {
-          session: { email: user.email, password: "password" },
-        }
+        login_as(user)
+
         expect(response).to have_http_status(:ok)
 
         # logged in確認
@@ -44,7 +41,7 @@ RSpec.describe "Api::V1::Me", type: :request do
         expect(response).to have_http_status(:ok)
 
         # logout
-        delete "/api/v1/session"
+        delete "/api/v1/session", headers: csrf_headers
         expect(response).to have_http_status(:no_content)
 
         # logout後の確認
