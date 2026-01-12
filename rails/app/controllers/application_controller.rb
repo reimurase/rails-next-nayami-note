@@ -1,5 +1,8 @@
 class ApplicationController < ActionController::API
   include ActionController::Cookies
+  include ActionController::RequestForgeryProtection
+  protect_from_forgery with: :exception
+
   rescue_from ActiveRecord::RecordInvalid, with: :render_unprocessable_entity
   rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
   rescue_from ActiveRecord::RecordNotDestroyed, with: :render_unprocessable_entity
@@ -10,7 +13,7 @@ class ApplicationController < ActionController::API
 
     def render_unprocessable_entity(exception)
       record = exception.record
-      render json: { errors: record.errors.full_messages }, status: :unprocessable_entity
+      render json: { errors: record.errors.full_messages }, status: :unprocessable_content
     end
 
     def render_not_found(_exception)
