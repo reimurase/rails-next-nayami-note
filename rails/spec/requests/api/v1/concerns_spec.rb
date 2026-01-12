@@ -46,7 +46,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
       it "レコードを作成せず、422を返す" do
         expect { request_api }.not_to change { user.concerns.count }
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
 
         json = JSON.parse(response.body)
         expect(json["errors"]).to be_present
@@ -163,7 +163,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
       it "422 Unprocessable Entity が返ること" do
         request_api
-        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response).to have_http_status(:unprocessable_content)
       end
 
       it "データが更新されないこと" do
