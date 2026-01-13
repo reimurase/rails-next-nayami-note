@@ -83,8 +83,16 @@ api.interceptors.response.use(
     const config = err.config as AxiosRequestConfig | undefined;
     if (!config) throw err;
 
-    // CSRF取得リクエスト自体は対象外
+    // CSRF取得リクエスト自体は対象外（無限ループ防止）
     if (config.skipCsrf) throw err;
+
+    const status = err.response?.status;
+
+    // 401 は共通で扱える形に変換（「土台」）
+    if (status === 401) {
+      // onUnauthorized?.();
+      throw new UnauthorizedError();
+    }
 
     // CSRF失敗っぽい & まだリトライしてないなら、トークン破棄して1回だけ再実行
     if (isCsrfLikelyError(err) && !config.retryOnCsrfFailure) {
@@ -101,3 +109,10 @@ api.interceptors.response.use(
     throw err;
   }
 );
+
+export class UnauthorizedError extends Error {
+  name = "UnauthorizedError";
+  constructor(message = "Unauthorized") {
+    super(message);
+  }
+}
