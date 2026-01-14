@@ -32,9 +32,19 @@ export function AuthForm({ mode }: Props) {
         await authApi.login({ email, password });
       }
       router.push("/concerns");
-    } catch (error: any) {
-      console.error("An error occurred:", error);
-      setError("Failed. Please check your email/password.");
+    } catch (err: unknown) {
+      // axios error っぽい時だけレスポンスから拾う
+      const message =
+        typeof err === "object" &&
+        err !== null &&
+        "response" in err &&
+        typeof (err as any).response?.data === "object"
+          ? ((err as any).response.data.error ??
+            (err as any).response.data.errors?.join(", ") ??
+            "Failed. Please check your email/password.")
+          : "Failed. Please check your email/password.";
+
+      setError(message);
     } finally {
       setSubmitting(false);
     }
