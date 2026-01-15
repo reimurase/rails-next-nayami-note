@@ -9,7 +9,7 @@ type Props = {
   mode: "signup" | "login";
 };
 
-export function AuthForm({ mode }: Props) {
+export const AuthForm = ({ mode }: Props) => {
   const router = useRouter();
 
   const [email, setEmail] = useState("");
@@ -83,4 +83,4 @@ export function AuthForm({ mode }: Props) {
       </button>
     </form>
   );
-}
+};
