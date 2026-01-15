@@ -9,6 +9,22 @@ type Props = {
   mode: "signup" | "login";
 };
 
+function getErrorMessage(err: unknown): string {
+  if (typeof err === "object" && err !== null && "response" in err) {
+    const data = (err as any).response?.data;
+    if (data && typeof data === "object") {
+      const maybeError = (data as any).error;
+      const maybeErrors = (data as any).errors;
+
+      if (typeof maybeError === "string" && maybeError.length > 0) return maybeError;
+      if (Array.isArray(maybeErrors) && maybeErrors.every((x) => typeof x === "string")) {
+        return maybeErrors.join(", ");
+      }
+    }
+  }
+  return "Failed. Please check your email/password.";
+}
+
 export const AuthForm = ({ mode }: Props) => {
   const router = useRouter();
 
@@ -26,6 +42,12 @@ export const AuthForm = ({ mode }: Props) => {
     setSubmitting(true);
     setError(null);
 
+    if (mode === "signup" && password !== passwordConfirmation) {
+      setError("Password confirmation doesn't match.");
+      setSubmitting(false);
+      return;
+    }
+
     try {
       if (mode === "signup") {
         await authApi.signup({ email, password, password_confirmation: passwordConfirmation });
@@ -34,18 +56,7 @@ export const AuthForm = ({ mode }: Props) => {
       }
       router.push("/concerns");
     } catch (err: unknown) {
-      // axios error っぽい時だけレスポンスから拾う
-      const message =
-        typeof err === "object" &&
-        err !== null &&
-        "response" in err &&
-        typeof (err as any).response?.data === "object"
-          ? ((err as any).response.data.error ??
-            (err as any).response.data.errors?.join(", ") ??
-            "Failed. Please check your email/password.")
-          : "Failed. Please check your email/password.";
-
-      setError(message);
+      setError(getErrorMessage(err));
     } finally {
       setSubmitting(false);
     }
