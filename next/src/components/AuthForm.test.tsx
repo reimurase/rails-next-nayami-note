@@ -6,7 +6,7 @@ import { AuthForm } from "./AuthForm";
 
 import { authApi } from "@/lib/authApi";
 
-// 1) router.push を監視できるようにする
+// router.push を監視できるようにする
 const pushMock = jest.fn();
 
 jest.mock("next/navigation", () => ({
@@ -15,7 +15,7 @@ jest.mock("next/navigation", () => ({
   }),
 }));
 
-// 2) authApi をモックできるようにする（中身はテスト内で差し替える）
+// authApi をモックできるようにする
 jest.mock("@/lib/authApi", () => ({
   authApi: {
     signup: jest.fn(),
@@ -29,12 +29,12 @@ describe("AuthForm", () => {
     jest.clearAllMocks();
   });
 
-  it("renders signup form", () => {
+  test("サインアップページが表示される", () => {
     render(<AuthForm mode="signup" />);
     expect(screen.getByRole("heading", { name: "Signup" })).toBeInTheDocument();
   });
 
-  it("signup success: redirects to /concerns", async () => {
+  test("サインアップ成功後、/concernsに遷移する", async () => {
     const user = userEvent.setup();
 
     // signup を成功させる
@@ -44,17 +44,19 @@ describe("AuthForm", () => {
 
     await user.type(screen.getByLabelText("Email"), "test@example.com");
     await user.type(screen.getByLabelText("Password"), "password");
+    await user.type(screen.getByLabelText("Password confirmation"), "password");
 
     await user.click(screen.getByRole("button", { name: "Create account" }));
 
     expect(authApi.signup).toHaveBeenCalledWith({
       email: "test@example.com",
       password: "password",
+      password_confirmation: "password",
     });
     expect(pushMock).toHaveBeenCalledWith("/concerns");
   });
 
-  it("login failure: shows error message", async () => {
+  test("ログインが失敗後、エラーメッセージが表示される", async () => {
     const user = userEvent.setup();
 
     // login を失敗させる（401想定）

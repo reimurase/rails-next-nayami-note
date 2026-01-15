@@ -14,6 +14,7 @@ export const AuthForm = ({ mode }: Props) => {
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [submitting, setSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
@@ -27,7 +28,7 @@ export const AuthForm = ({ mode }: Props) => {
 
     try {
       if (mode === "signup") {
-        await authApi.signup({ email, password });
+        await authApi.signup({ email, password, password_confirmation: passwordConfirmation });
       } else {
         await authApi.login({ email, password });
       }
@@ -75,6 +76,19 @@ export const AuthForm = ({ mode }: Props) => {
           autoComplete={mode === "signup" ? "new-password" : "current-password"}
         />
       </label>
+
+      {mode === "signup" && (
+        <label>
+          Password confirmation
+          <input
+            name="password_confirmation"
+            type="password"
+            value={passwordConfirmation}
+            onChange={(e) => setPasswordConfirmation(e.target.value)}
+            autoComplete="new-password"
+          />
+        </label>
+      )}
 
       {error && <p role="alert">{error}</p>}
 
