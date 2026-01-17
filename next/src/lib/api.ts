@@ -6,7 +6,7 @@ const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
 const CSRF_ENDPOINT = "/api/v1/csrf";
 
 // JSONのキー名に合わせる
-type CsrfResponse = { csrf_token: string };
+type CsrfResponse = { csrfToken: string };
 
 // ---- Axios config拡張（内部フラグ用）----
 declare module "axios" {
@@ -40,7 +40,7 @@ async function fetchCsrfToken(): Promise<string> {
   csrfTokenPromise = (async () => {
     // ★CSRF取得は interceptor の影響を受けないように skipCsrf を付ける
     const res = await api.get<CsrfResponse>(CSRF_ENDPOINT, { skipCsrf: true });
-    const token = res.data.csrf_token;
+    const token = res.data.csrfToken;
     if (!token) throw new Error("CSRF token is missing in response.");
     csrfToken = token;
     return token;

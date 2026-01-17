@@ -87,19 +87,22 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 - ✅ userとconcernを関連付け
 - ✅ 一覧でCRUD完結のためshow削除
 - ✅ CSRF対策機能を有効化
+- ✅ サインアップ/ログインUIを実装
 
 ## 今後
 - ログイン機能の実装
-  - PR0 設計固定
-  - PR1 Userモデル（has_secure_password）
-  - PR2 サインアップAPI
-  - PR3 セッションAPI（ログイン/ログアウト/me）
-  - PR4 Concernをユーザーに紐付ける（重要）
-  - PR5 Cookieセッション + CSRF（正攻法）
-  - PR6 Next：APIクライアント統一
   - PR7 Next：サインアップ/ログインUI
+    - APIサーバーにCSRF対策
+    - corsの確認
+    - UnauthorizedErrorの処理が正常に動作すること
+    - 更新系に X-CSRF-Token が付いているか
+    - アクセスしようとしたURLに遷移
+    - エラーメッセージ
+    - バリデーション追加
   - PR8 Next：認証ガード（最小）
-  - PR9 AWS配備（CloudFront 1ドメイン）
+  - PR9 バリデーション強化
+    - email, passwordのバリデーションを強化
+    - Cookieのその他の対策を調べる
   - v2（対策フェーズ：必要になったら）
 - UIの強化
-- 機能を渋ってる分UIを少しでもやりやすいようにとは思う。
+- なやみノートのバージョン1.0を提示するべき
