@@ -92,10 +92,8 @@ MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
 ## 今後
 - ログイン機能の実装
   - PR7 Next：サインアップ/ログインUI
-    - APIサーバーにCSRF対策
     - corsの確認
     - UnauthorizedErrorの処理が正常に動作すること
-    - 更新系に X-CSRF-Token が付いているか
     - アクセスしようとしたURLに遷移
     - エラーメッセージ
     - バリデーション追加
