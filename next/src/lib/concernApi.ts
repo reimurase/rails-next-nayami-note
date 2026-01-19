@@ -1,4 +1,5 @@
 import { api } from "@/lib/api";
+import type { Concern } from "@/components/concerns/ConcernIndex";
 
 type CreateConcernParams = {
   triggerEvent: string;
@@ -16,6 +17,11 @@ type DeleteConcernParams = {
 };
 
 export const concernApi = {
+  getConcerns: async (): Promise<Concern[]> => {
+    const res = await api.get<Concern[]>("/api/v1/concerns");
+    return res.data;
+  },
+
   create: ({ triggerEvent, content }: CreateConcernParams) =>
     api.post("/api/v1/concerns", {
       concern: { trigger_event: triggerEvent, content },

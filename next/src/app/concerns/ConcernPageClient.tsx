@@ -1,23 +1,33 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import useSWR from "swr";
 
-import ConcernIndex, { type Concern } from "@/components/concerns/ConcernIndex";
+import ConcernIndex from "@/components/concerns/ConcernIndex";
 import ConcernCreateSheet from "@/components/concerns/ConcernCreateSheet";
+import { concernApi } from "@/lib/concernApi";
 
-export default function ConcernPageClient({ initialConcerns }: { initialConcerns: Concern[] }) {
-  const router = useRouter();
+export default function ConcernPageClient() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
-  const refresh = () => {
-    router.refresh();
+  const {
+    data: concerns,
+    error,
+    isLoading,
+    mutate,
+  } = useSWR("/api/v1/concerns", () => concernApi.getConcerns());
+
+  const refresh = async () => {
+    await mutate();
   };
 
-  const handleCreated = () => {
-    refresh();
+  const handleCreated = async () => {
+    await refresh();
     setIsSheetOpen(false);
   };
+
+  if (isLoading) return <div>読み込み中...</div>;
+  if (error) return <div>エラーが発生しました {String(error)}</div>;
 
   return (
     <div style={{ paddingBottom: isSheetOpen ? 160 : 0 }}>
@@ -30,7 +40,7 @@ export default function ConcernPageClient({ initialConcerns }: { initialConcerns
         </button>
       </header>
 
-      <ConcernIndex concerns={initialConcerns} onChanged={refresh} />
+      <ConcernIndex concerns={concerns ?? []} onChanged={refresh} />
 
       <ConcernCreateSheet
         isOpen={isSheetOpen}
