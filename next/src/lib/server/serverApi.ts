@@ -1,3 +1,5 @@
+// NOTE: サーバーからの GET は「ログイン不要」用途のみ。ログイン必須は clientApi + SWR。
+
 function getBaseUrl() {
   const baseURL = process.env.API_BASE_URL;
   if (!baseURL) {
