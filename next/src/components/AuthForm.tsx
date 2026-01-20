@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import { mutate } from "swr";
 
 import { authApi } from "@/lib/authApi";
 
@@ -57,7 +58,10 @@ export const AuthForm = ({ mode }: Props) => {
       } else {
         await authApi.login({ email, password });
       }
-      router.push(next);
+      const meRes = await authApi.me();
+      mutate("me", meRes.data, false);
+
+      router.replace(next);
     } catch (err: unknown) {
       setError(getErrorMessage(err));
     } finally {
