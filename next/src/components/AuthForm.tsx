@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 import { authApi } from "@/lib/authApi";
 
@@ -27,6 +27,9 @@ function getErrorMessage(err: unknown): string {
 
 export const AuthForm = ({ mode }: Props) => {
   const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const next = searchParams.get("next") ?? "/concerns";
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -54,7 +57,7 @@ export const AuthForm = ({ mode }: Props) => {
       } else {
         await authApi.login({ email, password });
       }
-      router.push("/concerns");
+      router.push(next);
     } catch (err: unknown) {
       setError(getErrorMessage(err));
     } finally {
