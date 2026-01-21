@@ -11,6 +11,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import MuiProvider from "@/providers/MuiProvider";
 import { AppHeader } from "@/components/AppHeader";
 import "./globals.css";
+import { UnauthorizedHandler } from "@/components/UnauthorizedHandler";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -33,6 +34,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AppRouterCacheProvider options={{ key: "mui" }}>
           <MuiProvider>
+            <UnauthorizedHandler />
             <AppHeader />
             {children}
           </MuiProvider>
