@@ -1,7 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { useRouter } from "next/navigation";
 import useSWR from "swr";
 import type { AxiosError } from "axios";
 
@@ -17,25 +15,10 @@ function isUnauthorized(err: unknown): boolean {
 }
 
 export function AuthGuard({ children }: Props) {
-  const router = useRouter();
-
-  const { error, isLoading } = useSWR(
-    "me",
-    async () => {
-      const res = await authApi.me();
-      return res.data;
-    },
-    {
-      revalidateOnFocus: false,
-      shouldRetryOnError: false,
-    }
-  );
-
-  useEffect(() => {
-    if (isUnauthorized(error)) {
-      router.replace("/login?next=/concerns"); // next は任意
-    }
-  }, [error, router]);
+  const { error, isLoading } = useSWR("me", async () => (await authApi.me()).data, {
+    revalidateOnFocus: false,
+    shouldRetryOnError: false,
+  });
 
   // /me確認中 or 401でリダイレクト中は何も出さない（最小）
   if (isLoading) return null;
