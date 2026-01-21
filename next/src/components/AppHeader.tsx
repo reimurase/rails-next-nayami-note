@@ -19,7 +19,7 @@ export function AppHeader() {
 
   const onLogout = async () => {
     await authApi.logout();
-    mutate("me"); // ログイン状態を即更新
+    mutate("me", undefined, false); // ログイン状態を即更新
     router.replace("/"); // 画面も移動
   };
 
