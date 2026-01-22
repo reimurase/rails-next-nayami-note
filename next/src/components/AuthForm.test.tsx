@@ -6,13 +6,12 @@ import { AuthForm } from "./AuthForm";
 
 import { authApi } from "@/lib/authApi";
 
-// router.push を監視できるようにする
-const pushMock = jest.fn();
+// router.replace を監視できるようにする
+const replaceMock = jest.fn();
 
 jest.mock("next/navigation", () => ({
-  useRouter: () => ({
-    push: pushMock,
-  }),
+  useRouter: () => ({ replace: replaceMock }),
+  useSearchParams: () => ({ get: () => "/concerns" }),
 }));
 
 // authApi をモックできるようにする
@@ -20,12 +19,13 @@ jest.mock("@/lib/authApi", () => ({
   authApi: {
     signup: jest.fn(),
     login: jest.fn(),
+    me: jest.fn(),
   },
 }));
 
 describe("AuthForm", () => {
   beforeEach(() => {
-    pushMock.mockClear();
+    replaceMock.mockClear();
     jest.clearAllMocks();
   });
 
@@ -39,6 +39,7 @@ describe("AuthForm", () => {
 
     // signup を成功させる
     (authApi.signup as jest.Mock).mockResolvedValueOnce({});
+    (authApi.me as jest.Mock).mockResolvedValueOnce({});
 
     render(<AuthForm mode="signup" />);
 
@@ -53,7 +54,7 @@ describe("AuthForm", () => {
       password: "password",
       password_confirmation: "password",
     });
-    expect(pushMock).toHaveBeenCalledWith("/concerns");
+    expect(replaceMock).toHaveBeenCalledWith("/concerns");
   });
 
   test("ログインが失敗後、エラーメッセージが表示される", async () => {
@@ -77,6 +78,6 @@ describe("AuthForm", () => {
     expect(await screen.findByRole("alert")).toHaveTextContent("Unauthorized");
 
     // 失敗時は遷移しない
-    expect(pushMock).not.toHaveBeenCalled();
+    expect(replaceMock).not.toHaveBeenCalled();
   });
 });
