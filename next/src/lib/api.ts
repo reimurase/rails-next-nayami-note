@@ -1,5 +1,7 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
+import { notifyUnauthorized } from "@/lib/onUnauthorized";
+
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
 
 // CSRFトークン取得エンドポイント
@@ -90,8 +92,8 @@ api.interceptors.response.use(
 
     // 401 は共通で扱える形に変換（「土台」）
     if (status === 401) {
-      // onUnauthorized?.();
-      throw new UnauthorizedError();
+      notifyUnauthorized();
+      throw err;
     }
 
     // CSRF失敗っぽい & まだリトライしてないなら、トークン破棄して1回だけ再実行
@@ -109,10 +111,3 @@ api.interceptors.response.use(
     throw err;
   }
 );
-
-export class UnauthorizedError extends Error {
-  name = "UnauthorizedError";
-  constructor(message = "Unauthorized") {
-    super(message);
-  }
-}
