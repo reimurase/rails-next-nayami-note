@@ -9,6 +9,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
 import MuiProvider from "@/providers/MuiProvider";
+import { AppHeader } from "@/components/AppHeader";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -31,7 +32,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     <html lang="ja">
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AppRouterCacheProvider options={{ key: "mui" }}>
-          <MuiProvider>{children}</MuiProvider>
+          <MuiProvider>
+            <AppHeader />
+            {children}
+          </MuiProvider>
         </AppRouterCacheProvider>
       </body>
     </html>
