@@ -19,7 +19,6 @@ jest.mock("@/lib/authApi", () => ({
   authApi: {
     signup: jest.fn(),
     login: jest.fn(),
-    me: jest.fn(),
   },
 }));
 
@@ -39,7 +38,6 @@ describe("AuthForm", () => {
 
     // signup を成功させる
     (authApi.signup as jest.Mock).mockResolvedValueOnce({});
-    (authApi.me as jest.Mock).mockResolvedValueOnce({});
 
     render(<AuthForm mode="signup" />);
 
