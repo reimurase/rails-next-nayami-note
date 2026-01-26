@@ -17,4 +17,6 @@ export const authApi = {
   login: (params: LoginParams) => api.post("/api/v1/session", { session: params }),
 
   logout: () => api.delete("/api/v1/session"),
+
+  me: () => api.get("/api/v1/me"),
 };
