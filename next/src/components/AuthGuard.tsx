@@ -20,11 +20,11 @@ export function AuthGuard({ children }: Props) {
     shouldRetryOnError: false,
   });
 
-  // /me確認中 or 401でリダイレクト中は何も出さない（最小）
+  // /me確認中 or 401でリダイレクト中は何も出さない
   if (isLoading) return null;
   if (isUnauthorized(error)) return null;
 
-  // 401以外のエラーは「落とす」か「表示する」か好み（最小なら落とすでもOK）
+  // 401以外のエラーは「表示する」
   if (error) {
     return <div style={{ padding: 16 }}>Failed to load session.</div>;
   }
