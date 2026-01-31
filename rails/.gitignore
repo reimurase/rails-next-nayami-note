@@ -32,7 +32,5 @@
 cookie.txt
 *.cookie
 
-credentials.yml.enc
-
 # ローカル証明書
 /config/ssl/*.pem
