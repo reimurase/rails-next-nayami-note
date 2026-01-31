@@ -39,7 +39,11 @@ module RailsNextNayamiNote
 
     config.middleware.use ActionDispatch::Cookies
     config.middleware.use ActionDispatch::Session::CookieStore,
-                          key: "_rails_next_nayami_note_session"
+                          key: "_rails_next_nayami_note_session",
+                          secure: true,
+                          same_site: :none,
+                          httponly: true
+
     config.active_support.to_time_preserves_timezone = :zone
   end
 end
