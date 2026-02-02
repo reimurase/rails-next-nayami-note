@@ -15,7 +15,14 @@ worker_timeout 3600 if ENV.fetch("RAILS_ENV", "development") == "development"
 
 # Specifies the `port` that Puma will listen on to receive requests; default is 3000.
 #
-port ENV.fetch("PORT") { 3000 }
+if Rails.env.development?
+  ssl_bind "127.0.0.1", "3000", {
+    key: "config/ssl/localhost-key.pem",
+    cert: "config/ssl/localhost.pem",
+  }
+else
+  port ENV.fetch("PORT") { 3000 }
+end
 
 # Specifies the `environment` that Puma will run in.
 #

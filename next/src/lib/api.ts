@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } f
 
 import { notifyUnauthorized } from "@/lib/onUnauthorized";
 
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "http://localhost:3000";
+const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://localhost:3000";
 
 // CSRFトークン取得エンドポイント
 const CSRF_ENDPOINT = "/api/v1/csrf";

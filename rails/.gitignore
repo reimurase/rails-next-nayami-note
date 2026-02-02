@@ -31,3 +31,6 @@
 # curl cookie jar
 cookie.txt
 *.cookie
+
+# ローカル証明書
+/config/ssl/*.pem

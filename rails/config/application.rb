@@ -38,8 +38,26 @@ module RailsNextNayamiNote
     config.i18n.default_locale = :ja
 
     config.middleware.use ActionDispatch::Cookies
-    config.middleware.use ActionDispatch::Session::CookieStore,
-                          key: "_rails_next_nayami_note_session"
+
+    cookie_opts =
+      if Rails.env.test?
+        {
+          key: "_rails_next_nayami_note_session",
+          secure: false,
+          same_site: :lax,
+          httponly: true,
+        }
+      else
+        {
+          key: "_rails_next_nayami_note_session",
+          secure: true,
+          same_site: :none,
+          httponly: true,
+        }
+      end
+
+    config.middleware.use ActionDispatch::Session::CookieStore, cookie_opts
+
     config.active_support.to_time_preserves_timezone = :zone
   end
 end
