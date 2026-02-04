@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 
 import { authApi } from "@/lib/authApi";
-import { clearCsrfTokenCache } from "@/lib/api";
+import { clearCsrfTokenCache } from "@/lib/csrf";
 
 export function AppHeader() {
   const router = useRouter();
