@@ -4,8 +4,12 @@ import userEvent from "@testing-library/user-event";
 
 import { AppHeader } from "./AppHeader";
 
+import { clearCsrfTokenCache } from "@/lib/csrf";
+
 // ---- mocks ----
 const replaceMock = jest.fn();
+const clearCsrfTokenCacheMock = clearCsrfTokenCache as unknown as jest.Mock;
+
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ replace: replaceMock }),
 }));
@@ -34,6 +38,10 @@ jest.mock("@/lib/authApi", () => ({
   },
 }));
 
+jest.mock("@/lib/csrf", () => ({
+  clearCsrfTokenCache: jest.fn(),
+}));
+
 beforeEach(() => {
   jest.clearAllMocks();
 });
@@ -47,7 +55,7 @@ describe("AppHeader (happy path)", () => {
     expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
   });
 
-  test("ログアウトが成功した場合：logout、meのキャッシュをクリア、そしてリダイレクトが実行される", async () => {
+  test("ログアウトが成功した場合：logout、meのキャッシュをクリア、csrfキャッシュをクリア、そしてリダイレクトが実行される", async () => {
     logoutMock.mockResolvedValueOnce(undefined);
 
     const user = userEvent.setup();
@@ -57,6 +65,7 @@ describe("AppHeader (happy path)", () => {
 
     await waitFor(() => {
       expect(logoutMock).toHaveBeenCalledTimes(1);
+      expect(clearCsrfTokenCacheMock).toHaveBeenCalledTimes(1);
       expect(mutateMock).toHaveBeenCalledWith("me", undefined, false);
       expect(replaceMock).toHaveBeenCalledWith("/");
     });
