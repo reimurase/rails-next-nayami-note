@@ -66,6 +66,11 @@ function isCsrfLikelyError(error: AxiosError) {
   return status === 403 || status === 422;
 }
 
+export function clearCsrfTokenCache() {
+  csrfToken = null;
+  csrfTokenPromise = null;
+}
+
 // ---- request interceptor：更新系だけCSRFヘッダ付与 ----
 api.interceptors.request.use(async (config) => {
   if (config.skipCsrf) return config;
@@ -98,7 +103,7 @@ api.interceptors.response.use(
 
     // CSRF失敗っぽい & まだリトライしてないなら、トークン破棄して1回だけ再実行
     if (isCsrfLikelyError(err) && !config.retryOnCsrfFailure) {
-      csrfToken = null;
+      clearCsrfTokenCache();
       config.retryOnCsrfFailure = true;
 
       const token = await fetchCsrfToken();
