@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { mutate } from "swr";
 
 import { authApi } from "@/lib/authApi";
+import { clearCsrfTokenCache } from "@/lib/api";
 
 export function AppHeader() {
   const router = useRouter();
@@ -13,6 +14,7 @@ export function AppHeader() {
   const onLogout = async () => {
     try {
       await authApi.logout();
+      clearCsrfTokenCache();
     } catch (e: any) {
       const status = e?.response?.status;
       if (status !== 401) {
