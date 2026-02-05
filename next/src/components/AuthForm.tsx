@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
 import { authApi } from "@/lib/authApi";
+import { clearCsrfTokenCache } from "@/lib/csrf";
 
 type Props = {
   mode: "signup" | "login";
@@ -57,6 +58,7 @@ export const AuthForm = ({ mode }: Props) => {
       } else {
         await authApi.login({ email, password });
       }
+      clearCsrfTokenCache();
       router.replace(next);
     } catch (err: unknown) {
       setError(getErrorMessage(err));
