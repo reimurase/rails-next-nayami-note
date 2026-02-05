@@ -14,7 +14,7 @@ class ApplicationController < ActionController::API
 
     def render_invalid_csrf(_exception)
       Rails.logger.warn("[CSRF] invalid authenticity token")
-      render json: { error: { code: "invalid_csrf", message: "CSRF token is invalid" } }, status: :unprocessable_content
+      render json: { error: { code: "invalid_csrf", message: "CSRF token is invalid" } }, status: :forbidden
     end
 
     def render_unprocessable_entity(exception)
