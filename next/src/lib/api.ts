@@ -1,6 +1,6 @@
 import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 
-import { fetchCsrfToken, isMutatingMethod, isCsrfLikelyError, clearCsrfTokenCache } from "./csrf";
+import { fetchCsrfToken, isMutatingMethod, isCsrfError, clearCsrfTokenCache } from "./csrf";
 
 import { notifyUnauthorized } from "@/lib/onUnauthorized";
 
@@ -50,7 +50,7 @@ api.interceptors.response.use(
     }
 
     // CSRF失敗っぽい & まだリトライしてないなら、トークン破棄して1回だけ再実行
-    if (isCsrfLikelyError(err) && !config.retryOnCsrfFailure) {
+    if (isCsrfError(err) && !config.retryOnCsrfFailure) {
       clearCsrfTokenCache();
       config.retryOnCsrfFailure = true;
 
