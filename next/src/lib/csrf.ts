@@ -7,6 +7,7 @@ const CSRF_ENDPOINT = "/api/v1/csrf";
 
 // JSONのキー名に合わせる
 type CsrfResponse = { csrfToken: string };
+type ApiErrorBody = { error?: { code?: string } };
 
 let csrfToken: string | null = null;
 let csrfTokenPromise: Promise<string> | null = null;
@@ -44,10 +45,15 @@ export function isMutatingMethod(method?: string) {
   return m === "post" || m === "put" || m === "patch" || m === "delete";
 }
 
-export function isCsrfLikelyError(error: AxiosError) {
-  const status = error.response?.status;
-  // Railsの構成によって 403/422 あたりで落ちることが多いので広めに拾う
-  return status === 403 || status === 422;
+export function isCsrfError(error: unknown): boolean {
+  if (typeof error !== "object" || error === null) return false;
+
+  const e = error as AxiosError<ApiErrorBody>;
+  const status = e.response?.status;
+
+  const apiCode = e.response?.data?.error?.code;
+
+  return status === 403 && apiCode === "invalid_csrf";
 }
 
 export function clearCsrfTokenCache() {

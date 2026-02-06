@@ -12,7 +12,7 @@ RSpec.describe "CSRF protection", type: :request do
           params: { concern: { trigger_event: "no csrf" } }.to_json,
           headers: json_headers
 
-    expect(response).to have_http_status(:unprocessable_content)
+    expect(response).to have_http_status(:forbidden)
   end
 
   it "CSRFトークンありのPATCHは通る" do
