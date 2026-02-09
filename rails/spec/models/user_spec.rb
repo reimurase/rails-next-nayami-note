@@ -21,6 +21,14 @@ RSpec.describe User, type: :model do
       expect(duplicate_user.errors[:email]).to be_present
     end
 
+    it "emailの最大文字数が255であること" do
+      valid_user = build(:user, email: "#{"a" * 243}@example.com") # 255
+      invalid_user = build(:user, email: "#{"a" * 244}@example.com") # 256
+
+      expect(valid_user).to be_valid
+      expect(invalid_user).not_to be_valid
+    end
+
     it "passwordが必須であること（作成時）" do
       user = build(:user, password: "")
       expect(user).not_to be_valid
