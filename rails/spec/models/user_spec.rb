@@ -77,4 +77,12 @@ RSpec.describe User, type: :model do
       expect(result).to be false
     end
   end
+
+  describe "before_validation" do
+    it "emailが小文字に変換されること" do
+      user = build(:user, email: "TeSt@eXamPLe.cOm")
+      user.valid?
+      expect(user.email).to eq("test@example.com")
+    end
+  end
 end
