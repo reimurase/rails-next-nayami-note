@@ -29,6 +29,36 @@ RSpec.describe User, type: :model do
       expect(invalid_user).not_to be_valid
     end
 
+    it "有効なemailを受け付ける" do
+      valid = [
+        "user@example.com",             # 基本形
+        "USER@example.com",             # 大文字
+        "user.name+tag@example.co.jp",  # . と + と複数ドメイン
+        "user_name@example-domain.com", # _ と -
+      ]
+
+      valid.each do |email|
+        user = build(:user, email:)
+        expect(user).to be_valid, "expected #{email} to be valid, but got: #{user.errors.full_messages}"
+      end
+    end
+
+    it "無効なemailを拒否する" do
+      invalid = [
+        "userexample.com",    # @なし
+        "user@",              # ドメインなし
+        "@example.com",       # ローカルなし
+        "user@-example.com",  # ラベル先頭がハイフン
+        "user@example..com",  # ドット連続
+      ]
+
+      invalid.each do |email|
+        user = build(:user, email:)
+        expect(user).to be_invalid, "expected #{email} to be invalid"
+        expect(user.errors[:email]).to be_present
+      end
+    end
+
     it "passwordが必須であること（作成時）" do
       user = build(:user, password: "")
       expect(user).not_to be_valid
