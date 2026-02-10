@@ -2,6 +2,13 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
+  describe "factory" do
+    it "userが valid であること" do
+      user = build(:user)
+      expect(user).to be_valid
+    end
+  end
+
   describe "before_validation" do
     it "emailが小文字に変換されること" do
       user = build(:user, email: "TeSt@eXamPLe.cOm")
@@ -11,11 +18,6 @@ RSpec.describe User, type: :model do
   end
 
   describe "email validations" do
-    it "userが valid であること" do
-      user = build(:user)
-      expect(user).to be_valid
-    end
-
     it "emailが必須であること" do
       user = build(:user, email: "")
       expect(user).not_to be_valid
