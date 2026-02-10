@@ -38,6 +38,7 @@ RSpec.describe User, type: :model do
 
       expect(valid_user).to be_valid
       expect(invalid_user).not_to be_valid
+      expect(invalid_user.errors.details[:email]).to include(hash_including(error: :too_long))
     end
 
     it "有効なemailを受け付ける" do
