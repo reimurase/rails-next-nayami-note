@@ -2,7 +2,15 @@
 require "rails_helper"
 
 RSpec.describe User, type: :model do
-  describe "validations" do
+  describe "before_validation" do
+    it "emailが小文字に変換されること" do
+      user = build(:user, email: "TeSt@eXamPLe.cOm")
+      user.valid?
+      expect(user.email).to eq("test@example.com")
+    end
+  end
+
+  describe "email validations" do
     it "userが valid であること" do
       user = build(:user)
       expect(user).to be_valid
@@ -58,7 +66,9 @@ RSpec.describe User, type: :model do
         expect(user.errors[:email]).to be_present
       end
     end
+  end
 
+  describe "password validations" do
     it "passwordが必須であること（作成時）" do
       user = build(:user, password: "")
       expect(user).not_to be_valid
@@ -81,14 +91,6 @@ RSpec.describe User, type: :model do
       user = create(:user, password: "password")
       result = user.authenticate("wrong")
       expect(result).to be false
-    end
-  end
-
-  describe "before_validation" do
-    it "emailが小文字に変換されること" do
-      user = build(:user, email: "TeSt@eXamPLe.cOm")
-      user.valid?
-      expect(user.email).to eq("test@example.com")
     end
   end
 end
