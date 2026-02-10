@@ -67,7 +67,7 @@ RSpec.describe User, type: :model do
       invalid.each do |email|
         user = build(:user, email:)
         expect(user).to be_invalid, "expected #{email} to be invalid"
-        expect(user.errors[:email]).to be_present
+        expect(user.errors.details[:email]).to include(hash_including(error: :invalid))
       end
     end
   end
