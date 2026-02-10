@@ -27,8 +27,9 @@ RSpec.describe User, type: :model do
     it "emailが一意であること" do
       create(:user, email: "testA@email.com")
       duplicate_user = build(:user, email: "testA@email.com")
+
       expect(duplicate_user).not_to be_valid
-      expect(duplicate_user.errors[:email]).to be_present
+      expect(duplicate_user.errors.details[:email]).to include(hash_including(error: :taken))
     end
 
     it "emailの最大文字数が255であること" do
@@ -37,6 +38,7 @@ RSpec.describe User, type: :model do
 
       expect(valid_user).to be_valid
       expect(invalid_user).not_to be_valid
+      expect(invalid_user.errors.details[:email]).to include(hash_including(error: :too_long))
     end
 
     it "有効なemailを受け付ける" do
@@ -65,7 +67,7 @@ RSpec.describe User, type: :model do
       invalid.each do |email|
         user = build(:user, email:)
         expect(user).to be_invalid, "expected #{email} to be invalid"
-        expect(user.errors[:email]).to be_present
+        expect(user.errors.details[:email]).to include(hash_including(error: :invalid))
       end
     end
   end
