@@ -65,6 +65,12 @@ RSpec.describe User, type: :model do
       expect(user.errors[:password]).to be_present
     end
 
+    it "空白のみのpasswordを拒否する" do
+      user = build(:user, password: " ")
+      expect(user).not_to be_valid
+      expect(user.errors.details[:password]).to include(error: :blank)
+    end
+
     it "正しいパスワードなら認証できる" do
       user = create(:user, password: "password")
       result = user.authenticate("password")

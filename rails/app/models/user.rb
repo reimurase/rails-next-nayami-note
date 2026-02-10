@@ -8,6 +8,8 @@ class User < ApplicationRecord
             uniqueness: true,
             length: { maximum: 255 }
 
+  validates :password, presence: true
+
   has_many :concerns, dependent: :destroy
 
   private
