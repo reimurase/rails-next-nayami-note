@@ -85,6 +85,15 @@ RSpec.describe User, type: :model do
       expect(user.errors.details[:password]).to include(error: :blank)
     end
 
+    it "passwordの最小文字数が6であること" do
+      valid_user = build(:user, password: "a" * 6)
+      invalid_user = build(:user, password: "a" * 5)
+
+      expect(valid_user).to be_valid
+      expect(invalid_user).not_to be_valid
+      expect(invalid_user.errors.details[:password]).to include(hash_including(error: :too_short))
+    end
+
     it "正しいパスワードなら認証できる" do
       user = create(:user, password: "password")
       result = user.authenticate("password")
