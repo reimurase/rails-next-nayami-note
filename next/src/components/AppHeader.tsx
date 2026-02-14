@@ -32,6 +32,7 @@ export function AppHeader() {
       <Link href="/">なやみノート</Link>
 
       <div style={{ marginLeft: "auto", display: "flex", gap: 12 }}>
+        <Link href="/signup">Signup</Link>
         <Link href="/login">Login</Link>
         <button onClick={onLogout}>Logout</button>
       </div>

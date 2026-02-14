@@ -51,6 +51,7 @@ describe("AppHeader (happy path)", () => {
     render(<AppHeader />);
 
     expect(screen.getByRole("link", { name: "なやみノート" })).toHaveAttribute("href", "/");
+    expect(screen.getByRole("link", { name: "Signup" })).toHaveAttribute("href", "/signup");
     expect(screen.getByRole("link", { name: "Login" })).toHaveAttribute("href", "/login");
     expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
   });
