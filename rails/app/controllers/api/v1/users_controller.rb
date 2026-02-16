@@ -1,5 +1,9 @@
 class Api::V1::UsersController < ApplicationController
   skip_before_action :require_login, only: [:create]
+  rate_limit to: 5, within: 10.minutes, only: :create,
+             by: -> { request.remote_ip },
+             store: Rails.cache,
+             with: -> { render_rate_limited }
 
   def show
   end

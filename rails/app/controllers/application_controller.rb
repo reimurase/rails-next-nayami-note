@@ -12,6 +12,10 @@ class ApplicationController < ActionController::API
 
   private
 
+    def render_rate_limited
+      render json: { error: { code: "rate_limited", message: "Too many requests" } }, status: :too_many_requests
+    end
+
     def render_invalid_csrf(_exception)
       Rails.logger.warn("[CSRF] invalid authenticity token")
       render json: { error: { code: "invalid_csrf", message: "CSRF token is invalid" } }, status: :forbidden
