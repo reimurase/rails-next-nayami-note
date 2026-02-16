@@ -51,6 +51,6 @@ class ApplicationController < ActionController::API
     def require_login
       return if current_user
 
-      render json: { error: "Unauthorized" }, status: :unauthorized
+      render json: { error: { code: "unauthorized", message: "Unauthorized" } }, status: :unauthorized
     end
 end
