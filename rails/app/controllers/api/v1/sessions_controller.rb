@@ -1,6 +1,9 @@
 class Api::V1::SessionsController < ApplicationController
   skip_before_action :require_login, only: [:create]
-  rate_limit to: 10, within: 3.minutes, only: :create
+  rate_limit to: 10, within: 3.minutes, only: :create,
+             by: -> { request.remote_ip },
+             store: Rails.cache,
+             with: -> { render_rate_limited }
 
   def create
     user = User.find_by(email: session_params[:email])
