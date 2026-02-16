@@ -23,7 +23,18 @@ class ApplicationController < ActionController::API
 
     def render_unprocessable_entity(exception)
       record = exception.record
-      render json: { errors: record.errors.full_messages }, status: :unprocessable_content
+
+      errors = record.errors.details.transform_values do |arr|
+        arr.map do |h|
+          code = h[:error].to_s
+          meta = {}
+          meta[:max] = h[:count] if h.has_key?(:count) # too_long のとき
+          meta = nil if meta.empty?
+          meta ? { code: code, meta: meta } : { code: code }
+        end
+      end
+
+      render json: { errors: errors }, status: :unprocessable_content
     end
 
     def render_not_found(_exception)
