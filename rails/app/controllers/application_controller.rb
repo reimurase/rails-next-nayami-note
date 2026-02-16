@@ -38,7 +38,7 @@ class ApplicationController < ActionController::API
     end
 
     def render_not_found(_exception)
-      render json: { error: "Not Found" }, status: :not_found
+      render json: { error: { code: "not_found", message: "Not Found" } }, status: :not_found
     end
 
     def current_user
