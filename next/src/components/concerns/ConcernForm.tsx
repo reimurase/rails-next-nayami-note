@@ -80,7 +80,10 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
       <textarea
         placeholder="何があって、どう思ったんだろう。（任意）"
         value={triggerEvent}
-        onChange={(e) => setTriggerEvent(e.target.value)}
+        onChange={(e) => {
+          setTriggerEvent(e.target.value);
+          setServerErrors((prev) => ({ ...prev, trigger_event: undefined }));
+        }}
         rows={4}
         style={{
           width: "600px",
@@ -102,7 +105,10 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
       <textarea
         placeholder="とりあえず、今のなやみを書いてみよう（必須）"
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={(e) => {
+          setContent(e.target.value);
+          setServerErrors((prev) => ({ ...prev, content: undefined }));
+        }}
         rows={4}
         style={{
           width: "600px",
