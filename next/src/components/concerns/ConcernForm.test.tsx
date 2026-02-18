@@ -151,4 +151,40 @@ describe("ConcernForm 異常系", () => {
 
     consoleSpy.mockRestore();
   });
+
+  test("APIが422を返したらフィールド下にエラーが表示されること", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    mockedConcernApi.create.mockRejectedValueOnce({
+      response: {
+        status: 422,
+        data: {
+          errors: {
+            content: [{ code: "blank" }],
+          },
+        },
+      },
+    });
+
+    const mockOnCreated = jest.fn();
+    render(<ConcernForm onCreated={mockOnCreated} />);
+
+    // FEは通す入力（※ここ重要）
+    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう。（任意）"), {
+      target: { value: "テストのきっかけ" },
+    });
+    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう（必須）"), {
+      target: { value: "テストのなやみ" },
+    });
+
+    fireEvent.click(screen.getByRole("button", { name: "追加" }));
+
+    // serverErrors が表示される（mapConcernServerErrors が効いている証拠）
+    expect(await screen.findByText("なやみは必須です")).toBeInTheDocument();
+
+    // 成功時コールバックは呼ばれない
+    expect(mockOnCreated).not.toHaveBeenCalled();
+
+    consoleSpy.mockRestore();
+  });
 });

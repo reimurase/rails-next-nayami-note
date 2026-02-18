@@ -9,6 +9,8 @@ import {
   validateLength,
   validateOnSubmit,
   validateRequired,
+  ConcernErrors,
+  mapConcernServerErrors,
 } from "@/lib/concernValidation";
 
 type ConcernFormProps = {
@@ -18,7 +20,10 @@ type ConcernFormProps = {
 const ConcernForm = ({ onCreated }: ConcernFormProps) => {
   const [triggerEvent, setTriggerEvent] = useState("");
   const [content, setContent] = useState("");
+
   const [apiError, setApiError] = useState<string | null>(null);
+  const [serverErrors, setServerErrors] = useState<ConcernErrors>({});
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
@@ -26,6 +31,7 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
     e.preventDefault();
     setSubmitted(true);
     setApiError(null);
+    setServerErrors({});
 
     const nextErrors = validateOnSubmit({ trigger_event: triggerEvent, content });
     if (hasErrors(nextErrors)) return;
@@ -39,7 +45,15 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
       setContent("");
       setSubmitted(false);
       onCreated();
-    } catch (error) {
+    } catch (error: any) {
+      const status = error?.response?.status;
+      const data = error?.response?.data;
+
+      if (status === 422) {
+        setServerErrors(mapConcernServerErrors(data));
+        return; // ★422のときは apiError を出さない
+      }
+
       console.error(error);
       setApiError("通信に失敗しました。時間を置いて再度お試しください。");
     } finally {
@@ -66,7 +80,10 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
       <textarea
         placeholder="何があって、どう思ったんだろう。（任意）"
         value={triggerEvent}
-        onChange={(e) => setTriggerEvent(e.target.value)}
+        onChange={(e) => {
+          setTriggerEvent(e.target.value);
+          setServerErrors((prev) => ({ ...prev, trigger_event: undefined }));
+        }}
         rows={4}
         style={{
           width: "600px",
@@ -74,10 +91,12 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
           fontSize: "16px",
         }}
       />
-      {(requiredErrors.trigger_event || lengthErrors.trigger_event) && (
+      {(serverErrors.trigger_event ||
+        requiredErrors.trigger_event ||
+        lengthErrors.trigger_event) && (
         <p style={{ color: "tomato", fontSize: 12 }}>
           {/* 基本 requiredErrors.trigger_event は出ません。必須になれば拡張可能 */}
-          {requiredErrors.trigger_event ?? lengthErrors.trigger_event}
+          {serverErrors.trigger_event ?? requiredErrors.trigger_event ?? lengthErrors.trigger_event}
         </p>
       )}
       <p style={{ fontSize: 12, opacity: 0.8 }}>
@@ -86,7 +105,10 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
       <textarea
         placeholder="とりあえず、今のなやみを書いてみよう（必須）"
         value={content}
-        onChange={(e) => setContent(e.target.value)}
+        onChange={(e) => {
+          setContent(e.target.value);
+          setServerErrors((prev) => ({ ...prev, content: undefined }));
+        }}
         rows={4}
         style={{
           width: "600px",
@@ -94,9 +116,9 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
           fontSize: "16px",
         }}
       />
-      {(requiredErrors.content || lengthErrors.content) && (
+      {(serverErrors.content || requiredErrors.content || lengthErrors.content) && (
         <p style={{ color: "tomato", fontSize: 12 }}>
-          {requiredErrors.content ?? lengthErrors.content}
+          {serverErrors.content ?? requiredErrors.content ?? lengthErrors.content}
         </p>
       )}
       <p style={{ fontSize: 12, opacity: 0.8 }}>
