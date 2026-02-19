@@ -6,7 +6,7 @@ Rails.application.routes.draw do
       resource :csrf, only: [:show], controller: "csrf"
       resources :users, only: [:create]
       resource :session, only: [:create, :destroy]
-      resources :concerns, only: [:index, :create, :update, :destroy]
+      resources :concerns, only: [:index, :show, :create, :update, :destroy]
     end
   end
 
