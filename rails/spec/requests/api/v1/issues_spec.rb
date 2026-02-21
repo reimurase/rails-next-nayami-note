@@ -153,4 +153,31 @@ RSpec.describe "Api::V1::Issues", type: :request do
       end
     end
   end
+
+  describe "DELETE api/v1/issues/:id" do
+    subject(:request_api) { delete "/api/v1/issues/#{issue_id}", headers: csrf_headers }
+
+    let!(:issue) { create(:issue) }
+    let(:issue_id) { issue.id }
+
+    context "指定したIDのissueが存在する場合" do
+      it "204 No Content が返ること" do
+        request_api
+        expect(response).to have_http_status(:no_content)
+      end
+
+      it "指定したissueが削除されること" do
+        expect { request_api }.to change { Issue.count }.by(-1)
+      end
+    end
+
+    context "指定したIDのissueが存在しない場合" do
+      let(:issue_id) { 999_999 }
+
+      it "404 Not Found が返ること" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
 end

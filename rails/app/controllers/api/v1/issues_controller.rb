@@ -22,6 +22,12 @@ class Api::V1::IssuesController < ApplicationController
     render json: issue
   end
 
+  def destroy
+    issue = Issue.find(params[:id])
+    issue.destroy!
+    head :no_content
+  end
+
   private
 
     def issue_params
