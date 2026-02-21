@@ -2,6 +2,34 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Issues", type: :request do
+  describe "POST api/v1/issues" do
+    subject(:request_api) {
+      post "/api/v1/issues",
+           params: { issue: params }.to_json,
+           headers: csrf_headers
+    }
+
+    let(:valid_params) do
+      {
+        title: "テストのタイトル",
+        content: "テストの問題",
+      }
+    end
+
+    context "パラメータが正しいとき" do
+      let(:params) { valid_params }
+
+      it "レコードを1件作成し、201を返す" do
+        expect { request_api }.to change { Issue.count }.by(1)
+
+        expect(response).to have_http_status(:created)
+        json = JSON.parse(response.body)
+        expect(json["title"]).to eq "テストのタイトル"
+        expect(json["content"]).to eq "テストの問題"
+      end
+    end
+  end
+
   describe "GET /api/v1/issues" do
     subject(:request_api) { get "/api/v1/issues" }
 
