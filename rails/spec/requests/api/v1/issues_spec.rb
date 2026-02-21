@@ -2,6 +2,12 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Issues", type: :request do
+  let(:user) { create(:user) }
+
+  before do
+    login_as(user)
+  end
+
   describe "POST api/v1/issues" do
     subject(:request_api) {
       post "/api/v1/issues",
@@ -20,7 +26,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
       let(:params) { valid_params }
 
       it "レコードを1件作成し、201を返す" do
-        expect { request_api }.to change { Issue.count }.by(1)
+        expect { request_api }.to change { user.issues.count }.by(1)
 
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
@@ -47,7 +53,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
     end
 
     context "issueが複数件の場合" do
-      let!(:issues) { create_list(:issue, 3) }
+      let!(:issues) { create_list(:issue, 3, user: user) }
 
       before do
         request_api
@@ -78,7 +84,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
     subject(:request_api) { get "/api/v1/issues/#{issue_id}" }
 
     context "指定したIDのissueが存在する場合" do
-      let!(:issue) { create(:issue) }
+      let!(:issue) { create(:issue, user: user) }
       let(:issue_id) { issue.id }
 
       it "200 OK が返ること" do
@@ -104,7 +110,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
             headers: csrf_headers
     }
 
-    let!(:issue) { create(:issue, title: "元のタイトル", content: "元の問題") }
+    let!(:issue) { create(:issue, title: "元のタイトル", content: "元の問題", user: user) }
     let(:issue_id) { issue.id }
 
     # 共通で使う JSON パース用ヘルパ
@@ -157,7 +163,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
   describe "DELETE api/v1/issues/:id" do
     subject(:request_api) { delete "/api/v1/issues/#{issue_id}", headers: csrf_headers }
 
-    let!(:issue) { create(:issue) }
+    let!(:issue) { create(:issue, user: user) }
     let(:issue_id) { issue.id }
 
     context "指定したIDのissueが存在する場合" do
@@ -167,7 +173,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
       end
 
       it "指定したissueが削除されること" do
-        expect { request_api }.to change { Issue.count }.by(-1)
+        expect { request_api }.to change { user.issues.count }.by(-1)
       end
     end
 
