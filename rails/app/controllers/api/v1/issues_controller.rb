@@ -16,6 +16,12 @@ class Api::V1::IssuesController < ApplicationController
     render json: issue, status: :created
   end
 
+  def update
+    issue = Issue.find(params[:id])
+    issue.update!(issue_params)
+    render json: issue
+  end
+
   private
 
     def issue_params
