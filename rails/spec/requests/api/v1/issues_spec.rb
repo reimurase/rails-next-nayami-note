@@ -2,6 +2,12 @@
 require "rails_helper"
 
 RSpec.describe "Api::V1::Issues", type: :request do
+  let(:user) { create(:user) }
+
+  before do
+    login_as(user)
+  end
+
   describe "POST api/v1/issues" do
     subject(:request_api) {
       post "/api/v1/issues",
@@ -20,7 +26,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
       let(:params) { valid_params }
 
       it "レコードを1件作成し、201を返す" do
-        expect { request_api }.to change { Issue.count }.by(1)
+        expect { request_api }.to change { user.issues.count }.by(1)
 
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
@@ -47,7 +53,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
     end
 
     context "issueが複数件の場合" do
-      let!(:issues) { create_list(:issue, 3) }
+      let!(:issues) { create_list(:issue, 3, user: user) }
 
       before do
         request_api
@@ -61,7 +67,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
         expect(json.length).to eq(3)
       end
 
-      it "各 issue の問題が正しいこと" do
+      it "各 issue の内容が正しいこと" do
         expected = issues.index_by(&:id)
 
         json.each do |item|
@@ -78,7 +84,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
     subject(:request_api) { get "/api/v1/issues/#{issue_id}" }
 
     context "指定したIDのissueが存在する場合" do
-      let!(:issue) { create(:issue) }
+      let!(:issue) { create(:issue, user: user) }
       let(:issue_id) { issue.id }
 
       it "200 OK が返ること" do
@@ -104,7 +110,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
             headers: csrf_headers
     }
 
-    let!(:issue) { create(:issue, title: "元のタイトル", content: "元の問題") }
+    let!(:issue) { create(:issue, title: "元のタイトル", content: "元の問題", user: user) }
     let(:issue_id) { issue.id }
 
     # 共通で使う JSON パース用ヘルパ
@@ -123,7 +129,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it "指定したissueの問題が更新されること" do
+      it "指定したissueの内容が更新されること" do
         expect {
           request_api
         }.to change { issue.reload.title }.from("元のタイトル").to("更新後のタイトル").
@@ -152,12 +158,29 @@ RSpec.describe "Api::V1::Issues", type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context "他人のissueを更新しようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_issue) { create(:issue, user: other_user, content: "他人の問題") }
+      let(:issue_id) { other_issue.id }
+
+      let(:params) do
+        {
+          content: "不正に更新",
+        }
+      end
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   describe "DELETE api/v1/issues/:id" do
     subject(:request_api) { delete "/api/v1/issues/#{issue_id}", headers: csrf_headers }
 
-    let!(:issue) { create(:issue) }
+    let!(:issue) { create(:issue, user: user) }
     let(:issue_id) { issue.id }
 
     context "指定したIDのissueが存在する場合" do
@@ -167,7 +190,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
       end
 
       it "指定したissueが削除されること" do
-        expect { request_api }.to change { Issue.count }.by(-1)
+        expect { request_api }.to change { user.issues.count }.by(-1)
       end
     end
 
@@ -177,6 +200,23 @@ RSpec.describe "Api::V1::Issues", type: :request do
       it "404 Not Found が返ること" do
         request_api
         expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "他人のissueを削除しようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_issue) { create(:issue, user: other_user) }
+      let(:issue_id) { other_issue.id }
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "他人のデータが削除されないこと" do
+        expect {
+          request_api
+        }.not_to change { Issue.count }
       end
     end
   end
