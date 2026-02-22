@@ -67,7 +67,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
         expect(json.length).to eq(3)
       end
 
-      it "各 issue の問題が正しいこと" do
+      it "各 issue の内容が正しいこと" do
         expected = issues.index_by(&:id)
 
         json.each do |item|
@@ -129,7 +129,7 @@ RSpec.describe "Api::V1::Issues", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it "指定したissueの問題が更新されること" do
+      it "指定したissueの内容が更新されること" do
         expect {
           request_api
         }.to change { issue.reload.title }.from("元のタイトル").to("更新後のタイトル").
@@ -154,6 +154,23 @@ RSpec.describe "Api::V1::Issues", type: :request do
       end
 
       it "404 Not Found が返ること" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "他人のissueを更新しようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_issue) { create(:issue, user: other_user, content: "他人の問題") }
+      let(:issue_id) { other_issue.id }
+
+      let(:params) do
+        {
+          content: "不正に更新",
+        }
+      end
+
+      it "404 Not Found が返ること（存在を隠す）" do
         request_api
         expect(response).to have_http_status(:not_found)
       end
@@ -183,6 +200,23 @@ RSpec.describe "Api::V1::Issues", type: :request do
       it "404 Not Found が返ること" do
         request_api
         expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "他人のissueを削除しようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_issue) { create(:issue, user: other_user) }
+      let(:issue_id) { other_issue.id }
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+
+      it "他人のデータが削除されないこと" do
+        expect {
+          request_api
+        }.not_to change { Issue.count }
       end
     end
   end
