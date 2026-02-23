@@ -17,9 +17,10 @@ import {
 type Props = {
   concern: Concern;
   onChanged?: () => void; // 更新 or 削除が成功したときに一覧を更新する用
+  onOpenDetail?: () => void;
 };
 
-const ConcernRow = ({ concern, onChanged }: Props) => {
+const ConcernRow = ({ concern, onChanged, onOpenDetail }: Props) => {
   const [isEditing, setIsEditing] = useState(false); // 編集モードかどうか
   const [triggerEvent, setTriggerEvent] = useState(concern.trigger_event);
   const [content, setContent] = useState(concern.content); // 入力中の値
@@ -113,18 +114,23 @@ const ConcernRow = ({ concern, onChanged }: Props) => {
           </button>
         </>
       ) : (
-        <>
+        <div
+          onClick={onOpenDetail}
+          style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}
+        >
           <span>{concern.trigger_event}</span>
           <span>{concern.content}</span>
+
           <button
-            onClick={() => {
+            onClick={(e) => {
+              e.stopPropagation(); // 詳細を開かない
               setIsEditing(true);
               setSubmitted(false);
             }}
           >
             編集
           </button>
-        </>
+        </div>
       )}
 
       {/* 既存の削除ボタンはそのまま使える */}
