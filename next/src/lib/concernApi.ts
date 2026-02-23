@@ -12,6 +12,10 @@ type UpdateConcernParams = {
   content: string;
 };
 
+type GetConcernParams = {
+  id: number;
+};
+
 type DeleteConcernParams = {
   id: number;
 };
@@ -19,6 +23,11 @@ type DeleteConcernParams = {
 export const concernApi = {
   getConcerns: async (): Promise<Concern[]> => {
     const res = await api.get<Concern[]>("/api/v1/concerns");
+    return res.data;
+  },
+
+  getConcern: async ({ id }: GetConcernParams): Promise<Concern> => {
+    const res = await api.get<Concern>(`/api/v1/concerns/${id}`);
     return res.data;
   },
 
