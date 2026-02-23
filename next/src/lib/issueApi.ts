@@ -1,6 +1,6 @@
 import { api } from "@/lib/api";
 
-type Issue = {
+export type Issue = {
   title: string;
   content: string;
 };
