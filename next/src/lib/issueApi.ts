@@ -1,6 +1,7 @@
 import { api } from "@/lib/api";
 
 export type Issue = {
+  id: number;
   title: string;
   content: string;
 };
