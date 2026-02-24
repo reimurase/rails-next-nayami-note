@@ -25,7 +25,7 @@ type DeleteIssueParams = {
   id: number;
 };
 
-export const IssueApi = {
+export const issueApi = {
   getIssues: async (): Promise<Issue[]> => {
     const res = await api.get<Issue[]>("/api/v1/issues");
     return res.data;
