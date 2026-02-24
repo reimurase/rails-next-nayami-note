@@ -2,15 +2,14 @@ import type { Issue } from "@/lib/issueApi";
 
 type Props = {
   issue: Issue;
+  onOpenDetail?: () => void;
 };
 
-const IssueRow = ({ issue }: Props) => {
+const IssueRow = ({ issue, onOpenDetail }: Props) => {
   return (
-    <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
-      <div style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
-        <span>{issue.title}</span>
-        <span>{issue.content}</span>
-      </div>
+    <div onClick={onOpenDetail} style={{ display: "flex", gap: 8, alignItems: "center" }}>
+      <span>{issue.title}</span>
+      <span>{issue.content}</span>
     </div>
   );
 };
