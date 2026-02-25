@@ -40,7 +40,7 @@ export default function IssuePageClient() {
         </button>
       </header>
 
-      <IssueIndex issues={issues ?? []} />
+      <IssueIndex issues={issues ?? []} onChanged={refresh} />
 
       <IssueCreateSheet
         isOpen={isSheetOpen}
