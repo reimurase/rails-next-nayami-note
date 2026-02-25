@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import IssueDeleteButton from "./IssueDeleteButton";
+
 import { issueApi } from "@/lib/issueApi";
 import type { Issue } from "@/lib/issueApi";
 
@@ -80,6 +82,12 @@ const IssueRow = ({ issue, onChanged, onOpenDetail }: Props) => {
           </button>
         </div>
       )}
+
+      {/* 既存の削除ボタンはそのまま使える */}
+      <IssueDeleteButton
+        id={issue.id}
+        onDeleted={onChanged} // 削除成功時も一覧更新
+      />
     </div>
   );
 };
