@@ -12,6 +12,7 @@ class User < ApplicationRecord
 
   has_many :concerns, dependent: :destroy
   has_many :issues, dependent: :destroy
+  has_many :roadmaps, dependent: :destroy
 
   private
 

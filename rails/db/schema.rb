@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_02_25_133832) do
+ActiveRecord::Schema[8.0].define(version: 2026_02_25_233335) do
   create_table "concerns", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
@@ -34,6 +34,8 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_25_133832) do
     t.text "content"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id"], name: "index_roadmaps_on_user_id"
   end
 
   create_table "users", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
@@ -46,4 +48,5 @@ ActiveRecord::Schema[8.0].define(version: 2026_02_25_133832) do
 
   add_foreign_key "concerns", "users"
   add_foreign_key "issues", "users"
+  add_foreign_key "roadmaps", "users"
 end
