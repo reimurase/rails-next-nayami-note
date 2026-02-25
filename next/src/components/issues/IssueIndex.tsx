@@ -11,9 +11,10 @@ import type { Issue } from "@/lib/issueApi";
 
 type Props = {
   issues: Issue[];
+  onChanged?: () => void;
 };
 
-const IssueIndex = ({ issues }: Props) => {
+const IssueIndex = ({ issues, onChanged }: Props) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
@@ -26,7 +27,11 @@ const IssueIndex = ({ issues }: Props) => {
         <ul style={{ display: "flex", flexDirection: "column", gap: 8, padding: 0 }}>
           {issues.map((issue) => (
             <li key={issue.id} style={{ listStyle: "none" }}>
-              <IssueRow issue={issue} onOpenDetail={() => setSelectedId(issue.id)} />
+              <IssueRow
+                issue={issue}
+                onChanged={onChanged}
+                onOpenDetail={() => setSelectedId(issue.id)}
+              />
             </li>
           ))}
         </ul>

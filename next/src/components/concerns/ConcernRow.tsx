@@ -83,32 +83,39 @@ const ConcernRow = ({ concern, onChanged, onOpenDetail }: Props) => {
             onChange={(e) => setTriggerEvent(e.target.value)}
             disabled={isSaving}
           />
+
           {(requiredErrors.trigger_event || lengthErrors.trigger_event) && (
             <p style={{ color: "tomato", fontSize: 12 }}>
               {/* 基本 requiredErrors.trigger_event は出ません。必須になれば拡張可能 */}
               {requiredErrors.trigger_event ?? lengthErrors.trigger_event}
             </p>
           )}
+
           <p style={{ fontSize: 12, opacity: 0.8 }}>
             {triggerEvent.length}/{CONCERN_LIMITS.trigger_event}
           </p>
+
           <textarea
             value={content}
             placeholder="とりあえず、今のなやみを書いてみよう（必須）"
             onChange={(e) => setContent(e.target.value)}
             disabled={isSaving}
           />
+
           {(requiredErrors.content || lengthErrors.content) && (
             <p style={{ color: "tomato", fontSize: 12 }}>
               {requiredErrors.content ?? lengthErrors.content}
             </p>
           )}
+
           <p style={{ fontSize: 12, opacity: 0.8 }}>
             {content.length}/{CONCERN_LIMITS.content}
           </p>
+
           <button onClick={handleSave} disabled={isSaving || overTrigger || overContent}>
             {isSaving ? "保存中..." : "保存"}
           </button>
+
           <button onClick={handleCancel} disabled={isSaving}>
             キャンセル
           </button>
