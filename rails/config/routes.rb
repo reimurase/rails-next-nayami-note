@@ -8,7 +8,7 @@ Rails.application.routes.draw do
       resource :session, only: [:create, :destroy]
       resources :concerns, only: [:index, :show, :create, :update, :destroy]
       resources :issues, only: [:index, :show, :create, :update, :destroy]
-      resources :roadmaps, only: [:index, :show]
+      resources :roadmaps, only: [:index, :show, :create, :update, :destroy]
     end
   end
 
