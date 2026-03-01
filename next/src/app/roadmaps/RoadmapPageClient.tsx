@@ -40,7 +40,7 @@ export default function RoadmapPageClient() {
         </button>
       </header>
 
-      <RoadmapIndex roadmaps={roadmaps ?? []} />
+      <RoadmapIndex roadmaps={roadmaps ?? []} onChanged={refresh} />
 
       <RoadmapCreateSheet
         isOpen={isSheetOpen}
