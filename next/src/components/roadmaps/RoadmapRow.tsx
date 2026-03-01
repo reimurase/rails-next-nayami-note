@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import RoadmapDeleteButton from "./RoadmapDeleteButton";
+
 import { roadmapApi } from "@/lib/roadmapApi";
 import type { Roadmap } from "@/lib/roadmapApi";
 
@@ -45,14 +47,14 @@ const RoadmapRow = ({ roadmap, onChanged, onOpenDetail }: Props) => {
         <>
           <textarea
             value={goal}
-            placeholder="何があって、どう思ったんだろう。（任意）"
+            placeholder="ゴール（任意）"
             onChange={(e) => setGoal(e.target.value)}
             disabled={isSaving}
           />
 
           <textarea
             value={content}
-            placeholder="とりあえず、今のなやみを書いてみよう（必須）"
+            placeholder="ロードマップ（任意）"
             onChange={(e) => setContent(e.target.value)}
             disabled={isSaving}
           />
@@ -80,6 +82,12 @@ const RoadmapRow = ({ roadmap, onChanged, onOpenDetail }: Props) => {
           </button>
         </div>
       )}
+
+      {/* 既存の削除ボタンはそのまま使える */}
+      <RoadmapDeleteButton
+        id={roadmap.id}
+        onDeleted={onChanged} // 削除成功時も一覧更新
+      />
     </div>
   );
 };
