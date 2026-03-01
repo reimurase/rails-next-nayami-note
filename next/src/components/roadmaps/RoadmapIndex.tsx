@@ -11,9 +11,10 @@ import type { Roadmap } from "@/lib/roadmapApi";
 
 type Props = {
   roadmaps: Roadmap[];
+  onChanged?: () => void;
 };
 
-const RoadmapIndex = ({ roadmaps }: Props) => {
+const RoadmapIndex = ({ roadmaps, onChanged }: Props) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
@@ -26,7 +27,11 @@ const RoadmapIndex = ({ roadmaps }: Props) => {
         <ul style={{ display: "flex", flexDirection: "column", gap: 8, padding: 0 }}>
           {roadmaps.map((roadmap) => (
             <li key={roadmap.id} style={{ listStyle: "none" }}>
-              <RoadmapRow roadmap={roadmap} onOpenDetail={() => setSelectedId(roadmap.id)} />
+              <RoadmapRow
+                roadmap={roadmap}
+                onChanged={onChanged}
+                onOpenDetail={() => setSelectedId(roadmap.id)}
+              />
             </li>
           ))}
         </ul>
