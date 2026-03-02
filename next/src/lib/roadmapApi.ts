@@ -1,29 +1,5 @@
 import { api } from "@/lib/api";
-
-export type Roadmap = {
-  id: number;
-  goal: string;
-  content: string;
-};
-
-type CreateRoadmapParams = {
-  goal: string;
-  content: string;
-};
-
-type UpdateRoadmapParams = {
-  id: number;
-  goal: string;
-  content: string;
-};
-
-type GetRoadmapParams = {
-  id: number;
-};
-
-type DeleteRoadmapParams = {
-  id: number;
-};
+import { Roadmap, RoadmapInput } from "@/types/roadmap";
 
 export const roadmapApi = {
   getRoadmaps: async (): Promise<Roadmap[]> => {
@@ -31,20 +7,20 @@ export const roadmapApi = {
     return res.data;
   },
 
-  getRoadmap: async ({ id }: GetRoadmapParams): Promise<Roadmap> => {
+  getRoadmap: async (id: number): Promise<Roadmap> => {
     const res = await api.get<Roadmap>(`/api/v1/roadmaps/${id}`);
     return res.data;
   },
 
-  create: ({ goal, content }: CreateRoadmapParams) =>
+  create: ({ goal, content }: RoadmapInput) =>
     api.post("/api/v1/roadmaps", {
       roadmap: { goal, content },
     }),
 
-  update: ({ id, goal, content }: UpdateRoadmapParams) =>
+  update: (id: number, { goal, content }: RoadmapInput) =>
     api.patch(`/api/v1/roadmaps/${id}`, {
       roadmap: { goal, content },
     }),
 
-  remove: ({ id }: DeleteRoadmapParams) => api.delete(`/api/v1/roadmaps/${id}`),
+  remove: (id: number) => api.delete(`/api/v1/roadmaps/${id}`),
 };

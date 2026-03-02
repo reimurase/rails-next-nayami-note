@@ -7,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import RoadmapRow from "./RoadmapRow";
 import RoadmapDetail from "./RoadmapDetail";
 
-import type { Roadmap } from "@/lib/roadmapApi";
+import { Roadmap } from "@/types/roadmap";
 
 type Props = {
   roadmaps: Roadmap[];

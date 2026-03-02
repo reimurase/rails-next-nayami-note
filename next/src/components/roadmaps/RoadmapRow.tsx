@@ -5,7 +5,7 @@ import { useState } from "react";
 import RoadmapDeleteButton from "./RoadmapDeleteButton";
 
 import { roadmapApi } from "@/lib/roadmapApi";
-import type { Roadmap } from "@/lib/roadmapApi";
+import { Roadmap } from "@/types/roadmap";
 
 type Props = {
   roadmap: Roadmap;
@@ -24,7 +24,7 @@ const RoadmapRow = ({ roadmap, onChanged, onOpenDetail }: Props) => {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      await roadmapApi.update({ id: roadmap.id, goal, content });
+      await roadmapApi.update(roadmap.id, { goal, content });
 
       setIsEditing(false);
 

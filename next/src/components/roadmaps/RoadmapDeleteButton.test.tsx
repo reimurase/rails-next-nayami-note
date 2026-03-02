@@ -32,7 +32,7 @@ describe("RoadmapDeleteButton 正常系", () => {
 
     // RoadmapApi.delete が呼ばれる
     await waitFor(() => {
-      expect(mockedRoadmapApi.remove).toHaveBeenCalledWith({ id: 1 });
+      expect(mockedRoadmapApi.remove).toHaveBeenCalledWith(1);
     });
 
     // APIが終わって onDeleted が呼ばれる
