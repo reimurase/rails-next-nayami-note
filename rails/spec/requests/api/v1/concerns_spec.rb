@@ -64,7 +64,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
         request_api
       end
 
-      it "レコードが0件の場合でも空配列が返ること" do
+      it "空配列が返ること" do
         expect(json).to eq([])
         expect(response).to have_http_status(:ok)
       end
