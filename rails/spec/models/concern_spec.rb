@@ -2,14 +2,14 @@
 require "rails_helper"
 
 RSpec.describe Concern, type: :model do
-  describe "validations" do
-    context "content が正しい場合" do
-      it "valid であること" do
-        concern = build(:concern)
-        expect(concern).to be_valid
-      end
+  describe "factory" do
+    it "concern が valid であること" do
+      concern = build(:concern)
+      expect(concern).to be_valid
     end
+  end
 
+  describe "validations" do
     context "content が空の場合" do
       it "invalid であること" do
         concern = build(:concern, content: "")
