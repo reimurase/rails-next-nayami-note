@@ -2,7 +2,6 @@
 
 import useSWR from "swr";
 
-import type { Issue } from "@/lib/issueApi";
 import { issueApi } from "@/lib/issueApi";
 
 type Props = {
@@ -14,7 +13,7 @@ export default function IssueDetail({ id }: Props) {
     data: issue,
     error,
     isLoading,
-  } = useSWR<Issue>(`/api/v1/issues/${id}`, () => issueApi.getIssue({ id }));
+  } = useSWR(`/api/v1/issues/${id}`, () => issueApi.getIssue(id));
 
   if (isLoading) {
     return (

@@ -2,8 +2,6 @@
 
 import useSWR from "swr";
 
-import type { Concern } from "./ConcernIndex.tsx";
-
 import { concernApi } from "@/lib/concernApi";
 
 type Props = {
@@ -15,7 +13,7 @@ export default function ConcernDetail({ id }: Props) {
     data: concern,
     error,
     isLoading,
-  } = useSWR<Concern>(`/api/v1/concerns/${id}`, () => concernApi.getConcern({ id }));
+  } = useSWR(`/api/v1/concerns/${id}`, () => concernApi.getConcern(id));
 
   if (isLoading) {
     return (

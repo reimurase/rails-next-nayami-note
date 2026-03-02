@@ -7,11 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import ConcernRow from "./ConcernRow";
 import ConcernDetail from "./ConcernDetail";
 
-export type Concern = {
-  id: number;
-  trigger_event: string;
-  content: string;
-};
+import type { Concern } from "@/types/concern";
 
 type Props = {
   concerns: Concern[];

@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 
-import type { Concern } from "./ConcernIndex";
 import ConcernDeleteButton from "./ConcernDeleteButton";
 
+import type { Concern } from "@/types/concern";
 import { concernApi } from "@/lib/concernApi";
 import {
   hasErrors,
@@ -37,7 +37,7 @@ const ConcernRow = ({ concern, onChanged, onOpenDetail }: Props) => {
 
     try {
       setIsSaving(true);
-      await concernApi.update({ id: concern.id, triggerEvent, content });
+      await concernApi.update(concern.id, { triggerEvent, content });
 
       setIsEditing(false);
       setSubmitted(false);

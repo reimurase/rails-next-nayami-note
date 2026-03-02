@@ -1,29 +1,5 @@
 import { api } from "@/lib/api";
-
-export type Issue = {
-  id: number;
-  title: string;
-  content: string;
-};
-
-type CreateIssueParams = {
-  title: string;
-  content: string;
-};
-
-type UpdateIssueParams = {
-  id: number;
-  title: string;
-  content: string;
-};
-
-type GetIssueParams = {
-  id: number;
-};
-
-type DeleteIssueParams = {
-  id: number;
-};
+import { Issue, IssueInput } from "@/types/issue";
 
 export const issueApi = {
   getIssues: async (): Promise<Issue[]> => {
@@ -31,20 +7,20 @@ export const issueApi = {
     return res.data;
   },
 
-  getIssue: async ({ id }: GetIssueParams): Promise<Issue> => {
+  getIssue: async (id: number): Promise<Issue> => {
     const res = await api.get<Issue>(`/api/v1/issues/${id}`);
     return res.data;
   },
 
-  create: ({ title, content }: CreateIssueParams) =>
+  create: ({ title, content }: IssueInput) =>
     api.post("/api/v1/issues", {
       issue: { title, content },
     }),
 
-  update: ({ id, title, content }: UpdateIssueParams) =>
+  update: (id: number, { title, content }: IssueInput) =>
     api.patch(`/api/v1/issues/${id}`, {
       issue: { title, content },
     }),
 
-  remove: ({ id }: DeleteIssueParams) => api.delete(`/api/v1/issues/${id}`),
+  remove: (id: number) => api.delete(`/api/v1/issues/${id}`),
 };

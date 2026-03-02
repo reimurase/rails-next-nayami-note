@@ -1,15 +1,6 @@
 import { api } from "./api";
 
-type SignupParams = {
-  email: string;
-  password: string;
-  password_confirmation: string;
-};
-
-type LoginParams = {
-  email: string;
-  password: string;
-};
+import { SignupParams, LoginParams } from "@/types/auth";
 
 export const authApi = {
   signup: (params: SignupParams) => api.post("/api/v1/users", { user: params }),

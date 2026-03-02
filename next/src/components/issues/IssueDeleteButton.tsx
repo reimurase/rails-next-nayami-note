@@ -20,7 +20,7 @@ const IssueDeleteButton = ({ id, onDeleted }: Props) => {
 
     try {
       setIsDeleting(true);
-      await issueApi.remove({ id });
+      await issueApi.remove(id);
 
       // 正常系でやりたいこと（一覧の再取得など）
       if (onDeleted) {

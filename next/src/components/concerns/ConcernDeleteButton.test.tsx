@@ -32,7 +32,7 @@ describe("ConcernDeleteButton 正常系", () => {
 
     // ConcernApi.delete が呼ばれる
     await waitFor(() => {
-      expect(mockedConcernApi.remove).toHaveBeenCalledWith({ id: 1 });
+      expect(mockedConcernApi.remove).toHaveBeenCalledWith(1);
     });
 
     // APIが終わって onDeleted が呼ばれる

@@ -20,7 +20,7 @@ const RoadmapDeleteButton = ({ id, onDeleted }: Props) => {
 
     try {
       setIsDeleting(true);
-      await roadmapApi.remove({ id });
+      await roadmapApi.remove(id);
 
       // 正常系でやりたいこと（一覧の再取得など）
       if (onDeleted) {

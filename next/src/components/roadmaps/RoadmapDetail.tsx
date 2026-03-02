@@ -2,7 +2,6 @@
 
 import useSWR from "swr";
 
-import type { Roadmap } from "@/lib/roadmapApi";
 import { roadmapApi } from "@/lib/roadmapApi";
 
 type Props = {
@@ -14,7 +13,7 @@ export default function RoadmapDetail({ id }: Props) {
     data: roadmap,
     error,
     isLoading,
-  } = useSWR<Roadmap>(`/api/v1/roadmaps/${id}`, () => roadmapApi.getRoadmap({ id }));
+  } = useSWR(`/api/v1/roadmaps/${id}`, () => roadmapApi.getRoadmap(id));
 
   if (isLoading) {
     return (

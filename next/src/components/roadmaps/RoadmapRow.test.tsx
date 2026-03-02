@@ -54,8 +54,7 @@ describe("RoadmapRow 正常系", () => {
 
     // 7. update が正しい引数で呼ばれたか
     await waitFor(() => {
-      expect(mockedRoadmapApi.update).toHaveBeenCalledWith({
-        id: 1,
+      expect(mockedRoadmapApi.update).toHaveBeenCalledWith(1, {
         goal: "更新後のゴール",
         content: "更新後のロードマップ",
       });
