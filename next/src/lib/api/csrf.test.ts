@@ -1,9 +1,9 @@
-// src/lib/csrf.test.ts
+// src/lib/api/csrf.test.ts
 
-import { api } from "./api";
+import { api } from "./client";
 import { fetchCsrfToken, clearCsrfTokenCache } from "./csrf";
 
-jest.mock("./api", () => ({
+jest.mock("@/lib/api/client", () => ({
   api: { get: jest.fn() },
 }));
 

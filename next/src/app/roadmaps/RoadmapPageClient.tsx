@@ -5,7 +5,7 @@ import useSWR from "swr";
 
 import RoadmapIndex from "@/components/roadmaps/RoadmapIndex";
 import RoadmapCreateSheet from "@/components/roadmaps/RoadmapCreateSheet";
-import { roadmapApi } from "@/lib/roadmapApi";
+import { roadmapApi } from "@/lib/api/roadmap";
 
 export default function RoadmapPageClient() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);

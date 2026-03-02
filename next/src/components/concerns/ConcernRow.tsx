@@ -5,7 +5,7 @@ import { useState } from "react";
 import ConcernDeleteButton from "./ConcernDeleteButton";
 
 import type { Concern } from "@/types/concern";
-import { concernApi } from "@/lib/concernApi";
+import { concernApi } from "@/lib/api/concern";
 import {
   hasErrors,
   validateLength,

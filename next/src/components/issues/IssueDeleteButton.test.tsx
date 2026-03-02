@@ -3,9 +3,9 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import IssueDeleteButton from "./IssueDeleteButton";
 
-import { issueApi } from "@/lib/issueApi";
+import { issueApi } from "@/lib/api/issue";
 
-jest.mock("@/lib/issueApi", () => ({
+jest.mock("@/lib/api/issue", () => ({
   issueApi: {
     remove: jest.fn(),
   },

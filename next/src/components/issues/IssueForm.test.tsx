@@ -3,9 +3,9 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import IssueForm from "./IssueForm";
 
-import { issueApi } from "@/lib/issueApi";
+import { issueApi } from "@/lib/api/issue";
 
-jest.mock("@/lib/issueApi", () => ({
+jest.mock("@/lib/api/issue", () => ({
   issueApi: {
     create: jest.fn(),
   },

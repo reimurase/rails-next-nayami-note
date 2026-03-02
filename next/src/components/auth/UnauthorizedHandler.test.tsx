@@ -1,4 +1,4 @@
-// src/components/UnauthorizedHandler.test.tsx
+// src/components/auth/UnauthorizedHandler.test.tsx
 import React from "react";
 import { render, act } from "@testing-library/react";
 import { mutate } from "swr";
@@ -16,7 +16,7 @@ jest.mock("next/navigation", () => ({
   usePathname: () => mockPathname,
 }));
 
-jest.mock("@/lib/onUnauthorized", () => ({
+jest.mock("@/lib/api/onUnauthorized", () => ({
   setOnUnauthorized: jest.fn((cb: any) => {
     unauthorizedCb = cb;
   }),

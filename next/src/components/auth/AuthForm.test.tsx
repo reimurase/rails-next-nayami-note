@@ -1,10 +1,10 @@
-// src/components/AuthForm.test.tsx
+// src/components/auth/AuthForm.test.tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { AuthForm } from "./AuthForm";
 
-import { authApi } from "@/lib/authApi";
+import { authApi } from "@/lib/api/auth";
 
 // router.replace を監視できるようにする
 const replaceMock = jest.fn();
@@ -15,7 +15,7 @@ jest.mock("next/navigation", () => ({
 }));
 
 // authApi をモックできるようにする
-jest.mock("@/lib/authApi", () => ({
+jest.mock("@/lib/api/auth", () => ({
   authApi: {
     signup: jest.fn(),
     login: jest.fn(),

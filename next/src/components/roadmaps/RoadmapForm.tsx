@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { roadmapApi } from "@/lib/roadmapApi";
+import { roadmapApi } from "@/lib/api/roadmap";
 
 type RoadmapFormProps = {
   onCreated: () => void;

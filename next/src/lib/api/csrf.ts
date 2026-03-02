@@ -1,6 +1,6 @@
 import { AxiosError } from "axios";
 
-import { api } from "./api";
+import { api } from "./client";
 
 // CSRFトークン取得エンドポイント
 const CSRF_ENDPOINT = "/api/v1/csrf";

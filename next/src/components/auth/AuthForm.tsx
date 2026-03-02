@@ -3,8 +3,8 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-import { authApi } from "@/lib/authApi";
-import { clearCsrfTokenCache } from "@/lib/csrf";
+import { authApi } from "@/lib/api/auth";
+import { clearCsrfTokenCache } from "@/lib/api/csrf";
 
 type Props = {
   mode: "signup" | "login";
