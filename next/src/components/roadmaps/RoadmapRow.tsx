@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import RoadmapDeleteButton from "./RoadmapDeleteButton";
 
-import { roadmapApi } from "@/lib/roadmapApi";
+import { roadmapApi } from "@/lib/api/roadmap";
 import { Roadmap } from "@/types/roadmap";
 
 type Props = {

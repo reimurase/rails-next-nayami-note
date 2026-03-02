@@ -5,7 +5,7 @@ import useSWR from "swr";
 
 import ConcernIndex from "@/components/concerns/ConcernIndex";
 import ConcernCreateSheet from "@/components/concerns/ConcernCreateSheet";
-import { concernApi } from "@/lib/concernApi";
+import { concernApi } from "@/lib/api/concern";
 
 export default function ConcernPageClient() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);

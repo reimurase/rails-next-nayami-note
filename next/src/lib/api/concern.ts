@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { api } from "@/lib/api/client";
 import type { Concern, ConcernInput } from "@/types/concern";
 
 export const concernApi = {

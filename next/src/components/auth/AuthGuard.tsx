@@ -3,7 +3,7 @@
 import useSWR from "swr";
 import type { AxiosError } from "axios";
 
-import { authApi } from "@/lib/authApi";
+import { authApi } from "@/lib/api/auth";
 
 type Props = {
   children: React.ReactNode;

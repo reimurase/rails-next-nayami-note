@@ -4,7 +4,7 @@ import { useState } from "react";
 
 import IssueDeleteButton from "./IssueDeleteButton";
 
-import { issueApi } from "@/lib/issueApi";
+import { issueApi } from "@/lib/api/issue";
 import type { Issue } from "@/types/issue";
 
 type Props = {

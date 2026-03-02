@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { issueApi } from "@/lib/issueApi";
+import { issueApi } from "@/lib/api/issue";
 
 type Props = {
   id: number;

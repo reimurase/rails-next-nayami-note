@@ -2,7 +2,7 @@ import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse } f
 
 import { fetchCsrfToken, isMutatingMethod, isCsrfError, clearCsrfTokenCache } from "./csrf";
 
-import { notifyUnauthorized } from "@/lib/onUnauthorized";
+import { notifyUnauthorized } from "@/lib/api/onUnauthorized";
 
 const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://localhost:3000";
 

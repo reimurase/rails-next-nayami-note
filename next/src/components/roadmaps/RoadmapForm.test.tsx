@@ -3,9 +3,9 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import RoadmapForm from "./RoadmapForm";
 
-import { roadmapApi } from "@/lib/roadmapApi";
+import { roadmapApi } from "@/lib/api/roadmap";
 
-jest.mock("@/lib/roadmapApi", () => ({
+jest.mock("@/lib/api/roadmap", () => ({
   roadmapApi: {
     create: jest.fn(),
   },

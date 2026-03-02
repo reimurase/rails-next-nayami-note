@@ -1,4 +1,4 @@
-import { api } from "@/lib/api";
+import { api } from "@/lib/api/client";
 import { Roadmap, RoadmapInput } from "@/types/roadmap";
 
 export const roadmapApi = {

@@ -1,4 +1,4 @@
-// src/components/AuthGuard.test.tsx
+// src/components/auth/AuthGuard.test.tsx
 
 import React from "react";
 import { render, screen } from "@testing-library/react";
@@ -6,7 +6,7 @@ import useSWR from "swr";
 
 import { AuthGuard } from "./AuthGuard";
 
-import { authApi } from "@/lib/authApi";
+import { authApi } from "@/lib/api/auth";
 
 const mockedUseSWR = useSWR as unknown as jest.Mock;
 
@@ -15,7 +15,7 @@ jest.mock("swr", () => ({
   default: jest.fn(),
 }));
 
-jest.mock("@/lib/authApi", () => ({
+jest.mock("@/lib/api/auth", () => ({
   authApi: {
     me: jest.fn(),
   },

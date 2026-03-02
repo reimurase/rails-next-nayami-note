@@ -2,7 +2,7 @@
 
 import useSWR from "swr";
 
-import { concernApi } from "@/lib/concernApi";
+import { concernApi } from "@/lib/api/concern";
 
 type Props = {
   id: number;

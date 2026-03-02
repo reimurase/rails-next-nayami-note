@@ -4,7 +4,7 @@ import userEvent from "@testing-library/user-event";
 
 import { AppHeader } from "./AppHeader";
 
-import { clearCsrfTokenCache } from "@/lib/csrf";
+import { clearCsrfTokenCache } from "@/lib/api/csrf";
 
 // ---- mocks ----
 const replaceMock = jest.fn();
@@ -32,13 +32,13 @@ jest.mock("swr", () => ({
 }));
 
 const logoutMock = jest.fn();
-jest.mock("@/lib/authApi", () => ({
+jest.mock("@/lib/api/auth", () => ({
   authApi: {
     logout: (...args: any[]) => logoutMock(...args),
   },
 }));
 
-jest.mock("@/lib/csrf", () => ({
+jest.mock("@/lib/api/csrf", () => ({
   clearCsrfTokenCache: jest.fn(),
 }));
 

@@ -5,7 +5,7 @@ import useSWR from "swr";
 
 import IssueIndex from "@/components/issues/IssueIndex";
 import IssueCreateSheet from "@/components/issues/IssueCreateSheet";
-import { issueApi } from "@/lib/issueApi";
+import { issueApi } from "@/lib/api/issue";
 
 export default function IssuePageClient() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);

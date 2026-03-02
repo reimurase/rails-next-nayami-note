@@ -3,9 +3,9 @@ import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
 import ConcernRow from "./ConcernRow";
 
-import { concernApi } from "@/lib/concernApi";
+import { concernApi } from "@/lib/api/concern";
 
-jest.mock("@/lib/concernApi", () => ({
+jest.mock("@/lib/api/concern", () => ({
   concernApi: {
     update: jest.fn(),
   },

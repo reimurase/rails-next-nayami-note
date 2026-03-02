@@ -4,7 +4,7 @@ import { useEffect, useRef } from "react";
 import { usePathname, useRouter } from "next/navigation";
 import { mutate } from "swr";
 
-import { setOnUnauthorized } from "@/lib/onUnauthorized";
+import { setOnUnauthorized } from "@/lib/api/onUnauthorized";
 
 export function UnauthorizedHandler() {
   const router = useRouter();

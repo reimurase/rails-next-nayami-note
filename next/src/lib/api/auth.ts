@@ -1,4 +1,4 @@
-import { api } from "./api";
+import { api } from "./client";
 
 import { SignupParams, LoginParams } from "@/types/auth";
 

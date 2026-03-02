@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import { concernApi } from "@/lib/concernApi";
+import { concernApi } from "@/lib/api/concern";
 import {
   CONCERN_LIMITS,
   hasErrors,
