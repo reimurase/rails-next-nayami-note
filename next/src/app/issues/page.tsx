@@ -1,6 +1,6 @@
 import IssuePageClient from "./IssuePageClient";
 
-import { AuthGuard } from "@/components/AuthGuard";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default async function Page() {
   return (

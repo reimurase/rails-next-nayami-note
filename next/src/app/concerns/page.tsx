@@ -1,6 +1,6 @@
 import ConcernPageClient from "./ConcernPageClient";
 
-import { AuthGuard } from "@/components/AuthGuard";
+import { AuthGuard } from "@/components/auth/AuthGuard";
 
 export default async function Page() {
   return (

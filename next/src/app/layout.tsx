@@ -11,7 +11,7 @@ import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 import MuiProvider from "@/providers/MuiProvider";
 import { AppHeader } from "@/components/AppHeader";
 import "./globals.css";
-import { UnauthorizedHandler } from "@/components/UnauthorizedHandler";
+import { UnauthorizedHandler } from "@/components/auth/UnauthorizedHandler";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
