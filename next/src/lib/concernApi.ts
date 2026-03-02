@@ -1,24 +1,5 @@
 import { api } from "@/lib/api";
-import type { Concern } from "@/components/concerns/ConcernIndex";
-
-type CreateConcernParams = {
-  triggerEvent: string;
-  content: string;
-};
-
-type UpdateConcernParams = {
-  id: number;
-  triggerEvent: string;
-  content: string;
-};
-
-type GetConcernParams = {
-  id: number;
-};
-
-type DeleteConcernParams = {
-  id: number;
-};
+import type { Concern, ConcernInput } from "@/types/concern";
 
 export const concernApi = {
   getConcerns: async (): Promise<Concern[]> => {
@@ -26,20 +7,20 @@ export const concernApi = {
     return res.data;
   },
 
-  getConcern: async ({ id }: GetConcernParams): Promise<Concern> => {
+  getConcern: async (id: number): Promise<Concern> => {
     const res = await api.get<Concern>(`/api/v1/concerns/${id}`);
     return res.data;
   },
 
-  create: ({ triggerEvent, content }: CreateConcernParams) =>
+  create: ({ triggerEvent, content }: ConcernInput) =>
     api.post("/api/v1/concerns", {
       concern: { trigger_event: triggerEvent, content },
     }),
 
-  update: ({ id, triggerEvent, content }: UpdateConcernParams) =>
+  update: (id: number, { triggerEvent, content }: ConcernInput) =>
     api.patch(`/api/v1/concerns/${id}`, {
       concern: { trigger_event: triggerEvent, content },
     }),
 
-  remove: ({ id }: DeleteConcernParams) => api.delete(`/api/v1/concerns/${id}`),
+  remove: (id: number) => api.delete(`/api/v1/concerns/${id}`),
 };
