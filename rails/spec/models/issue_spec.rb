@@ -2,8 +2,28 @@
 require "rails_helper"
 
 RSpec.describe Issue, type: :model do
-  it "valid であること" do
-    issue = build(:issue)
-    expect(issue).to be_valid
+  describe "factory" do
+    it "valid であること" do
+      issue = build(:issue)
+      expect(issue).to be_valid
+    end
+  end
+
+  describe "validation" do
+    context "title が空の場合" do
+      it "valid であること" do
+        issue = build(:issue, title: "")
+        expect(issue).to be_valid
+      end
+    end
+
+    context "title が nil の場合" do
+      it "valid であり、空文字に正規化されること" do
+        issue = build(:issue, title: nil)
+
+        expect(issue).to be_valid
+        expect(issue.title).to eq("")
+      end
+    end
   end
 end
