@@ -25,5 +25,19 @@ RSpec.describe Issue, type: :model do
         expect(issue.title).to eq("")
       end
     end
+
+    context "title が120文字の場合" do
+      it "validであること" do
+        issue = build(:issue, title: "a" * 120)
+        expect(issue).to be_valid
+      end
+    end
+
+    context "title が121文字の場合" do
+      it "invalid であること" do
+        issue = build(:issue, title: "a" * 121)
+        expect(issue).not_to be_valid
+      end
+    end
   end
 end
