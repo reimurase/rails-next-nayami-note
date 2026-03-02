@@ -32,7 +32,7 @@ describe("IssueDeleteButton 正常系", () => {
 
     // IssueApi.delete が呼ばれる
     await waitFor(() => {
-      expect(mockedIssueApi.remove).toHaveBeenCalledWith({ id: 1 });
+      expect(mockedIssueApi.remove).toHaveBeenCalledWith(1);
     });
 
     // APIが終わって onDeleted が呼ばれる

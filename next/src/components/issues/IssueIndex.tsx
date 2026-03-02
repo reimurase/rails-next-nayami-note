@@ -7,7 +7,7 @@ import DialogContent from "@mui/material/DialogContent";
 import IssueRow from "./IssueRow";
 import IssueDetail from "./IssueDetail";
 
-import type { Issue } from "@/lib/issueApi";
+import type { Issue } from "@/types/issue";
 
 type Props = {
   issues: Issue[];

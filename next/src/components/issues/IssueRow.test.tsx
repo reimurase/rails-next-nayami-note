@@ -54,8 +54,7 @@ describe("IssueRow 正常系", () => {
 
     // 7. update が正しい引数で呼ばれたか
     await waitFor(() => {
-      expect(mockedIssueApi.update).toHaveBeenCalledWith({
-        id: 1,
+      expect(mockedIssueApi.update).toHaveBeenCalledWith(1, {
         title: "更新後のタイトル",
         content: "更新後の問題",
       });

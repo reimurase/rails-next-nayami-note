@@ -5,7 +5,7 @@ import { useState } from "react";
 import IssueDeleteButton from "./IssueDeleteButton";
 
 import { issueApi } from "@/lib/issueApi";
-import type { Issue } from "@/lib/issueApi";
+import type { Issue } from "@/types/issue";
 
 type Props = {
   issue: Issue;
@@ -24,7 +24,7 @@ const IssueRow = ({ issue, onChanged, onOpenDetail }: Props) => {
   const handleSave = async () => {
     try {
       setIsSaving(true);
-      await issueApi.update({ id: issue.id, title, content });
+      await issueApi.update(issue.id, { title, content });
 
       setIsEditing(false);
 
