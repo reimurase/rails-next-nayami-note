@@ -22,6 +22,12 @@ RSpec.describe "Api::V1::Issues", type: :request do
       }
     end
 
+    let(:invalid_params) do
+      {
+        content: "", # バリデーションに引っかかる値
+      }
+    end
+
     context "パラメータが正しいとき" do
       let(:params) { valid_params }
 
@@ -32,6 +38,18 @@ RSpec.describe "Api::V1::Issues", type: :request do
         json = JSON.parse(response.body)
         expect(json["title"]).to eq "テストのタイトル"
         expect(json["content"]).to eq "テストの問題"
+      end
+    end
+
+    context "パラメータが不正なとき" do
+      let(:params) { invalid_params }
+
+      it "レコードを作成せず、422を返す" do
+        expect { request_api }.not_to change { user.issues.count }
+        expect(response).to have_http_status(:unprocessable_content)
+
+        json = JSON.parse(response.body)
+        expect(json["errors"]).to be_present
       end
     end
   end
@@ -156,6 +174,25 @@ RSpec.describe "Api::V1::Issues", type: :request do
       it "404 Not Found が返ること" do
         request_api
         expect(response).to have_http_status(:not_found)
+      end
+    end
+
+    context "パラメータが不正な場合（例: content が空）" do
+      let(:params) do
+        {
+          content: "",
+        }
+      end
+
+      it "422 Unprocessable Entity が返ること" do
+        request_api
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+
+      it "データが更新されないこと" do
+        before_value = issue.reload.content
+        request_api
+        expect(issue.reload.content).to eq(before_value)
       end
     end
 
