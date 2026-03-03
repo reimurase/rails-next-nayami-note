@@ -24,6 +24,20 @@ RSpec.describe Roadmap, type: :model do
       end
     end
 
+    context "content が1000文字の場合" do
+      it "valid であること" do
+        roadmap = build(:roadmap, content: "a" * 1000)
+        expect(roadmap).to be_valid
+      end
+    end
+
+    context "content が1001文字の場合" do
+      it "invalid であること" do
+        roadmap = build(:roadmap, content: "a" * 1001)
+        expect(roadmap).not_to be_valid
+      end
+    end
+
     context "goal が空の場合" do
       it "valid であること" do
         roadmap = build(:roadmap, goal: "")
