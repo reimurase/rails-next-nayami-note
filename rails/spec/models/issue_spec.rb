@@ -24,6 +24,20 @@ RSpec.describe Issue, type: :model do
       end
     end
 
+    context "content が1000文字の場合" do
+      it "valid であること" do
+        issue = build(:issue, content: "a" * 1000)
+        expect(issue).to be_valid
+      end
+    end
+
+    context "content が1001文字の場合" do
+      it "invalid であること" do
+        issue = build(:issue, content: "a" * 1001)
+        expect(issue).not_to be_valid
+      end
+    end
+
     context "title が空の場合" do
       it "valid であること" do
         issue = build(:issue, title: "")
