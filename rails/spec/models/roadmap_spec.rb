@@ -10,6 +10,20 @@ RSpec.describe Roadmap, type: :model do
   end
 
   describe "validation" do
+    context "content が空の場合" do
+      it "invalid であること" do
+        roadmap = build(:roadmap, content: "")
+        expect(roadmap).not_to be_valid
+      end
+    end
+
+    context "content が nil の場合" do
+      it "invalid であること" do
+        roadmap = build(:roadmap, content: nil)
+        expect(roadmap).not_to be_valid
+      end
+    end
+
     context "goal が空の場合" do
       it "valid であること" do
         roadmap = build(:roadmap, goal: "")
