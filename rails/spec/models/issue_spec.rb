@@ -10,6 +10,20 @@ RSpec.describe Issue, type: :model do
   end
 
   describe "validation" do
+    context "content が空の場合" do
+      it "invalid であること" do
+        issue = build(:issue, content: "")
+        expect(issue).not_to be_valid
+      end
+    end
+
+    context "content が nil の場合" do
+      it "invalid であること" do
+        issue = build(:issue, content: nil)
+        expect(issue).not_to be_valid
+      end
+    end
+
     context "title が空の場合" do
       it "valid であること" do
         issue = build(:issue, title: "")
