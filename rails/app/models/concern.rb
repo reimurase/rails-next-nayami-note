@@ -5,4 +5,5 @@ class Concern < ApplicationRecord
   validates :trigger_event, length: { maximum: 120 }
 
   belongs_to :user
+  has_one :issue, dependent: :destroy
 end

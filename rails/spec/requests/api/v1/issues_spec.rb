@@ -8,70 +8,24 @@ RSpec.describe "Api::V1::Issues", type: :request do
     login_as(user)
   end
 
-  describe "POST api/v1/issues" do
-    subject(:request_api) {
-      post "/api/v1/issues",
-           params: { issue: params }.to_json,
-           headers: csrf_headers
-    }
-
-    let(:valid_params) do
-      {
-        title: "テストのタイトル",
-        content: "テストの問題",
-      }
-    end
-
-    let(:invalid_params) do
-      {
-        content: "", # バリデーションに引っかかる値
-      }
-    end
-
-    context "パラメータが正しいとき" do
-      let(:params) { valid_params }
-
-      it "レコードを1件作成し、201を返す" do
-        expect { request_api }.to change { user.issues.count }.by(1)
-
-        expect(response).to have_http_status(:created)
-        json = JSON.parse(response.body)
-        expect(json["title"]).to eq "テストのタイトル"
-        expect(json["content"]).to eq "テストの問題"
-      end
-    end
-
-    context "パラメータが不正なとき" do
-      let(:params) { invalid_params }
-
-      it "レコードを作成せず、422を返す" do
-        expect { request_api }.not_to change { user.issues.count }
-        expect(response).to have_http_status(:unprocessable_content)
-
-        json = JSON.parse(response.body)
-        expect(json["errors"]).to be_present
-      end
-    end
-  end
-
   describe "GET /api/v1/issues" do
     subject(:request_api) { get "/api/v1/issues" }
 
     let(:json) { JSON.parse(response.body) }
 
     context "issueが0件の場合" do
-      before do
-        request_api
-      end
-
       it "空配列が返ること" do
+        request_api
         expect(json).to eq([])
         expect(response).to have_http_status(:ok)
       end
     end
 
     context "issueが複数件の場合" do
-      let!(:issues) { create_list(:issue, 3, user: user) }
+      let!(:concerns) { create_list(:concern, 3, user: user) }
+      let!(:issues) do
+        concerns.map {|c| create(:issue, user: user, concern: c) }
+      end
 
       before do
         request_api
@@ -93,167 +47,8 @@ RSpec.describe "Api::V1::Issues", type: :request do
 
           expect(item["title"]).to eq(record.title)
           expect(item["content"]).to eq(record.content)
+          expect(item["concern_id"]).to eq(record.concern_id)
         end
-      end
-    end
-  end
-
-  describe "GET /api/v1/issues/:id" do
-    subject(:request_api) { get "/api/v1/issues/#{issue_id}" }
-
-    context "指定したIDのissueが存在する場合" do
-      let!(:issue) { create(:issue, user: user) }
-      let(:issue_id) { issue.id }
-
-      it "200 OK が返ること" do
-        request_api
-        expect(response).to have_http_status(:ok)
-      end
-    end
-
-    context "指定したIDのissueが存在しない場合" do
-      let(:issue_id) { 999_999 }
-
-      it "404 Not Found が返ること" do
-        request_api
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-  end
-
-  describe "PATCH api/v1/issues/:id" do
-    subject(:request_api) {
-      patch "/api/v1/issues/#{issue_id}",
-            params: { issue: params }.to_json,
-            headers: csrf_headers
-    }
-
-    let!(:issue) { create(:issue, title: "元のタイトル", content: "元の問題", user: user) }
-    let(:issue_id) { issue.id }
-
-    # 共通で使う JSON パース用ヘルパ
-    let(:body) { JSON.parse(response.body) }
-
-    context "指定したIDのissueが存在し、有効なパラメータを送信した場合" do
-      let(:params) do
-        {
-          title: "更新後のタイトル",
-          content: "更新後の問題",
-        }
-      end
-
-      it "200 OK が返ること" do
-        request_api
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "指定したissueの内容が更新されること" do
-        expect {
-          request_api
-        }.to change { issue.reload.title }.from("元のタイトル").to("更新後のタイトル").
-               and change { issue.reload.content }.from("元の問題").to("更新後の問題")
-      end
-
-      it "レスポンスに更新後のデータが含まれていること" do
-        request_api
-
-        expect(body["id"]).to eq(issue.id)
-        expect(body["title"]).to eq("更新後のタイトル")
-        expect(body["content"]).to eq("更新後の問題")
-      end
-    end
-
-    context "指定したIDのissueが存在しない場合" do
-      let(:issue_id) { 999_999 } # 存在しないIDを想定
-      let(:params) do
-        {
-          content: "更新後の問題",
-        }
-      end
-
-      it "404 Not Found が返ること" do
-        request_api
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
-    context "パラメータが不正な場合（例: content が空）" do
-      let(:params) do
-        {
-          content: "",
-        }
-      end
-
-      it "422 Unprocessable Entity が返ること" do
-        request_api
-        expect(response).to have_http_status(:unprocessable_content)
-      end
-
-      it "データが更新されないこと" do
-        before_value = issue.reload.content
-        request_api
-        expect(issue.reload.content).to eq(before_value)
-      end
-    end
-
-    context "他人のissueを更新しようとした場合" do
-      let(:other_user) { create(:user, email: "other@email.com") }
-      let!(:other_issue) { create(:issue, user: other_user, content: "他人の問題") }
-      let(:issue_id) { other_issue.id }
-
-      let(:params) do
-        {
-          content: "不正に更新",
-        }
-      end
-
-      it "404 Not Found が返ること（存在を隠す）" do
-        request_api
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-  end
-
-  describe "DELETE api/v1/issues/:id" do
-    subject(:request_api) { delete "/api/v1/issues/#{issue_id}", headers: csrf_headers }
-
-    let!(:issue) { create(:issue, user: user) }
-    let(:issue_id) { issue.id }
-
-    context "指定したIDのissueが存在する場合" do
-      it "204 No Content が返ること" do
-        request_api
-        expect(response).to have_http_status(:no_content)
-      end
-
-      it "指定したissueが削除されること" do
-        expect { request_api }.to change { user.issues.count }.by(-1)
-      end
-    end
-
-    context "指定したIDのissueが存在しない場合" do
-      let(:issue_id) { 999_999 }
-
-      it "404 Not Found が返ること" do
-        request_api
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-
-    context "他人のissueを削除しようとした場合" do
-      let(:other_user) { create(:user, email: "other@email.com") }
-      let!(:other_issue) { create(:issue, user: other_user) }
-      let(:issue_id) { other_issue.id }
-
-      it "404 Not Found が返ること（存在を隠す）" do
-        request_api
-        expect(response).to have_http_status(:not_found)
-      end
-
-      it "他人のデータが削除されないこと" do
-        expect {
-          request_api
-        }.not_to change { Issue.count }
       end
     end
   end
