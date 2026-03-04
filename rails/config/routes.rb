@@ -9,11 +9,12 @@ Rails.application.routes.draw do
 
       resources :concerns, only: [:index, :show, :create, :update, :destroy] do
         resource :issue, module: :concerns, only: [:show, :create, :update, :destroy]
+        resource :roadmap, module: :concerns, only: [:show, :create, :update, :destroy]
       end
 
       # 一覧表示用
       resources :issues, only: [:index]
-      resources :roadmaps, only: [:index, :show, :create, :update, :destroy]
+      resources :roadmaps, only: [:index]
     end
   end
 
