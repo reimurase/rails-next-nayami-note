@@ -6,4 +6,5 @@ class Concern < ApplicationRecord
 
   belongs_to :user
   has_one :issue, dependent: :destroy
+  has_one :roadmap, dependent: :destroy
 end
