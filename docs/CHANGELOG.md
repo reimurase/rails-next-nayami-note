@@ -75,3 +75,11 @@
 - ✅ ログイン・サインアップにレート制限を追加 
 - ✅ エラーレスポンスをdetails(code/meta・code/message)に統一 
 - ✅ サーバーエラーをフォームに表示する処理を追加 
+- ✅ concernShowAPIを再実装
+- ✅ 詳細ダイアログを実装
+- ✅ issueのCRUDを実装
+- ✅ issueとuserを紐づけ
+- ✅ roadmapのCRUDを実装
+- ✅ roadmapとuserを紐づける
+- ✅ concernとissueを1:1で紐づける（親：concern）
+- ✅ concernとroadmapを1:1で紐づける(親：concern)
