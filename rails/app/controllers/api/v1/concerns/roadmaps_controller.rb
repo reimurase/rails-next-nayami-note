@@ -1,13 +1,6 @@
 class Api::V1::Concerns::RoadmapsController < ApplicationController
   before_action :set_concern
 
-  def show
-    roadmap = @concern.roadmap
-    return head :not_found unless roadmap
-
-    render json: roadmap
-  end
-
   def create
     if @concern.roadmap
       return render json: { errors: { roadmap: [{ code: "already_exists" }] } },

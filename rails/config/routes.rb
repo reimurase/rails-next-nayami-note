@@ -8,8 +8,8 @@ Rails.application.routes.draw do
       resource :session, only: [:create, :destroy]
 
       resources :concerns, only: [:index, :show, :create, :update, :destroy] do
-        resource :issue, module: :concerns, only: [:show, :create, :update, :destroy]
-        resource :roadmap, module: :concerns, only: [:show, :create, :update, :destroy]
+        resource :issue, module: :concerns, only: [:create, :update, :destroy]
+        resource :roadmap, module: :concerns, only: [:create, :update, :destroy]
       end
 
       # 一覧表示用

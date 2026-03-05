@@ -1,13 +1,6 @@
 class Api::V1::Concerns::IssuesController < ApplicationController
   before_action :set_concern
 
-  def show
-    issue = @concern.issue
-    return head :not_found unless issue
-
-    render json: issue
-  end
-
   def create
     if @concern.issue
       return render json: { errors: { issue: [{ code: "already_exists" }] } },

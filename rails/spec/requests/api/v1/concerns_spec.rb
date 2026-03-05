@@ -105,9 +105,31 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       let!(:concern) { create(:concern, user: user) }
       let(:concern_id) { concern.id }
 
-      it "200 OK が返ること" do
-        request_api
-        expect(response).to have_http_status(:ok)
+      context "issue/roadmap が未作成の場合" do
+        it "concernが返り、issue と roadmap は nil で返る" do
+          request_api
+          expect(response).to have_http_status(:ok)
+
+          json = JSON.parse(response.body)
+          expect(json["concern"]["id"]).to eq(concern.id)
+          expect(json["issue"]).to be_nil
+          expect(json["roadmap"]).to be_nil
+        end
+      end
+
+      context "issue/roadmap が存在する場合" do
+        let!(:issue) { create(:issue, user: user, concern: concern) }
+        let!(:roadmap) { create(:roadmap, user: user, concern: concern) }
+
+        it "concern と issue と roadmap が返る" do
+          request_api
+          expect(response).to have_http_status(:ok)
+
+          json = JSON.parse(response.body)
+          expect(json["concern"]["id"]).to eq(concern.id)
+          expect(json["issue"]["id"]).to eq(issue.id)
+          expect(json["roadmap"]["id"]).to eq(roadmap.id)
+        end
       end
     end
 
