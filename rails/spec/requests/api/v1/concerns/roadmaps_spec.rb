@@ -7,29 +7,6 @@ RSpec.describe "Api::V1::Concerns::Roadmaps", type: :request do
 
   before { login_as(user) }
 
-  describe "GET /api/v1/concerns/:concern_id/roadmap" do
-    subject(:request_api) { get "/api/v1/concerns/#{concern.id}/roadmap" }
-
-    context "roadmapが存在する場合" do
-      let!(:roadmap) { create(:roadmap, user: user, concern: concern) }
-
-      it "200 OK が返ること" do
-        request_api
-        expect(response).to have_http_status(:ok)
-
-        json = JSON.parse(response.body)
-        expect(json["id"]).to eq(roadmap.id)
-      end
-    end
-
-    context "roadmapが存在しない場合" do
-      it "404 Not Found が返ること" do
-        request_api
-        expect(response).to have_http_status(:not_found)
-      end
-    end
-  end
-
   describe "POST api/v1/concerns/:concern_id/roadmap" do
     subject(:request_api) do
       post "/api/v1/concerns/#{concern.id}/roadmap",

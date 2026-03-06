@@ -5,8 +5,12 @@ class Api::V1::ConcernsController < ApplicationController
   end
 
   def show
-    concern = current_user.concerns.find(params[:id])
-    render json: concern
+    concern = current_user.concerns.includes(:issue, :roadmap).find(params[:id])
+    render json: {
+      concern: concern,
+      issue: concern.issue,     # なければ nil
+      roadmap: concern.roadmap, # なければ nil
+    }
   end
 
   def create
