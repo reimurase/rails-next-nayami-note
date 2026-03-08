@@ -1,5 +1,5 @@
 import { api } from "@/lib/api/client";
-import type { Concern, ConcernInput } from "@/types/concern";
+import type { Concern, ConcernInput, ConcernDetailResponse } from "@/types/concern";
 
 export const concernApi = {
   getConcerns: async (): Promise<Concern[]> => {
@@ -7,8 +7,8 @@ export const concernApi = {
     return res.data;
   },
 
-  getConcern: async (id: number): Promise<Concern> => {
-    const res = await api.get<Concern>(`/api/v1/concerns/${id}`);
+  getConcern: async (id: number): Promise<ConcernDetailResponse> => {
+    const res = await api.get<ConcernDetailResponse>(`/api/v1/concerns/${id}`);
     return res.data;
   },
 

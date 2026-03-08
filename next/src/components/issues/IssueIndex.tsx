@@ -4,8 +4,9 @@ import { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 
+import ConcernDetail from "../detail/ConcernDetail";
+
 import IssueRow from "./IssueRow";
-import IssueDetail from "./IssueDetail";
 
 import type { Issue } from "@/types/issue";
 
@@ -38,7 +39,7 @@ const IssueIndex = ({ issues, onChanged }: Props) => {
       )}
 
       <Dialog open={selectedId !== null} onClose={() => setSelectedId(null)} fullWidth>
-        <DialogContent>{selectedId !== null && <IssueDetail id={selectedId} />}</DialogContent>
+        <DialogContent>{selectedId !== null && <ConcernDetail id={selectedId} />}</DialogContent>
       </Dialog>
     </div>
   );
