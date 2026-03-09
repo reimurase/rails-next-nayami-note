@@ -1,11 +1,11 @@
 export const CONCERN_LIMITS = {
-  trigger_event: 120,
+  triggerEvent: 120,
   content: 1000,
   contentWarn: 800,
 } as const;
 
 export type ConcernValues = {
-  trigger_event: string;
+  triggerEvent: string;
   content: string;
 };
 
@@ -21,7 +21,7 @@ type ApiValidationError = { errors: Record<string, ApiFieldError[]> };
 export const validateRequired = (v: ConcernValues): ConcernErrors => {
   const errors: ConcernErrors = {};
 
-  // 今の方針：content は必須、trigger_event は必須じゃない
+  // 今の方針：content は必須、triggerEvent は必須じゃない
   if (!v.content.trim()) {
     errors.content = "なやみは必須です";
   }
@@ -33,11 +33,11 @@ export const validateRequired = (v: ConcernValues): ConcernErrors => {
 export const validateLength = (v: ConcernValues): ConcernErrors => {
   const errors: ConcernErrors = {};
 
-  const trigger = v.trigger_event.trim();
+  const trigger = v.triggerEvent.trim();
   const content = v.content.trim();
 
-  if (trigger.length > CONCERN_LIMITS.trigger_event) {
-    errors.trigger_event = `きっかけは${CONCERN_LIMITS.trigger_event}文字以内です`;
+  if (trigger.length > CONCERN_LIMITS.triggerEvent) {
+    errors.triggerEvent = `きっかけは${CONCERN_LIMITS.triggerEvent}文字以内です`;
   }
 
   if (content.length > CONCERN_LIMITS.content) {
@@ -73,11 +73,11 @@ export function mapConcernServerErrors(payload: unknown): ConcernErrors {
     out.content = `なやみは${max}文字以内です`;
   }
 
-  // trigger_event の1個目だけ見る
-  const triggerErr = errors["trigger_event"]?.[0];
+  // triggerEvent の1個目だけ見る
+  const triggerErr = errors["triggerEvent"]?.[0];
   if (triggerErr?.code === "too_long") {
-    const max = triggerErr.meta?.max ?? CONCERN_LIMITS.trigger_event;
-    out.trigger_event = `きっかけは${max}文字以内です`;
+    const max = triggerErr.meta?.max ?? CONCERN_LIMITS.triggerEvent;
+    out.triggerEvent = `きっかけは${max}文字以内です`;
   }
 
   return out;

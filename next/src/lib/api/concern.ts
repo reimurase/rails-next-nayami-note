@@ -1,10 +1,26 @@
 import { api } from "@/lib/api/client";
-import type { Concern, ConcernInput, ConcernDetailResponse } from "@/types/concern";
+import type {
+  ConcernResponse,
+  Concern,
+  ConcernInput,
+  ConcernDetailResponse,
+} from "@/types/concern";
+
+const toConcern = (data: ConcernResponse): Concern => ({
+  id: data.id,
+  triggerEvent: data.trigger_event,
+  content: data.content,
+});
+
+const toConcernPayload = (input: ConcernInput) => ({
+  trigger_event: input.triggerEvent,
+  content: input.content,
+});
 
 export const concernApi = {
   getConcerns: async (): Promise<Concern[]> => {
-    const res = await api.get<Concern[]>("/api/v1/concerns");
-    return res.data;
+    const res = await api.get<ConcernResponse[]>("/api/v1/concerns");
+    return res.data.map(toConcern);
   },
 
   getConcern: async (id: number): Promise<ConcernDetailResponse> => {
@@ -12,15 +28,19 @@ export const concernApi = {
     return res.data;
   },
 
-  create: ({ triggerEvent, content }: ConcernInput) =>
-    api.post("/api/v1/concerns", {
-      concern: { trigger_event: triggerEvent, content },
-    }),
+  create: async (input: ConcernInput): Promise<Concern> => {
+    const res = await api.post<ConcernResponse>("/api/v1/concerns", {
+      concern: toConcernPayload(input),
+    });
+    return toConcern(res.data);
+  },
 
-  update: (id: number, { triggerEvent, content }: ConcernInput) =>
-    api.patch(`/api/v1/concerns/${id}`, {
-      concern: { trigger_event: triggerEvent, content },
-    }),
+  update: async (id: number, input: ConcernInput): Promise<Concern> => {
+    const res = await api.patch<ConcernResponse>(`/api/v1/concerns/${id}`, {
+      concern: toConcernPayload(input),
+    });
+    return toConcern(res.data);
+  },
 
   remove: (id: number) => api.delete(`/api/v1/concerns/${id}`),
 };
