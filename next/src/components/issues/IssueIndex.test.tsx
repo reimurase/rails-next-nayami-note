@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 
 import IssueIndex from "./IssueIndex";
 
-jest.mock("./IssueDetail", () => ({
+jest.mock("../detail/ConcernDetail", () => ({
   __esModule: true,
   default: ({ id }: { id: number }) => <div>DETAIL:{id}</div>,
 }));

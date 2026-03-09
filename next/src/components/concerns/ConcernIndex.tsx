@@ -4,8 +4,9 @@ import { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 
+import ConcernDetail from "../detail/ConcernDetail";
+
 import ConcernRow from "./ConcernRow";
-import ConcernDetail from "./ConcernDetail";
 
 import type { Concern } from "@/types/concern";
 
