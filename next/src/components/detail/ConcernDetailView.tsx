@@ -2,19 +2,19 @@
 
 import useSWR from "swr";
 
-import type { ConcernDetailResponse } from "@/types/concern";
+import type { ConcernDetail } from "@/types/concern";
 import { concernApi } from "@/lib/api/concern";
 
 type Props = {
   id: number;
 };
 
-export default function ConcernDetail({ id }: Props) {
+export default function ConcernDetailView({ id }: Props) {
   const {
     data: detail,
     error,
     isLoading,
-  } = useSWR<ConcernDetailResponse>(`/api/v1/concerns/${id}`, () => concernApi.getConcern(id));
+  } = useSWR<ConcernDetail>(`/api/v1/concerns/${id}`, () => concernApi.getConcern(id));
 
   if (isLoading) {
     return (

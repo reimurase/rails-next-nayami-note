@@ -4,7 +4,7 @@ import { useState } from "react";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
 
-import ConcernDetail from "../detail/ConcernDetail";
+import ConcernDetailView from "../detail/ConcernDetailView";
 
 import RoadmapRow from "./RoadmapRow";
 
@@ -39,7 +39,9 @@ const RoadmapIndex = ({ roadmaps, onChanged }: Props) => {
       )}
 
       <Dialog open={selectedId !== null} onClose={() => setSelectedId(null)} fullWidth>
-        <DialogContent>{selectedId !== null && <ConcernDetail id={selectedId} />}</DialogContent>
+        <DialogContent>
+          {selectedId !== null && <ConcernDetailView id={selectedId} />}
+        </DialogContent>
       </Dialog>
     </div>
   );

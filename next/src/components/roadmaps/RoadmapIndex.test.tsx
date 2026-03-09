@@ -3,7 +3,7 @@ import { render, screen, fireEvent } from "@testing-library/react";
 
 import RoadmapIndex from "./RoadmapIndex";
 
-jest.mock("../detail/ConcernDetail", () => ({
+jest.mock("../detail/ConcernDetailView", () => ({
   __esModule: true,
   default: ({ id }: { id: number }) => <div>DETAIL:{id}</div>,
 }));

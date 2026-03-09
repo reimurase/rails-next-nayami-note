@@ -4,12 +4,19 @@ import type {
   Concern,
   ConcernInput,
   ConcernDetailResponse,
+  ConcernDetail,
 } from "@/types/concern";
 
 const toConcern = (data: ConcernResponse): Concern => ({
   id: data.id,
   triggerEvent: data.trigger_event,
   content: data.content,
+});
+
+const toConcernDetail = (data: ConcernDetailResponse): ConcernDetail => ({
+  concern: toConcern(data.concern),
+  issue: data.issue,
+  roadmap: data.roadmap,
 });
 
 const toConcernPayload = (input: ConcernInput) => ({
@@ -23,9 +30,9 @@ export const concernApi = {
     return res.data.map(toConcern);
   },
 
-  getConcern: async (id: number): Promise<ConcernDetailResponse> => {
+  getConcern: async (id: number): Promise<ConcernDetail> => {
     const res = await api.get<ConcernDetailResponse>(`/api/v1/concerns/${id}`);
-    return res.data;
+    return toConcernDetail(res.data);
   },
 
   create: async (input: ConcernInput): Promise<Concern> => {
