@@ -33,7 +33,7 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
     setApiError(null);
     setServerErrors({});
 
-    const nextErrors = validateOnSubmit({ trigger_event: triggerEvent, content });
+    const nextErrors = validateOnSubmit({ triggerEvent, content });
     if (hasErrors(nextErrors)) return;
 
     setIsSubmitting(true);
@@ -61,12 +61,12 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
     }
   };
 
-  const values = { trigger_event: triggerEvent, content };
+  const values = { triggerEvent, content };
 
   const lengthErrors = validateLength(values);
   const requiredErrors = submitted ? validateRequired(values) : {};
 
-  const overTrigger = Boolean(lengthErrors.trigger_event);
+  const overTrigger = Boolean(lengthErrors.triggerEvent);
   const overContent = Boolean(lengthErrors.content);
 
   return (
@@ -82,7 +82,7 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
         value={triggerEvent}
         onChange={(e) => {
           setTriggerEvent(e.target.value);
-          setServerErrors((prev) => ({ ...prev, trigger_event: undefined }));
+          setServerErrors((prev) => ({ ...prev, triggerEvent: undefined }));
         }}
         rows={4}
         style={{
@@ -91,16 +91,14 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
           fontSize: "16px",
         }}
       />
-      {(serverErrors.trigger_event ||
-        requiredErrors.trigger_event ||
-        lengthErrors.trigger_event) && (
+      {(serverErrors.triggerEvent || requiredErrors.triggerEvent || lengthErrors.triggerEvent) && (
         <p style={{ color: "tomato", fontSize: 12 }}>
-          {/* 基本 requiredErrors.trigger_event は出ません。必須になれば拡張可能 */}
-          {serverErrors.trigger_event ?? requiredErrors.trigger_event ?? lengthErrors.trigger_event}
+          {/* 基本 requiredErrors.triggerEvent は出ません。必須になれば拡張可能 */}
+          {serverErrors.triggerEvent ?? requiredErrors.triggerEvent ?? lengthErrors.triggerEvent}
         </p>
       )}
       <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {triggerEvent.length}/{CONCERN_LIMITS.trigger_event}
+        {triggerEvent.length}/{CONCERN_LIMITS.triggerEvent}
       </p>
       <textarea
         placeholder="とりあえず、今のなやみを書いてみよう（必須）"

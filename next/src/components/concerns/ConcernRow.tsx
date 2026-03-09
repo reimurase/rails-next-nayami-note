@@ -22,7 +22,7 @@ type Props = {
 
 const ConcernRow = ({ concern, onChanged, onOpenDetail }: Props) => {
   const [isEditing, setIsEditing] = useState(false); // 編集モードかどうか
-  const [triggerEvent, setTriggerEvent] = useState(concern.trigger_event);
+  const [triggerEvent, setTriggerEvent] = useState(concern.triggerEvent);
   const [content, setContent] = useState(concern.content); // 入力中の値
   const [isSaving, setIsSaving] = useState(false); // 保存中フラグ
   const [submitted, setSubmitted] = useState(false);
@@ -32,7 +32,7 @@ const ConcernRow = ({ concern, onChanged, onOpenDetail }: Props) => {
     setSubmitted(true);
     setApiError(null);
 
-    const nextErrors = validateOnSubmit({ trigger_event: triggerEvent, content });
+    const nextErrors = validateOnSubmit({ triggerEvent, content });
     if (hasErrors(nextErrors)) return;
 
     try {
@@ -54,17 +54,17 @@ const ConcernRow = ({ concern, onChanged, onOpenDetail }: Props) => {
 
   const handleCancel = () => {
     setIsEditing(false);
-    setTriggerEvent(concern.trigger_event);
+    setTriggerEvent(concern.triggerEvent);
     setContent(concern.content); // 元の内容に戻す
     setSubmitted(false);
   };
 
-  const values = { trigger_event: triggerEvent, content };
+  const values = { triggerEvent, content };
 
   const lengthErrors = validateLength(values);
   const requiredErrors = submitted ? validateRequired(values) : {};
 
-  const overTrigger = Boolean(lengthErrors.trigger_event);
+  const overTrigger = Boolean(lengthErrors.triggerEvent);
   const overContent = Boolean(lengthErrors.content);
 
   return (
@@ -84,15 +84,15 @@ const ConcernRow = ({ concern, onChanged, onOpenDetail }: Props) => {
             disabled={isSaving}
           />
 
-          {(requiredErrors.trigger_event || lengthErrors.trigger_event) && (
+          {(requiredErrors.triggerEvent || lengthErrors.triggerEvent) && (
             <p style={{ color: "tomato", fontSize: 12 }}>
-              {/* 基本 requiredErrors.trigger_event は出ません。必須になれば拡張可能 */}
-              {requiredErrors.trigger_event ?? lengthErrors.trigger_event}
+              {/* 基本 requiredErrors.triggerEvent は出ません。必須になれば拡張可能 */}
+              {requiredErrors.triggerEvent ?? lengthErrors.triggerEvent}
             </p>
           )}
 
           <p style={{ fontSize: 12, opacity: 0.8 }}>
-            {triggerEvent.length}/{CONCERN_LIMITS.trigger_event}
+            {triggerEvent.length}/{CONCERN_LIMITS.triggerEvent}
           </p>
 
           <textarea
@@ -125,7 +125,7 @@ const ConcernRow = ({ concern, onChanged, onOpenDetail }: Props) => {
           onClick={onOpenDetail}
           style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}
         >
-          <span>{concern.trigger_event}</span>
+          <span>{concern.triggerEvent}</span>
           <span>{concern.content}</span>
 
           <button

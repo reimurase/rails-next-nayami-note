@@ -18,7 +18,7 @@ describe("ConcernRow 正常系", () => {
   });
   test("編集して保存すると update が呼ばれ、onChanged も呼ばれる", async () => {
     // 1. props を準備
-    const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
+    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
     const onChanged = jest.fn();
 
     // 2. update のモック成功レスポンス
@@ -76,7 +76,7 @@ describe("ConcernRow 異常系", () => {
     mockedConcernApi.update.mockReset();
   });
   test("content を空にして保存すると必須エラーが出て update は呼ばれない", async () => {
-    const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
+    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
     const onChanged = jest.fn();
 
     mockedConcernApi.update.mockResolvedValue({} as any);
@@ -102,7 +102,7 @@ describe("ConcernRow 異常系", () => {
   });
 
   test("content が1001文字だと文字数エラーが出て保存ボタンが押せない", () => {
-    const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
+    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
     const onChanged = jest.fn();
 
     render(<ConcernRow concern={concern} onChanged={onChanged} />);
@@ -121,8 +121,8 @@ describe("ConcernRow 異常系", () => {
     expect(screen.getByRole("button", { name: "保存" })).toBeDisabled();
   });
 
-  test("trigger_event が121文字だと文字数エラーが出て保存ボタンが押せない", () => {
-    const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
+  test("triggerEvent が121文字だと文字数エラーが出て保存ボタンが押せない", () => {
+    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
     const onChanged = jest.fn();
 
     render(<ConcernRow concern={concern} onChanged={onChanged} />);
@@ -142,7 +142,7 @@ describe("ConcernRow 異常系", () => {
   test("更新が失敗したらエラーが表示され、編集モードのままで onChanged は呼ばれない", async () => {
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
-    const concern = { id: 1, trigger_event: "もとのきっかけ", content: "もとの内容" };
+    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
     const onChanged = jest.fn();
 
     mockedConcernApi.update.mockRejectedValueOnce(new Error("update failed"));

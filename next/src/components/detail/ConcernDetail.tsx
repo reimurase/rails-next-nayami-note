@@ -49,7 +49,7 @@ export default function ConcernDetail({ id }: Props) {
 
       <h3>Concern</h3>
       <ul>
-        <li>きっかけ: {detail.concern.trigger_event || "なし"}</li>
+        <li>きっかけ: {detail.concern.triggerEvent || "なし"}</li>
         <li>内容: {detail.concern.content}</li>
       </ul>
 
