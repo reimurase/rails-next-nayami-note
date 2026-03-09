@@ -7,11 +7,6 @@ export const issueApi = {
     return res.data;
   },
 
-  getIssue: async (id: number): Promise<Issue> => {
-    const res = await api.get<Issue>(`/api/v1/issues/${id}`);
-    return res.data;
-  },
-
   create: ({ title, content }: IssueInput) =>
     api.post("/api/v1/issues", {
       issue: { title, content },
