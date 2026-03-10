@@ -18,7 +18,7 @@ describe("IssueRow 正常系", () => {
   });
   test("編集して保存すると update が呼ばれ、onChanged も呼ばれる", async () => {
     // 1. props を準備
-    const issue = { id: 1, title: "もとのタイトル", content: "もとの問題" };
+    const issue = { id: 1, title: "もとのタイトル", content: "もとの問題", concernId: 1 };
     const onChanged = jest.fn();
 
     // 2. update のモック成功レスポンス

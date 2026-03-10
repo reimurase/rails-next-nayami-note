@@ -5,10 +5,11 @@ import { useState } from "react";
 import { issueApi } from "@/lib/api/issue";
 
 type IssueFormProps = {
+  concernId: number;
   onCreated: () => void;
 };
 
-const IssueForm = ({ onCreated }: IssueFormProps) => {
+const IssueForm = ({ concernId, onCreated }: IssueFormProps) => {
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
 
@@ -20,7 +21,7 @@ const IssueForm = ({ onCreated }: IssueFormProps) => {
     setIsSubmitting(true);
 
     try {
-      await issueApi.create({ title, content });
+      await issueApi.create(concernId, { title, content });
 
       setTitle("");
       setContent("");

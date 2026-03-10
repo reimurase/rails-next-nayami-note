@@ -1,6 +1,9 @@
 "use client";
 
+import { useState } from "react";
 import useSWR from "swr";
+
+import IssueCreateSheet from "../issues/IssueCreateSheet";
 
 import type { ConcernDetail } from "@/types/concern";
 import { concernApi } from "@/lib/api/concern";
@@ -10,11 +13,23 @@ type Props = {
 };
 
 export default function ConcernDetailView({ id }: Props) {
+  const [isSheetOpen, setIsSheetOpen] = useState(false);
+
   const {
     data: detail,
     error,
     isLoading,
+    mutate,
   } = useSWR<ConcernDetail>(`/api/v1/concerns/${id}`, () => concernApi.getConcern(id));
+
+  const refresh = async () => {
+    await mutate();
+  };
+
+  const handleCreated = async () => {
+    await refresh();
+    setIsSheetOpen(false);
+  };
 
   if (isLoading) {
     return (
@@ -60,7 +75,17 @@ export default function ConcernDetailView({ id }: Props) {
           <li>内容: {detail.issue.content || "なし"}</li>
         </ul>
       ) : (
-        <p>issue はありません</p>
+        <div>
+          <p>issue はありません</p>
+          <button onClick={() => setIsSheetOpen(true)}>新規作成</button>
+
+          <IssueCreateSheet
+            concernId={detail.concern.id}
+            isOpen={isSheetOpen}
+            onClose={() => setIsSheetOpen(false)}
+            onCreated={handleCreated}
+          />
+        </div>
       )}
 
       <h3>Roadmap</h3>
