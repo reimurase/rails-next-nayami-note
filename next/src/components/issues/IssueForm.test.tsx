@@ -22,7 +22,7 @@ describe("IssueForm API 呼び出し", () => {
     mockedIssueApi.create.mockResolvedValue({} as any);
 
     const mockOnCreated = jest.fn();
-    render(<IssueForm onCreated={mockOnCreated} />);
+    render(<IssueForm concernId={1} onCreated={mockOnCreated} />);
 
     // タイトルを入力
     fireEvent.change(screen.getByPlaceholderText("タイトル（任意）"), {
@@ -41,7 +41,7 @@ describe("IssueForm API 呼び出し", () => {
     await waitFor(() => {
       expect(mockedIssueApi.create).toHaveBeenCalledTimes(1);
     });
-    expect(mockedIssueApi.create).toHaveBeenCalledWith({
+    expect(mockedIssueApi.create).toHaveBeenCalledWith(1, {
       title: "テストのタイトル",
       content: "テストの問題",
     });

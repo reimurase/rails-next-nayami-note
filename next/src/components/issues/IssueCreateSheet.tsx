@@ -3,12 +3,13 @@
 import IssueForm from "./IssueForm";
 
 type Props = {
+  concernId: number;
   isOpen: boolean;
   onClose: () => void;
   onCreated: () => void;
 };
 
-const IssueCreateSheet = ({ isOpen, onClose, onCreated }: Props) => {
+const IssueCreateSheet = ({ concernId, isOpen, onClose, onCreated }: Props) => {
   if (!isOpen) return null;
 
   return (
@@ -39,7 +40,7 @@ const IssueCreateSheet = ({ isOpen, onClose, onCreated }: Props) => {
         <button onClick={onClose}>✕</button>
       </div>
 
-      <IssueForm onCreated={onCreated} />
+      <IssueForm concernId={concernId} onCreated={onCreated} />
     </div>
   );
 };

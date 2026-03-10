@@ -27,11 +27,11 @@ const IssueIndex = ({ issues, onChanged }: Props) => {
       ) : (
         <ul style={{ display: "flex", flexDirection: "column", gap: 8, padding: 0 }}>
           {issues.map((issue) => (
-            <li key={issue.id} style={{ listStyle: "none" }}>
+            <li key={issue.concernId} style={{ listStyle: "none" }}>
               <IssueRow
                 issue={issue}
                 onChanged={onChanged}
-                onOpenDetail={() => setSelectedId(issue.id)}
+                onOpenDetail={() => setSelectedId(issue.concernId)}
               />
             </li>
           ))}
