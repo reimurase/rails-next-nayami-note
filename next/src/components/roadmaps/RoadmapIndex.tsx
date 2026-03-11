@@ -40,7 +40,7 @@ const RoadmapIndex = ({ roadmaps, onChanged }: Props) => {
 
       <Dialog open={selectedId !== null} onClose={() => setSelectedId(null)} fullWidth>
         <DialogContent>
-          {selectedId !== null && <ConcernDetailView id={selectedId} />}
+          {selectedId !== null && <ConcernDetailView concernId={selectedId} />}
         </DialogContent>
       </Dialog>
     </div>

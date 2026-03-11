@@ -21,10 +21,12 @@ export const issueApi = {
     return toIssue(res.data);
   },
 
-  update: (id: number, { title, content }: IssueInput) =>
-    api.patch(`/api/v1/issues/${id}`, {
-      issue: { title, content },
-    }),
+  update: async (concernId: number, input: IssueInput): Promise<Issue> => {
+    const res = await api.patch(`/api/v1/concerns/${concernId}/issue`, {
+      issue: input,
+    });
+    return toIssue(res.data);
+  },
 
   remove: (id: number) => api.delete(`/api/v1/issues/${id}`),
 };

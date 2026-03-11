@@ -40,7 +40,9 @@ const IssueIndex = ({ issues, onChanged }: Props) => {
 
       <Dialog open={selectedId !== null} onClose={() => setSelectedId(null)} fullWidth>
         <DialogContent>
-          {selectedId !== null && <ConcernDetailView id={selectedId} />}
+          {selectedId !== null && (
+            <ConcernDetailView onIssueListChanged={onChanged} concernId={selectedId} />
+          )}
         </DialogContent>
       </Dialog>
     </div>
