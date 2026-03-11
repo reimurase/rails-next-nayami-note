@@ -13,7 +13,7 @@ export default function IssuePageClient() {
     mutate,
   } = useSWR("/api/v1/issues", () => issueApi.getIssues());
 
-  const refresh = async () => {
+  const refreshIssueList = async () => {
     await mutate();
   };
 
@@ -22,7 +22,7 @@ export default function IssuePageClient() {
 
   return (
     <div>
-      <IssueIndex issues={issues ?? []} onChanged={refresh} />
+      <IssueIndex issues={issues ?? []} onIssueListChanged={refreshIssueList} />
     </div>
   );
 }

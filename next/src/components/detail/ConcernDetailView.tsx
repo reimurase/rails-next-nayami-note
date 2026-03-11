@@ -24,7 +24,11 @@ export default function ConcernDetailView({ concernId, onIssueListChanged }: Pro
 
   const refreshIssueDetail = async () => {
     await mutate();
-    if (onIssueListChanged) await onIssueListChanged();
+  };
+
+  const handleIssueChanged = async () => {
+    await refreshIssueDetail();
+    await onIssueListChanged?.();
   };
 
   if (isLoading) {
@@ -67,7 +71,7 @@ export default function ConcernDetailView({ concernId, onIssueListChanged }: Pro
       <IssueSection
         concernId={detail.concern.id}
         issue={detail.issue}
-        onIssueDetailChanged={refreshIssueDetail}
+        onIssueChanged={handleIssueChanged}
       />
 
       <h3>Roadmap</h3>

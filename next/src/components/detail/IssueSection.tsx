@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import IssueCreateSheet from "../issues/IssueCreateSheet";
+import IssueDeleteButton from "../issues/IssueDeleteButton";
 
 import type { Issue } from "@/types/issue";
 import { issueApi } from "@/lib/api/issue";
@@ -10,10 +11,10 @@ import { issueApi } from "@/lib/api/issue";
 type Props = {
   concernId: number;
   issue: Issue | null;
-  onIssueDetailChanged?: () => void | Promise<void>;
+  onIssueChanged?: () => void | Promise<void>;
 };
 
-export default function IssueSection({ concernId, issue, onIssueDetailChanged }: Props) {
+export default function IssueSection({ concernId, issue, onIssueChanged }: Props) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
@@ -34,9 +35,8 @@ export default function IssueSection({ concernId, issue, onIssueDetailChanged }:
       await issueApi.update(concernId, { title, content });
       setIsEditing(false);
 
-      if (onIssueDetailChanged) {
-        await onIssueDetailChanged();
-      }
+      // issueページ / 詳細のissueを更新
+      if (onIssueChanged) await onIssueChanged();
     } finally {
       setIsSaving(false);
     }
@@ -51,9 +51,8 @@ export default function IssueSection({ concernId, issue, onIssueDetailChanged }:
   const handleCreated = async () => {
     setIsSheetOpen(false);
 
-    if (onIssueDetailChanged) {
-      await onIssueDetailChanged();
-    }
+    // issueページ / 詳細のissueを更新
+    if (onIssueChanged) await onIssueChanged();
   };
 
   return (
@@ -104,6 +103,10 @@ export default function IssueSection({ concernId, issue, onIssueDetailChanged }:
           </ul>
 
           <button onClick={startEditing}>編集</button>
+          <IssueDeleteButton
+            concernId={concernId}
+            onDeleted={onIssueChanged} // 削除成功時も一覧更新
+          />
         </div>
       )}
     </div>

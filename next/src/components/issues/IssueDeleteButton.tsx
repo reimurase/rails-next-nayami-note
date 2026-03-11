@@ -5,11 +5,11 @@ import { useState } from "react";
 import { issueApi } from "@/lib/api/issue";
 
 type Props = {
-  id: number;
-  onDeleted?: () => void; // 正常終了時に呼びたい処理（一覧の更新など）
+  concernId: number;
+  onDeleted?: () => void | Promise<void>; // 正常終了時に呼びたい処理（一覧の更新など）
 };
 
-const IssueDeleteButton = ({ id, onDeleted }: Props) => {
+const IssueDeleteButton = ({ concernId, onDeleted }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -20,11 +20,11 @@ const IssueDeleteButton = ({ id, onDeleted }: Props) => {
 
     try {
       setIsDeleting(true);
-      await issueApi.remove(id);
+      await issueApi.remove(concernId);
 
       // 正常系でやりたいこと（一覧の再取得など）
       if (onDeleted) {
-        onDeleted();
+        await onDeleted();
       }
     } catch (error) {
       console.error(error);
