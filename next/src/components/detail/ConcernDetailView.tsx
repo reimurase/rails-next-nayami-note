@@ -1,34 +1,30 @@
 "use client";
 
-import { useState } from "react";
 import useSWR from "swr";
 
-import IssueCreateSheet from "../issues/IssueCreateSheet";
+import IssueSection from "./IssueSection";
 
 import type { ConcernDetail } from "@/types/concern";
 import { concernApi } from "@/lib/api/concern";
 
 type Props = {
-  id: number;
+  concernId: number;
+  onIssueListChanged?: () => void | Promise<void>;
 };
 
-export default function ConcernDetailView({ id }: Props) {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
-
+export default function ConcernDetailView({ concernId, onIssueListChanged }: Props) {
   const {
     data: detail,
     error,
     isLoading,
     mutate,
-  } = useSWR<ConcernDetail>(`/api/v1/concerns/${id}`, () => concernApi.getConcern(id));
+  } = useSWR<ConcernDetail>(`/api/v1/concerns/${concernId}`, () =>
+    concernApi.getConcern(concernId)
+  );
 
-  const refresh = async () => {
+  const refreshIssueDetail = async () => {
     await mutate();
-  };
-
-  const handleCreated = async () => {
-    await refresh();
-    setIsSheetOpen(false);
+    if (onIssueListChanged) await onIssueListChanged();
   };
 
   if (isLoading) {
@@ -68,30 +64,16 @@ export default function ConcernDetailView({ id }: Props) {
         <li>内容: {detail.concern.content}</li>
       </ul>
 
-      <h3>Issue</h3>
-      {detail.issue ? (
-        <ul>
-          <li>タイトル: {detail.issue.title || "なし"}</li>
-          <li>内容: {detail.issue.content || "なし"}</li>
-        </ul>
-      ) : (
-        <div>
-          <p>issue はありません</p>
-          <button onClick={() => setIsSheetOpen(true)}>新規作成</button>
-
-          <IssueCreateSheet
-            concernId={detail.concern.id}
-            isOpen={isSheetOpen}
-            onClose={() => setIsSheetOpen(false)}
-            onCreated={handleCreated}
-          />
-        </div>
-      )}
+      <IssueSection
+        concernId={detail.concern.id}
+        issue={detail.issue}
+        onIssueDetailChanged={refreshIssueDetail}
+      />
 
       <h3>Roadmap</h3>
       {detail.roadmap ? (
         <ul>
-          <li>目標: {detail.roadmap.goal || "なし"}</li>
+          <li>ゴール: {detail.roadmap.goal || "なし"}</li>
           <li>内容: {detail.roadmap.content || "なし"}</li>
         </ul>
       ) : (

@@ -5,7 +5,7 @@ import RoadmapIndex from "./RoadmapIndex";
 
 jest.mock("../detail/ConcernDetailView", () => ({
   __esModule: true,
-  default: ({ id }: { id: number }) => <div>DETAIL:{id}</div>,
+  default: ({ concernId }: { concernId: number }) => <div>DETAIL:{concernId}</div>,
 }));
 
 describe("RoadmapIndex", () => {
