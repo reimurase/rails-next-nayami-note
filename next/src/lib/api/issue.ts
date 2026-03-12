@@ -28,5 +28,5 @@ export const issueApi = {
     return toIssue(res.data);
   },
 
-  remove: (id: number) => api.delete(`/api/v1/issues/${id}`),
+  remove: (concernId: number) => api.delete(`/api/v1/concerns/${concernId}/issue`),
 };

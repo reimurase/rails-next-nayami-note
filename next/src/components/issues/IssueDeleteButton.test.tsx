@@ -23,7 +23,7 @@ describe("IssueDeleteButton 正常系", () => {
 
     const onDeletedMock = jest.fn();
 
-    render(<IssueDeleteButton id={1} onDeleted={onDeletedMock} />);
+    render(<IssueDeleteButton concernId={1} onDeleted={onDeletedMock} />);
 
     fireEvent.click(screen.getByRole("button", { name: "削除" }));
 
@@ -45,7 +45,7 @@ describe("IssueDeleteButton 正常系", () => {
     mockedIssueApi.remove.mockResolvedValue({} as any);
     window.confirm = jest.fn().mockReturnValue(true);
 
-    render(<IssueDeleteButton id={1} />);
+    render(<IssueDeleteButton concernId={1} />);
 
     fireEvent.click(screen.getByRole("button", { name: "削除" }));
 
@@ -68,7 +68,7 @@ describe("IssueDeleteButton 異常系", () => {
     mockedIssueApi.remove.mockRejectedValueOnce(new Error("remove failed"));
 
     const onDeletedMock = jest.fn();
-    render(<IssueDeleteButton id={1} onDeleted={onDeletedMock} />);
+    render(<IssueDeleteButton concernId={1} onDeleted={onDeletedMock} />);
 
     fireEvent.click(screen.getByRole("button", { name: "削除" }));
 
