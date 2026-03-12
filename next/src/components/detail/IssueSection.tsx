@@ -5,8 +5,9 @@ import { useState } from "react";
 import IssueCreateSheet from "../issues/IssueCreateSheet";
 import IssueDeleteButton from "../issues/IssueDeleteButton";
 
+import IssueEditor from "./IssueEditor";
+
 import type { Issue } from "@/types/issue";
-import { issueApi } from "@/lib/api/issue";
 
 type Props = {
   concernId: number;
@@ -17,34 +18,20 @@ type Props = {
 export default function IssueSection({ concernId, issue, onIssueChanged }: Props) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-  const [isSaving, setIsSaving] = useState(false);
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
 
   const startEditing = () => {
     if (!issue) return;
-
-    setTitle(issue.title || "");
-    setContent(issue.content || "");
     setIsEditing(true);
   };
 
-  const handleSave = async () => {
-    try {
-      setIsSaving(true);
-      await issueApi.update(concernId, { title, content });
-      setIsEditing(false);
+  const handleSaved = async () => {
+    setIsEditing(false);
 
-      // issueページ / 詳細のissueを更新
-      if (onIssueChanged) await onIssueChanged();
-    } finally {
-      setIsSaving(false);
-    }
+    // issueページ / 詳細のissueを更新
+    await onIssueChanged?.();
   };
 
-  const handleCancel = () => {
-    setTitle(issue?.title || "");
-    setContent(issue?.content || "");
+  const handleCancelEdit = () => {
     setIsEditing(false);
   };
 
@@ -52,7 +39,7 @@ export default function IssueSection({ concernId, issue, onIssueChanged }: Props
     setIsSheetOpen(false);
 
     // issueページ / 詳細のissueを更新
-    if (onIssueChanged) await onIssueChanged();
+    await onIssueChanged?.();
   };
 
   return (
@@ -72,29 +59,12 @@ export default function IssueSection({ concernId, issue, onIssueChanged }: Props
           />
         </div>
       ) : isEditing ? (
-        <div>
-          <textarea
-            value={title}
-            placeholder="タイトル（任意）"
-            onChange={(e) => setTitle(e.target.value)}
-            disabled={isSaving}
-          />
-
-          <textarea
-            value={content}
-            placeholder="問題（必須）"
-            onChange={(e) => setContent(e.target.value)}
-            disabled={isSaving}
-          />
-
-          <button onClick={handleSave} disabled={isSaving}>
-            {isSaving ? "保存中..." : "保存"}
-          </button>
-
-          <button onClick={handleCancel} disabled={isSaving}>
-            キャンセル
-          </button>
-        </div>
+        <IssueEditor
+          concernId={concernId}
+          issue={issue}
+          onSaved={handleSaved}
+          onCancel={handleCancelEdit}
+        />
       ) : (
         <div>
           <ul>
