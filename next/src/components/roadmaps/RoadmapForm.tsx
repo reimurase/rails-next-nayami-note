@@ -5,10 +5,11 @@ import { useState } from "react";
 import { roadmapApi } from "@/lib/api/roadmap";
 
 type RoadmapFormProps = {
+  concernId: number;
   onCreated: () => void;
 };
 
-const RoadmapForm = ({ onCreated }: RoadmapFormProps) => {
+const RoadmapForm = ({ concernId, onCreated }: RoadmapFormProps) => {
   const [goal, setGoal] = useState("");
   const [content, setContent] = useState("");
 
@@ -20,7 +21,7 @@ const RoadmapForm = ({ onCreated }: RoadmapFormProps) => {
     setIsSubmitting(true);
 
     try {
-      await roadmapApi.create({ goal, content });
+      await roadmapApi.create(concernId, { goal, content });
 
       setGoal("");
       setContent("");

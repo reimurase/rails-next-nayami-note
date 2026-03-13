@@ -22,7 +22,7 @@ describe("RoadmapForm API 呼び出し", () => {
     mockedRoadmapApi.create.mockResolvedValue({} as any);
 
     const mockOnCreated = jest.fn();
-    render(<RoadmapForm onCreated={mockOnCreated} />);
+    render(<RoadmapForm concernId={1} onCreated={mockOnCreated} />);
 
     // ゴールを入力
     fireEvent.change(screen.getByPlaceholderText("ゴール（任意）"), {
@@ -41,7 +41,7 @@ describe("RoadmapForm API 呼び出し", () => {
     await waitFor(() => {
       expect(mockedRoadmapApi.create).toHaveBeenCalledTimes(1);
     });
-    expect(mockedRoadmapApi.create).toHaveBeenCalledWith({
+    expect(mockedRoadmapApi.create).toHaveBeenCalledWith(1, {
       goal: "テストのゴール",
       content: "テストのロードマップ",
     });
