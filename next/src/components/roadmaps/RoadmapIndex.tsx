@@ -30,7 +30,7 @@ const RoadmapIndex = ({ roadmaps, onRoadmapListChanged }: Props) => {
             <li key={roadmap.id} style={{ listStyle: "none" }}>
               <RoadmapRow
                 roadmap={roadmap}
-                onChanged={onRoadmapListChanged}
+                onRoadmapListChanged={onRoadmapListChanged}
                 onOpenDetail={() => setSelectedId(roadmap.concernId)}
               />
             </li>

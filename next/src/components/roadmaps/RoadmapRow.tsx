@@ -6,11 +6,11 @@ import { Roadmap } from "@/types/roadmap";
 
 type Props = {
   roadmap: Roadmap;
-  onChanged?: () => void;
+  onRoadmapListChanged?: () => void;
   onOpenDetail?: () => void;
 };
 
-const RoadmapRow = ({ roadmap, onChanged, onOpenDetail }: Props) => {
+const RoadmapRow = ({ roadmap, onRoadmapListChanged, onOpenDetail }: Props) => {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center" }}>
       <div onClick={onOpenDetail} style={{ cursor: "pointer" }}>
@@ -19,7 +19,7 @@ const RoadmapRow = ({ roadmap, onChanged, onOpenDetail }: Props) => {
       </div>
 
       {/* 既存の削除ボタンはそのまま使える */}
-      <RoadmapDeleteButton id={roadmap.id} onDeleted={onChanged} />
+      <RoadmapDeleteButton concernId={roadmap.concernId} onDeleted={onRoadmapListChanged} />
     </div>
   );
 };

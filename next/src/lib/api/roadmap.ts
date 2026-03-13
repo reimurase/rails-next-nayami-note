@@ -28,5 +28,5 @@ export const roadmapApi = {
     return toRoadmap(res.data);
   },
 
-  remove: (id: number) => api.delete(`/api/v1/roadmaps/${id}`),
+  remove: (concernId: number) => api.delete(`/api/v1/concerns/${concernId}/roadmap`),
 };

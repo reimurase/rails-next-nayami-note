@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import RoadmapCreateSheet from "../roadmaps/RoadmapCreateSheet";
+import RoadmapDeleteButton from "../roadmaps/RoadmapDeleteButton";
 
 import RoadmapEditor from "./RoadmapEditor";
 
@@ -72,6 +73,7 @@ export default function RoadmapSection({ concernId, roadmap, onRoadmapChanged }:
           </ul>
 
           <button onClick={startEditing}>編集</button>
+          <RoadmapDeleteButton concernId={concernId} onDeleted={onRoadmapChanged} />
         </div>
       )}
     </div>

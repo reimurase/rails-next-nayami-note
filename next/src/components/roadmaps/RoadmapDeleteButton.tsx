@@ -5,11 +5,11 @@ import { useState } from "react";
 import { roadmapApi } from "@/lib/api/roadmap";
 
 type Props = {
-  id: number;
+  concernId: number;
   onDeleted?: () => void; // 正常終了時に呼びたい処理（一覧の更新など）
 };
 
-const RoadmapDeleteButton = ({ id, onDeleted }: Props) => {
+const RoadmapDeleteButton = ({ concernId, onDeleted }: Props) => {
   const [isDeleting, setIsDeleting] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
 
@@ -20,7 +20,7 @@ const RoadmapDeleteButton = ({ id, onDeleted }: Props) => {
 
     try {
       setIsDeleting(true);
-      await roadmapApi.remove(id);
+      await roadmapApi.remove(concernId);
 
       // 正常系でやりたいこと（一覧の再取得など）
       if (onDeleted) {
