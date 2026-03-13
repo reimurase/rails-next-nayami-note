@@ -31,7 +31,7 @@ const RoadmapIndex = ({ roadmaps, onChanged }: Props) => {
               <RoadmapRow
                 roadmap={roadmap}
                 onChanged={onChanged}
-                onOpenDetail={() => setSelectedId(roadmap.id)}
+                onOpenDetail={() => setSelectedId(roadmap.concernId)}
               />
             </li>
           ))}

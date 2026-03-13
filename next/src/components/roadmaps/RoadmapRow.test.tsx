@@ -18,7 +18,7 @@ describe("RoadmapRow 正常系", () => {
   });
   test("編集して保存すると update が呼ばれ、onChanged も呼ばれる", async () => {
     // 1. props を準備
-    const roadmap = { id: 1, goal: "もとのゴール", content: "もとのロードマップ" };
+    const roadmap = { id: 1, goal: "もとのゴール", content: "もとのロードマップ", concernId: 1 };
     const onChanged = jest.fn();
 
     // 2. update のモック成功レスポンス
