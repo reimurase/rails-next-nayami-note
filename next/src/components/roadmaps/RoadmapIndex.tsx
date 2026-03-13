@@ -12,10 +12,10 @@ import { Roadmap } from "@/types/roadmap";
 
 type Props = {
   roadmaps: Roadmap[];
-  onChanged?: () => void;
+  onRoadmapListChanged?: () => void;
 };
 
-const RoadmapIndex = ({ roadmaps, onChanged }: Props) => {
+const RoadmapIndex = ({ roadmaps, onRoadmapListChanged }: Props) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
@@ -30,7 +30,7 @@ const RoadmapIndex = ({ roadmaps, onChanged }: Props) => {
             <li key={roadmap.id} style={{ listStyle: "none" }}>
               <RoadmapRow
                 roadmap={roadmap}
-                onChanged={onChanged}
+                onChanged={onRoadmapListChanged}
                 onOpenDetail={() => setSelectedId(roadmap.concernId)}
               />
             </li>
@@ -40,7 +40,9 @@ const RoadmapIndex = ({ roadmaps, onChanged }: Props) => {
 
       <Dialog open={selectedId !== null} onClose={() => setSelectedId(null)} fullWidth>
         <DialogContent>
-          {selectedId !== null && <ConcernDetailView concernId={selectedId} />}
+          {selectedId !== null && (
+            <ConcernDetailView concernId={selectedId} onRoadmapListChanged={onRoadmapListChanged} />
+          )}
         </DialogContent>
       </Dialog>
     </div>

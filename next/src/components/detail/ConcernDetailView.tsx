@@ -3,6 +3,7 @@
 import useSWR from "swr";
 
 import IssueSection from "./IssueSection";
+import RoadmapSection from "./RoadmapSection";
 
 import type { ConcernDetail } from "@/types/concern";
 import { concernApi } from "@/lib/api/concern";
@@ -10,9 +11,14 @@ import { concernApi } from "@/lib/api/concern";
 type Props = {
   concernId: number;
   onIssueListChanged?: () => void | Promise<void>;
+  onRoadmapListChanged?: () => void | Promise<void>;
 };
 
-export default function ConcernDetailView({ concernId, onIssueListChanged }: Props) {
+export default function ConcernDetailView({
+  concernId,
+  onIssueListChanged,
+  onRoadmapListChanged,
+}: Props) {
   const {
     data: detail,
     error,
@@ -26,9 +32,18 @@ export default function ConcernDetailView({ concernId, onIssueListChanged }: Pro
     await mutate();
   };
 
+  const refreshRoadmapDetail = async () => {
+    await mutate();
+  };
+
   const handleIssueChanged = async () => {
     await refreshIssueDetail();
     await onIssueListChanged?.();
+  };
+
+  const handleRoadmapChanged = async () => {
+    await refreshRoadmapDetail();
+    await onRoadmapListChanged?.();
   };
 
   if (isLoading) {
@@ -74,15 +89,11 @@ export default function ConcernDetailView({ concernId, onIssueListChanged }: Pro
         onIssueChanged={handleIssueChanged}
       />
 
-      <h3>Roadmap</h3>
-      {detail.roadmap ? (
-        <ul>
-          <li>ゴール: {detail.roadmap.goal || "なし"}</li>
-          <li>内容: {detail.roadmap.content || "なし"}</li>
-        </ul>
-      ) : (
-        <p>roadmap はありません</p>
-      )}
+      <RoadmapSection
+        concernId={detail.concern.id}
+        roadmap={detail.roadmap}
+        onRoadmapChanged={handleRoadmapChanged}
+      />
     </div>
   );
 }

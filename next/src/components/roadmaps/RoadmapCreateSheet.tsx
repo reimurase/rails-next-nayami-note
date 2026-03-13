@@ -3,12 +3,13 @@
 import RoadmapForm from "./RoadmapForm";
 
 type Props = {
+  concernId: number;
   isOpen: boolean;
   onClose: () => void;
   onCreated: () => void;
 };
 
-const RoadmapCreateSheet = ({ isOpen, onClose, onCreated }: Props) => {
+const RoadmapCreateSheet = ({ concernId, isOpen, onClose, onCreated }: Props) => {
   if (!isOpen) return null;
 
   return (
@@ -39,7 +40,7 @@ const RoadmapCreateSheet = ({ isOpen, onClose, onCreated }: Props) => {
         <button onClick={onClose}>✕</button>
       </div>
 
-      <RoadmapForm onCreated={onCreated} />
+      <RoadmapForm concernId={concernId} onCreated={onCreated} />
     </div>
   );
 };
