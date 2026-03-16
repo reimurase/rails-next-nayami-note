@@ -3,6 +3,9 @@
 import { useState } from "react";
 
 import RoadmapCreateSheet from "../roadmaps/RoadmapCreateSheet";
+import RoadmapDeleteButton from "../roadmaps/RoadmapDeleteButton";
+
+import RoadmapEditor from "./RoadmapEditor";
 
 import type { Roadmap } from "@/types/roadmap";
 
@@ -14,6 +17,23 @@ type Props = {
 
 export default function RoadmapSection({ concernId, roadmap, onRoadmapChanged }: Props) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+
+  const startEditing = () => {
+    if (!roadmap) return;
+    setIsEditing(true);
+  };
+
+  const handleSaved = async () => {
+    setIsEditing(false);
+
+    // roadmapページ / 詳細のroadmapを更新
+    await onRoadmapChanged?.();
+  };
+
+  const handleCancelEdit = () => {
+    setIsEditing(false);
+  };
 
   const handleCreated = async () => {
     setIsSheetOpen(false);
@@ -38,12 +58,22 @@ export default function RoadmapSection({ concernId, roadmap, onRoadmapChanged }:
             onCreated={handleCreated}
           />
         </div>
+      ) : isEditing ? (
+        <RoadmapEditor
+          concernId={concernId}
+          roadmap={roadmap}
+          onSaved={handleSaved}
+          onCancel={handleCancelEdit}
+        />
       ) : (
         <div>
           <ul>
             <li>タイトル: {roadmap.goal || "なし"}</li>
             <li>内容: {roadmap.content || "なし"}</li>
           </ul>
+
+          <button onClick={startEditing}>編集</button>
+          <RoadmapDeleteButton concernId={concernId} onDeleted={onRoadmapChanged} />
         </div>
       )}
     </div>

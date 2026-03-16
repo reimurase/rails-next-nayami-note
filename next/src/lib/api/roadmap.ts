@@ -21,10 +21,12 @@ export const roadmapApi = {
     return toRoadmap(res.data);
   },
 
-  update: (id: number, { goal, content }: RoadmapInput) =>
-    api.patch(`/api/v1/roadmaps/${id}`, {
-      roadmap: { goal, content },
-    }),
+  update: async (concernId: number, input: RoadmapInput): Promise<Roadmap> => {
+    const res = await api.patch(`/api/v1/concerns/${concernId}/roadmap`, {
+      roadmap: input,
+    });
+    return toRoadmap(res.data);
+  },
 
-  remove: (id: number) => api.delete(`/api/v1/roadmaps/${id}`),
+  remove: (concernId: number) => api.delete(`/api/v1/concerns/${concernId}/roadmap`),
 };

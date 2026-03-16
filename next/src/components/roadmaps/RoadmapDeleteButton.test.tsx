@@ -23,7 +23,7 @@ describe("RoadmapDeleteButton 正常系", () => {
 
     const onDeletedMock = jest.fn();
 
-    render(<RoadmapDeleteButton id={1} onDeleted={onDeletedMock} />);
+    render(<RoadmapDeleteButton concernId={1} onDeleted={onDeletedMock} />);
 
     fireEvent.click(screen.getByRole("button", { name: "削除" }));
 
@@ -45,7 +45,7 @@ describe("RoadmapDeleteButton 正常系", () => {
     mockedRoadmapApi.remove.mockResolvedValue({} as any);
     window.confirm = jest.fn().mockReturnValue(true);
 
-    render(<RoadmapDeleteButton id={1} />);
+    render(<RoadmapDeleteButton concernId={1} />);
 
     fireEvent.click(screen.getByRole("button", { name: "削除" }));
 
@@ -68,7 +68,7 @@ describe("RoadmapDeleteButton 異常系", () => {
     mockedRoadmapApi.remove.mockRejectedValueOnce(new Error("remove failed"));
 
     const onDeletedMock = jest.fn();
-    render(<RoadmapDeleteButton id={1} onDeleted={onDeletedMock} />);
+    render(<RoadmapDeleteButton concernId={1} onDeleted={onDeletedMock} />);
 
     fireEvent.click(screen.getByRole("button", { name: "削除" }));
 
