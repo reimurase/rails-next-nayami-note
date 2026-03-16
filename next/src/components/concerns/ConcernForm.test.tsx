@@ -138,7 +138,7 @@ describe("ConcernForm 異常系", () => {
 
     // エラーが表示される
     expect(await screen.findByRole("alert")).toHaveTextContent(
-      "通信に失敗しました。時間を置いて再度お試しください。"
+      "保存に失敗しました。時間を置いて再度お試しください。"
     );
 
     // 成功時コールバックは呼ばれない
@@ -156,6 +156,7 @@ describe("ConcernForm 異常系", () => {
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     mockedConcernApi.create.mockRejectedValueOnce({
+      isAxiosError: true,
       response: {
         status: 422,
         data: {
@@ -169,7 +170,7 @@ describe("ConcernForm 異常系", () => {
     const mockOnCreated = jest.fn();
     render(<ConcernForm onCreated={mockOnCreated} />);
 
-    // FEは通す入力（※ここ重要）
+    // フロントの必須チェックは通し、サーバーの422表示だけを検証する
     fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう。（任意）"), {
       target: { value: "テストのきっかけ" },
     });

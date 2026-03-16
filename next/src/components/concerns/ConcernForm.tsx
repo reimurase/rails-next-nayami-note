@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 
+import { normalizeApiError } from "@/lib/api/error";
 import { concernApi } from "@/lib/api/concern";
 import {
   CONCERN_LIMITS,
@@ -9,8 +10,8 @@ import {
   validateLength,
   validateOnSubmit,
   validateRequired,
-  ConcernErrors,
-  mapConcernServerErrors,
+  type ConcernErrors,
+  mapConcernValidationErrors,
 } from "@/lib/concernValidation";
 
 type ConcernFormProps = {
@@ -27,47 +28,56 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
 
+  const values = { triggerEvent, content };
+
+  const lengthErrors = validateLength(values);
+  const requiredErrors = submitted ? validateRequired(values) : {};
+
+  const triggerEventError =
+    serverErrors.triggerEvent ?? requiredErrors.triggerEvent ?? lengthErrors.triggerEvent;
+
+  const contentError = serverErrors.content ?? requiredErrors.content ?? lengthErrors.content;
+
+  const overTrigger = Boolean(lengthErrors.triggerEvent);
+  const overContent = Boolean(lengthErrors.content);
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setSubmitted(true);
     setApiError(null);
     setServerErrors({});
 
-    const nextErrors = validateOnSubmit({ triggerEvent, content });
+    const nextErrors = validateOnSubmit(values);
     if (hasErrors(nextErrors)) return;
 
     setIsSubmitting(true);
 
     try {
-      await concernApi.create({ triggerEvent, content });
+      await concernApi.create(values);
 
       setTriggerEvent("");
       setContent("");
       setSubmitted(false);
       onCreated();
-    } catch (error: any) {
-      const status = error?.response?.status;
-      const data = error?.response?.data;
+    } catch (error: unknown) {
+      const appError = normalizeApiError(error);
 
-      if (status === 422) {
-        setServerErrors(mapConcernServerErrors(data));
-        return; // ★422のときは apiError を出さない
+      if (appError.type === "validation") {
+        setServerErrors(mapConcernValidationErrors(appError.errors));
+        return;
+      }
+
+      if (appError.type === "network") {
+        setApiError(appError.message);
+        return;
       }
 
       console.error(error);
-      setApiError("通信に失敗しました。時間を置いて再度お試しください。");
+      setApiError("保存に失敗しました。時間を置いて再度お試しください。");
     } finally {
       setIsSubmitting(false);
     }
   };
-
-  const values = { triggerEvent, content };
-
-  const lengthErrors = validateLength(values);
-  const requiredErrors = submitted ? validateRequired(values) : {};
-
-  const overTrigger = Boolean(lengthErrors.triggerEvent);
-  const overContent = Boolean(lengthErrors.content);
 
   return (
     <form onSubmit={handleSubmit}>
@@ -91,15 +101,11 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
           fontSize: "16px",
         }}
       />
-      {(serverErrors.triggerEvent || requiredErrors.triggerEvent || lengthErrors.triggerEvent) && (
-        <p style={{ color: "tomato", fontSize: 12 }}>
-          {/* 基本 requiredErrors.triggerEvent は出ません。必須になれば拡張可能 */}
-          {serverErrors.triggerEvent ?? requiredErrors.triggerEvent ?? lengthErrors.triggerEvent}
-        </p>
-      )}
+      {triggerEventError && <p style={{ color: "tomato", fontSize: 12 }}>{triggerEventError}</p>}
       <p style={{ fontSize: 12, opacity: 0.8 }}>
         {triggerEvent.length}/{CONCERN_LIMITS.triggerEvent}
       </p>
+
       <textarea
         placeholder="とりあえず、今のなやみを書いてみよう（必須）"
         value={content}
@@ -114,14 +120,11 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
           fontSize: "16px",
         }}
       />
-      {(serverErrors.content || requiredErrors.content || lengthErrors.content) && (
-        <p style={{ color: "tomato", fontSize: 12 }}>
-          {serverErrors.content ?? requiredErrors.content ?? lengthErrors.content}
-        </p>
-      )}
+      {contentError && <p style={{ color: "tomato", fontSize: 12 }}>{contentError}</p>}
       <p style={{ fontSize: 12, opacity: 0.8 }}>
         {content.length}/{CONCERN_LIMITS.content}
       </p>
+
       <button
         type="submit"
         disabled={isSubmitting || overTrigger || overContent}
