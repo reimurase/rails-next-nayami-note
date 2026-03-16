@@ -157,7 +157,9 @@ describe("ConcernRow 異常系", () => {
 
     fireEvent.click(screen.getByRole("button", { name: "保存" }));
 
-    expect(await screen.findByRole("alert")).toHaveTextContent("更新に失敗しました");
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "更新に失敗しました。時間を置いて再度お試しください。"
+    );
 
     expect(screen.getAllByRole("textbox")).toHaveLength(2);
 

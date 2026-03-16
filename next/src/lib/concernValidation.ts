@@ -1,3 +1,6 @@
+// src/lib/validation/concern.ts
+import type { ApiFieldError } from "@/lib/api/error";
+
 export const CONCERN_LIMITS = {
   triggerEvent: 120,
   content: 1000,
@@ -13,15 +16,9 @@ export type ConcernErrors = Partial<Record<keyof ConcernValues, string>>;
 
 export const hasErrors = (errors: ConcernErrors) => Object.keys(errors).length > 0;
 
-type ApiFieldError = { code: string; meta?: { max?: number } };
-
-type ApiValidationError = { errors: Record<string, ApiFieldError[]> };
-
-// 必須だけ（送信/保存を押した後にだけ表示したい用途）
 export const validateRequired = (v: ConcernValues): ConcernErrors => {
   const errors: ConcernErrors = {};
 
-  // 今の方針：content は必須、triggerEvent は必須じゃない
   if (!v.content.trim()) {
     errors.content = "なやみは必須です";
   }
@@ -29,62 +26,74 @@ export const validateRequired = (v: ConcernValues): ConcernErrors => {
   return errors;
 };
 
-// 文字数だけ（入力中も使う用途）
 export const validateLength = (v: ConcernValues): ConcernErrors => {
   const errors: ConcernErrors = {};
 
-  const trigger = v.triggerEvent.trim();
-  const content = v.content.trim();
-
-  if (trigger.length > CONCERN_LIMITS.triggerEvent) {
+  if (v.triggerEvent.trim().length > CONCERN_LIMITS.triggerEvent) {
     errors.triggerEvent = `きっかけは${CONCERN_LIMITS.triggerEvent}文字以内です`;
   }
 
-  if (content.length > CONCERN_LIMITS.content) {
+  if (v.content.trim().length > CONCERN_LIMITS.content) {
     errors.content = `なやみは${CONCERN_LIMITS.content}文字以内です`;
   }
 
   return errors;
 };
 
-// BE(422)の errors(code/meta) を、画面表示用の文字列に変換する
-export function mapConcernServerErrors(payload: unknown): ConcernErrors {
-  const out: ConcernErrors = {};
-
-  // payloadが想定外の形なら、空で返す（壊れないように）
-  if (
-    typeof payload !== "object" ||
-    payload === null ||
-    !("errors" in payload) ||
-    typeof (payload as any).errors !== "object" ||
-    (payload as any).errors === null
-  ) {
-    return out;
-  }
-
-  const errors = (payload as any).errors as ApiValidationError["errors"];
-
-  // content の1個目だけ見る
-  const contentErr = errors["content"]?.[0];
-  if (contentErr?.code === "blank") {
-    out.content = "なやみは必須です";
-  } else if (contentErr?.code === "too_long") {
-    const max = contentErr.meta?.max ?? CONCERN_LIMITS.content;
-    out.content = `なやみは${max}文字以内です`;
-  }
-
-  // triggerEvent の1個目だけ見る
-  const triggerErr = errors["triggerEvent"]?.[0];
-  if (triggerErr?.code === "too_long") {
-    const max = triggerErr.meta?.max ?? CONCERN_LIMITS.triggerEvent;
-    out.triggerEvent = `きっかけは${max}文字以内です`;
-  }
-
-  return out;
-}
-
-// 送信/保存時の最終チェック（必須 + 文字数）
 export const validateOnSubmit = (v: ConcernValues): ConcernErrors => ({
   ...validateRequired(v),
   ...validateLength(v),
 });
+
+const getMax = (meta: Record<string, unknown> | undefined): number | undefined => {
+  const max = meta?.max;
+  return typeof max === "number" ? max : undefined;
+};
+
+function toConcernApiFieldErrors(apiErrors: Record<string, ApiFieldError[]>) {
+  return {
+    content: apiErrors["content"],
+    triggerEvent: apiErrors["trigger_event"],
+  };
+}
+
+function messageForConcernField(
+  field: keyof ConcernValues,
+  err: ApiFieldError
+): string | undefined {
+  if (field === "content") {
+    if (err.code === "blank") return "なやみは必須です";
+    if (err.code === "too_long") {
+      const max = getMax(err.meta) ?? CONCERN_LIMITS.content;
+      return `なやみは${max}文字以内です`;
+    }
+  }
+
+  if (field === "triggerEvent") {
+    if (err.code === "too_long") {
+      const max = getMax(err.meta) ?? CONCERN_LIMITS.triggerEvent;
+      return `きっかけは${max}文字以内です`;
+    }
+  }
+
+  return undefined;
+}
+
+export function mapConcernValidationErrors(
+  apiErrors: Record<string, ApiFieldError[]>
+): ConcernErrors {
+  const out: ConcernErrors = {};
+  const errors = toConcernApiFieldErrors(apiErrors);
+
+  for (const field of ["content", "triggerEvent"] as const) {
+    const first = errors[field]?.[0];
+    if (!first) continue;
+
+    const message = messageForConcernField(field, first);
+    if (message) {
+      out[field] = message;
+    }
+  }
+
+  return out;
+}
