@@ -14,6 +14,7 @@ type Props = {
   onConcernListChanged?: () => void | Promise<void>;
   onIssueListChanged?: () => void | Promise<void>;
   onRoadmapListChanged?: () => void | Promise<void>;
+  onConcernDeleted?: () => void | Promise<void>;
 };
 
 export default function ConcernDetailView({
@@ -21,6 +22,7 @@ export default function ConcernDetailView({
   onConcernListChanged,
   onIssueListChanged,
   onRoadmapListChanged,
+  onConcernDeleted,
 }: Props) {
   const {
     data: detail,
@@ -38,6 +40,10 @@ export default function ConcernDetailView({
   const handleConcernChanged = async () => {
     await refreshDetail();
     await onConcernListChanged?.();
+  };
+
+  const handleConcernDeleted = async () => {
+    await onConcernDeleted?.();
   };
 
   const handleIssueChanged = async () => {
@@ -82,9 +88,9 @@ export default function ConcernDetailView({
       <h2>詳細ページ</h2>
 
       <ConcernSection
-        concernId={detail.concern.id}
         concern={detail.concern}
-        onConcernChanged={handleConcernChanged}
+        onConcernUpdated={handleConcernChanged}
+        onConcernDeleted={handleConcernDeleted}
       />
 
       <IssueSection

@@ -25,8 +25,7 @@ describe("ConcernEditor", () => {
 
     render(
       <ConcernEditor
-        concernId={1}
-        concern={{ id: 10, triggerEvent: "旧きっかけ", content: "旧内容" }}
+        concern={{ id: 1, triggerEvent: "旧きっかけ", content: "旧内容" }}
         onSaved={handleCreated}
         onCancel={handleCancelEdit}
       />
@@ -65,7 +64,7 @@ describe("ConcernEditor 異常系", () => {
 
     mockedConcernApi.update.mockResolvedValue({} as any);
 
-    render(<ConcernEditor concernId={1} concern={concern} onSaved={onSaved} onCancel={onCancel} />);
+    render(<ConcernEditor concern={concern} onSaved={onSaved} onCancel={onCancel} />);
 
     const inputs = screen.getAllByRole("textbox");
     const [, contentInput] = inputs;
@@ -88,7 +87,7 @@ describe("ConcernEditor 異常系", () => {
     const onSaved = jest.fn();
     const onCancel = jest.fn();
 
-    render(<ConcernEditor concernId={1} concern={concern} onSaved={onSaved} onCancel={onCancel} />);
+    render(<ConcernEditor concern={concern} onSaved={onSaved} onCancel={onCancel} />);
 
     const inputs = screen.getAllByRole("textbox");
     const [, contentInput] = inputs;
@@ -107,7 +106,7 @@ describe("ConcernEditor 異常系", () => {
     const onSaved = jest.fn();
     const onCancel = jest.fn();
 
-    render(<ConcernEditor concernId={1} concern={concern} onSaved={onSaved} onCancel={onCancel} />);
+    render(<ConcernEditor concern={concern} onSaved={onSaved} onCancel={onCancel} />);
 
     const inputs = screen.getAllByRole("textbox");
     const [triggerInput] = inputs;
@@ -128,7 +127,7 @@ describe("ConcernEditor 異常系", () => {
 
     mockedConcernApi.update.mockRejectedValueOnce(new Error("update failed"));
 
-    render(<ConcernEditor concernId={1} concern={concern} onSaved={onSaved} onCancel={onCancel} />);
+    render(<ConcernEditor concern={concern} onSaved={onSaved} onCancel={onCancel} />);
 
     const inputs = screen.getAllByRole("textbox");
     const [, contentInput] = inputs;

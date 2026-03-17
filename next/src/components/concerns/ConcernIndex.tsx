@@ -18,6 +18,11 @@ type Props = {
 const ConcernIndex = ({ concerns, onConcernListChanged }: Props) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
+  const handleConcernDeleted = async () => {
+    setSelectedId(null);
+    await onConcernListChanged?.();
+  };
+
   return (
     <div>
       <h2>なやみ一覧</h2>
@@ -41,7 +46,11 @@ const ConcernIndex = ({ concerns, onConcernListChanged }: Props) => {
       <Dialog open={selectedId !== null} onClose={() => setSelectedId(null)} fullWidth>
         <DialogContent>
           {selectedId !== null && (
-            <ConcernDetailView concernId={selectedId} onConcernListChanged={onConcernListChanged} />
+            <ConcernDetailView
+              concernId={selectedId}
+              onConcernListChanged={onConcernListChanged}
+              onConcernDeleted={handleConcernDeleted}
+            />
           )}
         </DialogContent>
       </Dialog>
