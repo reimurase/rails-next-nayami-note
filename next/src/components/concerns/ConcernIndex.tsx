@@ -12,10 +12,10 @@ import type { Concern } from "@/types/concern";
 
 type Props = {
   concerns: Concern[];
-  onChanged?: () => void;
+  onConcernListChanged?: () => void | Promise<void>;
 };
 
-const ConcernIndex = ({ concerns, onChanged }: Props) => {
+const ConcernIndex = ({ concerns, onConcernListChanged }: Props) => {
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
@@ -30,7 +30,7 @@ const ConcernIndex = ({ concerns, onChanged }: Props) => {
             <li key={concern.id} style={{ listStyle: "none" }}>
               <ConcernRow
                 concern={concern}
-                onChanged={onChanged}
+                onChanged={onConcernListChanged}
                 onOpenDetail={() => setSelectedId(concern.id)}
               />
             </li>
@@ -40,7 +40,9 @@ const ConcernIndex = ({ concerns, onChanged }: Props) => {
 
       <Dialog open={selectedId !== null} onClose={() => setSelectedId(null)} fullWidth>
         <DialogContent>
-          {selectedId !== null && <ConcernDetailView concernId={selectedId} />}
+          {selectedId !== null && (
+            <ConcernDetailView concernId={selectedId} onConcernListChanged={onConcernListChanged} />
+          )}
         </DialogContent>
       </Dialog>
     </div>

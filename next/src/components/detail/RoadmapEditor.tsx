@@ -14,7 +14,7 @@ type Props = {
 
 export default function RoadmapEditor({ concernId, roadmap, onSaved, onCancel }: Props) {
   const [isSaving, setIsSaving] = useState(false);
-  const [goal, setTitle] = useState(roadmap.goal || "");
+  const [goal, setGoal] = useState(roadmap.goal || "");
   const [content, setContent] = useState(roadmap.content || "");
 
   const handleSave = async () => {
@@ -32,7 +32,7 @@ export default function RoadmapEditor({ concernId, roadmap, onSaved, onCancel }:
       <textarea
         value={goal}
         placeholder="ゴール（任意）"
-        onChange={(e) => setTitle(e.target.value)}
+        onChange={(e) => setGoal(e.target.value)}
         disabled={isSaving}
       />
 

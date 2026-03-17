@@ -17,12 +17,12 @@ export default function ConcernPageClient() {
     mutate,
   } = useSWR("/api/v1/concerns", () => concernApi.getConcerns());
 
-  const refresh = async () => {
+  const refreshConcernList = async () => {
     await mutate();
   };
 
   const handleCreated = async () => {
-    await refresh();
+    await refreshConcernList();
     setIsSheetOpen(false);
   };
 
@@ -40,7 +40,7 @@ export default function ConcernPageClient() {
         </button>
       </header>
 
-      <ConcernIndex concerns={concerns ?? []} onChanged={refresh} />
+      <ConcernIndex concerns={concerns ?? []} onConcernListChanged={refreshConcernList} />
 
       <ConcernCreateSheet
         isOpen={isSheetOpen}

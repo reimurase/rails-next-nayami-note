@@ -1,7 +1,7 @@
-// src/components/concerns/ConcernRow.test.tsx
-import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+// src/components/detail/ConcernEditor.test.tsx
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 
-import ConcernRow from "./ConcernRow";
+import ConcernEditor from "./ConcernEditor";
 
 import { concernApi } from "@/lib/api/concern";
 
@@ -10,80 +10,62 @@ jest.mock("@/lib/api/concern", () => ({
     update: jest.fn(),
   },
 }));
+
 const mockedConcernApi = concernApi as jest.Mocked<typeof concernApi>;
 
-describe("ConcernRow 正常系", () => {
+describe("ConcernEditor", () => {
   beforeEach(() => {
     mockedConcernApi.update.mockReset();
   });
-  test("編集して保存すると update が呼ばれ、onChanged も呼ばれる", async () => {
-    // 1. props を準備
-    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
-    const onChanged = jest.fn();
 
-    // 2. update のモック成功レスポンス
+  test("編集して保存すると update と handleCreated が呼ばれる", async () => {
     mockedConcernApi.update.mockResolvedValue({} as any);
+    const handleCreated = jest.fn();
+    const handleCancelEdit = jest.fn();
 
-    // 3. 描画
-    render(<ConcernRow concern={concern} onChanged={onChanged} />);
+    render(
+      <ConcernEditor
+        concernId={1}
+        concern={{ id: 10, triggerEvent: "旧きっかけ", content: "旧内容" }}
+        onSaved={handleCreated}
+        onCancel={handleCancelEdit}
+      />
+    );
 
-    // --- 通常モードの表示がある ---
-    expect(screen.getByText("もとのきっかけ")).toBeInTheDocument();
-    expect(screen.getByText("もとの内容")).toBeInTheDocument();
+    fireEvent.change(screen.getByDisplayValue("旧きっかけ"), {
+      target: { value: "新きっかけ" },
+    });
+    fireEvent.change(screen.getByDisplayValue("旧内容"), {
+      target: { value: "新内容" },
+    });
 
-    // 4. 編集ボタンを押す
-    fireEvent.click(screen.getByRole("button", { name: "編集" }));
+    fireEvent.click(screen.getByRole("button", { name: "保存" }));
 
-    // 5. input と保存ボタンが表示される
-    const inputs = screen.getAllByRole("textbox");
-    expect(inputs).toHaveLength(2);
-
-    const [triggerInput, contentInput] = inputs;
-
-    // きっかけを変更
-    fireEvent.change(triggerInput, { target: { value: "更新後のきっかけ" } });
-    expect(triggerInput).toHaveValue("更新後のきっかけ");
-
-    // 内容を変更
-    fireEvent.change(contentInput, { target: { value: "更新後の内容" } });
-    expect(contentInput).toHaveValue("更新後の内容");
-
-    // 6. 保存をクリック
-    const saveButton = screen.getByRole("button", { name: "保存" });
-    fireEvent.click(saveButton);
-
-    // 7. update が正しい引数で呼ばれたか
     await waitFor(() => {
       expect(mockedConcernApi.update).toHaveBeenCalledWith(1, {
-        triggerEvent: "更新後のきっかけ",
-        content: "更新後の内容",
+        triggerEvent: "新きっかけ",
+        content: "新内容",
       });
     });
 
-    // 8. 親からもらった onChanged が呼ばれたか
-    expect(onChanged).toHaveBeenCalled();
-
-    // 9. 保存後は「編集モードが閉じている」ことだけ確認する
     await waitFor(() => {
-      // input が消えている（＝通常モードに戻った）
-      expect(screen.queryByRole("textbox")).not.toBeInTheDocument();
+      expect(handleCreated).toHaveBeenCalled();
     });
   });
 });
 
-describe("ConcernRow 異常系", () => {
+describe("ConcernEditor 異常系", () => {
   beforeEach(() => {
     mockedConcernApi.update.mockReset();
   });
   test("content を空にして保存すると必須エラーが出て update は呼ばれない", async () => {
     const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
-    const onChanged = jest.fn();
+    const onSaved = jest.fn();
+    const onCancel = jest.fn();
 
     mockedConcernApi.update.mockResolvedValue({} as any);
 
-    render(<ConcernRow concern={concern} onChanged={onChanged} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "編集" }));
+    render(<ConcernEditor concernId={1} concern={concern} onSaved={onSaved} onCancel={onCancel} />);
 
     const inputs = screen.getAllByRole("textbox");
     const [, contentInput] = inputs;
@@ -98,16 +80,15 @@ describe("ConcernRow 異常系", () => {
 
     // update は呼ばれない
     expect(mockedConcernApi.update).not.toHaveBeenCalled();
-    expect(onChanged).not.toHaveBeenCalled();
+    expect(onSaved).not.toHaveBeenCalled();
   });
 
   test("content が1001文字だと文字数エラーが出て保存ボタンが押せない", () => {
     const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
-    const onChanged = jest.fn();
+    const onSaved = jest.fn();
+    const onCancel = jest.fn();
 
-    render(<ConcernRow concern={concern} onChanged={onChanged} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "編集" }));
+    render(<ConcernEditor concernId={1} concern={concern} onSaved={onSaved} onCancel={onCancel} />);
 
     const inputs = screen.getAllByRole("textbox");
     const [, contentInput] = inputs;
@@ -123,11 +104,10 @@ describe("ConcernRow 異常系", () => {
 
   test("triggerEvent が121文字だと文字数エラーが出て保存ボタンが押せない", () => {
     const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
-    const onChanged = jest.fn();
+    const onSaved = jest.fn();
+    const onCancel = jest.fn();
 
-    render(<ConcernRow concern={concern} onChanged={onChanged} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "編集" }));
+    render(<ConcernEditor concernId={1} concern={concern} onSaved={onSaved} onCancel={onCancel} />);
 
     const inputs = screen.getAllByRole("textbox");
     const [triggerInput] = inputs;
@@ -139,17 +119,16 @@ describe("ConcernRow 異常系", () => {
     expect(screen.getByRole("button", { name: "保存" })).toBeDisabled();
   });
 
-  test("更新が失敗したらエラーが表示され、編集モードのままで onChanged は呼ばれない", async () => {
+  test("更新が失敗したらエラーが表示され、編集モードのままで onSaved は呼ばれない", async () => {
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
-    const onChanged = jest.fn();
+    const onSaved = jest.fn();
+    const onCancel = jest.fn();
 
     mockedConcernApi.update.mockRejectedValueOnce(new Error("update failed"));
 
-    render(<ConcernRow concern={concern} onChanged={onChanged} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "編集" }));
+    render(<ConcernEditor concernId={1} concern={concern} onSaved={onSaved} onCancel={onCancel} />);
 
     const inputs = screen.getAllByRole("textbox");
     const [, contentInput] = inputs;
@@ -163,7 +142,7 @@ describe("ConcernRow 異常系", () => {
 
     expect(screen.getAllByRole("textbox")).toHaveLength(2);
 
-    expect(onChanged).not.toHaveBeenCalled();
+    expect(onSaved).not.toHaveBeenCalled();
 
     await waitFor(() => {
       expect(screen.getByRole("button", { name: "保存" })).toBeEnabled();

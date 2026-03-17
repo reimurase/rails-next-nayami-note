@@ -2,6 +2,7 @@
 
 import useSWR from "swr";
 
+import ConcernSection from "./ConcernSection";
 import IssueSection from "./IssueSection";
 import RoadmapSection from "./RoadmapSection";
 
@@ -10,12 +11,14 @@ import { concernApi } from "@/lib/api/concern";
 
 type Props = {
   concernId: number;
+  onConcernListChanged?: () => void | Promise<void>;
   onIssueListChanged?: () => void | Promise<void>;
   onRoadmapListChanged?: () => void | Promise<void>;
 };
 
 export default function ConcernDetailView({
   concernId,
+  onConcernListChanged,
   onIssueListChanged,
   onRoadmapListChanged,
 }: Props) {
@@ -28,21 +31,22 @@ export default function ConcernDetailView({
     concernApi.getConcern(concernId)
   );
 
-  const refreshIssueDetail = async () => {
+  const refreshDetail = async () => {
     await mutate();
   };
 
-  const refreshRoadmapDetail = async () => {
-    await mutate();
+  const handleConcernChanged = async () => {
+    await refreshDetail();
+    await onConcernListChanged?.();
   };
 
   const handleIssueChanged = async () => {
-    await refreshIssueDetail();
+    await refreshDetail();
     await onIssueListChanged?.();
   };
 
   const handleRoadmapChanged = async () => {
-    await refreshRoadmapDetail();
+    await refreshDetail();
     await onRoadmapListChanged?.();
   };
 
@@ -77,11 +81,11 @@ export default function ConcernDetailView({
     <div>
       <h2>詳細ページ</h2>
 
-      <h3>Concern</h3>
-      <ul>
-        <li>きっかけ: {detail.concern.triggerEvent || "なし"}</li>
-        <li>内容: {detail.concern.content}</li>
-      </ul>
+      <ConcernSection
+        concernId={detail.concern.id}
+        concern={detail.concern}
+        onConcernChanged={handleConcernChanged}
+      />
 
       <IssueSection
         concernId={detail.concern.id}
