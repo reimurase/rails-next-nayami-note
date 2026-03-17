@@ -16,13 +16,12 @@ import {
 } from "@/lib/concernValidation";
 
 type Props = {
-  concernId: number;
   concern: Concern;
   onSaved?: () => void | Promise<void>;
   onCancel: () => void;
 };
 
-export default function ConcernEditor({ concernId, concern, onSaved, onCancel }: Props) {
+export default function ConcernEditor({ concern, onSaved, onCancel }: Props) {
   const [triggerEvent, setTriggerEvent] = useState(concern.triggerEvent || "");
   const [content, setContent] = useState(concern.content || "");
 
@@ -55,7 +54,7 @@ export default function ConcernEditor({ concernId, concern, onSaved, onCancel }:
 
     try {
       setIsSaving(true);
-      await concernApi.update(concernId, values);
+      await concernApi.update(concern.id, values);
 
       setSubmitted(false);
 

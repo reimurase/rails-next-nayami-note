@@ -2,17 +2,19 @@
 
 import { useState } from "react";
 
+import ConcernDeleteButton from "../concerns/ConcernDeleteButton";
+
 import ConcernEditor from "./ConcernEditor";
 
 import type { Concern } from "@/types/concern";
 
 type Props = {
-  concernId: number;
   concern: Concern;
-  onConcernChanged?: () => void | Promise<void>;
+  onConcernUpdated?: () => void | Promise<void>;
+  onConcernDeleted?: () => void | Promise<void>;
 };
 
-export default function ConcernSection({ concernId, concern, onConcernChanged }: Props) {
+export default function ConcernSection({ concern, onConcernUpdated, onConcernDeleted }: Props) {
   const [isEditing, setIsEditing] = useState(false);
 
   const startEditing = () => {
@@ -23,11 +25,15 @@ export default function ConcernSection({ concernId, concern, onConcernChanged }:
     setIsEditing(false);
 
     // concernページ / 詳細のconcernを更新
-    await onConcernChanged?.();
+    await onConcernUpdated?.();
   };
 
   const handleCancelEdit = () => {
     setIsEditing(false);
+  };
+
+  const handleConcernDeleted = async () => {
+    await onConcernDeleted?.();
   };
 
   return (
@@ -35,12 +41,7 @@ export default function ConcernSection({ concernId, concern, onConcernChanged }:
       <h3>Concern</h3>
 
       {isEditing ? (
-        <ConcernEditor
-          concernId={concernId}
-          concern={concern}
-          onSaved={handleSaved}
-          onCancel={handleCancelEdit}
-        />
+        <ConcernEditor concern={concern} onSaved={handleSaved} onCancel={handleCancelEdit} />
       ) : (
         <div>
           <ul>
@@ -49,6 +50,10 @@ export default function ConcernSection({ concernId, concern, onConcernChanged }:
           </ul>
 
           <button onClick={startEditing}>編集</button>
+          <ConcernDeleteButton
+            id={concern.id}
+            onDeleted={handleConcernDeleted} // 削除成功時も一覧更新
+          />
         </div>
       )}
     </div>
