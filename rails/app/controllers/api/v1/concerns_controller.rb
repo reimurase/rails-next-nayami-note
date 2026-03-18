@@ -1,7 +1,24 @@
 class Api::V1::ConcernsController < ApplicationController
   def index
-    concerns = current_user.concerns.order(created_at: :desc, id: :desc)
+    concerns = current_user.concerns.active.order(created_at: :desc, id: :desc)
     render json: concerns
+  end
+
+  def archived
+    concerns = current_user.concerns.archived.order(archived_at: :desc)
+    render json: concerns
+  end
+
+  def archive
+    concern = current_user.concerns.find(params[:id])
+    concern.archive!
+    render json: concern, status: :ok
+  end
+
+  def unarchive
+    concern = current_user.concerns.find(params[:id])
+    concern.unarchive!
+    render json: concern, status: :ok
   end
 
   def show

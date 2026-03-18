@@ -68,4 +68,46 @@ RSpec.describe Concern, type: :model do
       end
     end
   end
+
+  describe "archive scopes and methods" do
+    let(:user) { create(:user) }
+
+    describe ".active" do
+      let!(:active_concern) { create(:concern, user: user, archived_at: nil) }
+      let!(:archived_concern) { create(:concern, user: user, archived_at: Time.current) }
+
+      it "未アーカイブの concern のみを返すこと" do
+        expect(Concern.active).to contain_exactly(active_concern)
+      end
+    end
+
+    describe ".archived" do
+      let!(:active_concern) { create(:concern, user: user, archived_at: nil) }
+      let!(:archived_concern) { create(:concern, user: user, archived_at: Time.current) }
+
+      it "アーカイブ済みの concern のみを返すこと" do
+        expect(Concern.archived).to contain_exactly(archived_concern)
+      end
+    end
+
+    describe "#archive!" do
+      let(:concern) { create(:concern, user: user, archived_at: nil) }
+
+      it "archived_at に現在時刻が入ること" do
+        expect { concern.archive! }.
+          to change { concern.reload.archived_at }.
+               from(nil)
+      end
+    end
+
+    describe "#unarchive!" do
+      let(:concern) { create(:concern, user: user, archived_at: Time.current) }
+
+      it "archived_at に nil が入ること" do
+        expect { concern.unarchive! }.
+          to change { concern.reload.archived_at }.
+               to(nil)
+      end
+    end
+  end
 end
