@@ -8,7 +8,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     login_as(user)
   end
 
-  describe "POST api/v1/concerns" do
+  describe "POST /api/v1/concerns" do
     subject(:request_api) {
       post "/api/v1/concerns",
            params: { concern: params }.to_json,
@@ -54,10 +54,22 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
   end
 
-  describe "GET api/v1/concerns" do
+  describe "GET /api/v1/concerns" do
     subject(:request_api) { get "/api/v1/concerns" }
 
     let(:json) { JSON.parse(response.body) }
+
+    it "未アーカイブのみ返ること" do
+      active_concern = create(:concern, user: user, archived_at: nil)
+      create(:concern, user: user, archived_at: Time.current)
+
+      request_api
+
+      expect(response).to have_http_status(:ok)
+      expect(json.length).to eq(1)
+      expect(json[0]["id"]).to eq(active_concern.id)
+      expect(json[0]["archived_at"]).to be_nil
+    end
 
     context "concernが0件の場合" do
       before do
@@ -98,7 +110,92 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
   end
 
-  describe "GET api/v1/concerns/:id" do
+  describe "GET /api/v1/concerns/archived" do
+    subject(:request_api) { get "/api/v1/concerns/archived" }
+
+    it "自分のアーカイブ済み concern のみ返ること" do
+      create(:concern, user: user, archived_at: nil)
+      archived_concern = create(:concern, user: user, archived_at: Time.current)
+
+      other_user = create(:user, email: "other@email.com")
+      create(:concern, user: other_user, archived_at: Time.current)
+
+      request_api
+
+      expect(response).to have_http_status(:ok)
+      json = JSON.parse(response.body)
+
+      expect(json.length).to eq(1)
+      expect(json[0]["id"]).to eq(archived_concern.id)
+      expect(json[0]["archived_at"]).to be_present
+    end
+  end
+
+  describe "PATCH /api/v1/concerns/:id/archive" do
+    subject(:request_api) { patch "/api/v1/concerns/#{concern_id}/archive", headers: csrf_headers }
+
+    context "archived_at が nil の場合" do
+      let!(:concern) { create(:concern, user: user, archived_at: nil) }
+      let(:concern_id) { concern.id }
+
+      it "200 OK が返ること" do
+        request_api
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "archived_at に現在時刻が入ること" do
+        expect { request_api }.
+          to change { concern.reload.archived_at }.
+               from(nil)
+        expect(concern.reload.archived_at).to be_present
+      end
+    end
+
+    context "他人の concern をアーカイブしようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_concern) { create(:concern, user: other_user, archived_at: nil) }
+      let(:concern_id) { other_concern.id }
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe "PATCH /api/v1/concerns/:id/unarchive" do
+    subject(:request_api) { patch "/api/v1/concerns/#{concern_id}/unarchive", headers: csrf_headers }
+
+    context "archived_at が存在する場合" do
+      let!(:concern) { create(:concern, user: user, archived_at: Time.current) }
+      let(:concern_id) { concern.id }
+
+      it "200 OK が返ること" do
+        request_api
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "archived_at が nil になること" do
+        expect { request_api }.
+          to change { concern.reload.archived_at }.
+               from(concern.archived_at).
+               to(nil)
+      end
+    end
+
+    context "他人の concern のアーカイブを解除しようとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_concern) { create(:concern, user: other_user, archived_at: Time.current) }
+      let(:concern_id) { other_concern.id }
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
+  end
+
+  describe "GET /api/v1/concerns/:id" do
     subject(:request_api) { get "/api/v1/concerns/#{concern_id}" }
 
     context "指定したIDのconcernが存在する場合" do
@@ -143,7 +240,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
   end
 
-  describe "PATCH api/v1/concerns/:id" do
+  describe "PATCH /api/v1/concerns/:id" do
     subject(:request_api) {
       patch "/api/v1/concerns/#{concern_id}",
             params: { concern: params }.to_json,

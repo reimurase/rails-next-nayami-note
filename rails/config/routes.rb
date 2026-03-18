@@ -10,6 +10,15 @@ Rails.application.routes.draw do
       resources :concerns, only: [:index, :show, :create, :update, :destroy] do
         resource :issue, module: :concerns, only: [:create, :update, :destroy]
         resource :roadmap, module: :concerns, only: [:create, :update, :destroy]
+
+        collection do
+          get :archived
+        end
+
+        member do
+          patch :archive
+          patch :unarchive
+        end
       end
 
       # 一覧表示用
