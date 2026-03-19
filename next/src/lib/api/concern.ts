@@ -11,6 +11,7 @@ const toConcern = (data: ConcernResponse): Concern => ({
   id: data.id,
   triggerEvent: data.trigger_event,
   content: data.content,
+  archivedAt: data.archived_at,
 });
 
 const toConcernDetail = (data: ConcernDetailResponse): ConcernDetail => ({
@@ -27,6 +28,11 @@ const toConcernPayload = (input: ConcernInput) => ({
 export const concernApi = {
   getConcerns: async (): Promise<Concern[]> => {
     const res = await api.get<ConcernResponse[]>("/api/v1/concerns");
+    return res.data.map(toConcern);
+  },
+
+  getArchivedConcerns: async (): Promise<Concern[]> => {
+    const res = await api.get<ConcernResponse[]>("/api/v1/concerns/archived");
     return res.data.map(toConcern);
   },
 

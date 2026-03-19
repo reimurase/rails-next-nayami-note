@@ -5,6 +5,7 @@ export type ConcernResponse = {
   id: number;
   trigger_event: string;
   content: string;
+  archived_at: string | null;
 };
 
 export type ConcernDetailResponse = {
@@ -17,9 +18,13 @@ export type Concern = {
   id: number;
   triggerEvent: string;
   content: string;
+  archivedAt: string | null;
 };
 
-export type ConcernInput = Pick<Concern, "triggerEvent" | "content">;
+export type ConcernInput = {
+  triggerEvent: string;
+  content: string;
+};
 
 export type ConcernDetail = {
   concern: Concern;
