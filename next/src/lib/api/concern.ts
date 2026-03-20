@@ -31,11 +31,6 @@ export const concernApi = {
     return res.data.map(toConcern);
   },
 
-  getArchivedConcerns: async (): Promise<Concern[]> => {
-    const res = await api.get<ConcernResponse[]>("/api/v1/concerns/archived");
-    return res.data.map(toConcern);
-  },
-
   getConcern: async (id: number): Promise<ConcernDetail> => {
     const res = await api.get<ConcernDetailResponse>(`/api/v1/concerns/${id}`);
     return toConcernDetail(res.data);
@@ -56,4 +51,17 @@ export const concernApi = {
   },
 
   remove: (id: number) => api.delete(`/api/v1/concerns/${id}`),
+
+  getArchivedConcerns: async (): Promise<Concern[]> => {
+    const res = await api.get<ConcernResponse[]>("/api/v1/concerns/archived");
+    return res.data.map(toConcern);
+  },
+
+  archive: async (id: number): Promise<void> => {
+    await api.patch<ConcernResponse>(`/api/v1/concerns/${id}/archive`);
+  },
+
+  unarchive: async (id: number): Promise<void> => {
+    await api.patch<ConcernResponse>(`/api/v1/concerns/${id}/unarchive`);
+  },
 };
