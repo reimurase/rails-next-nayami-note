@@ -23,6 +23,10 @@ const ConcernIndex = ({ concerns, onConcernListChanged }: Props) => {
     await onConcernListChanged?.();
   };
 
+  const handleConcernArchived = async () => {
+    await onConcernListChanged?.();
+  };
+
   return (
     <div>
       <h2>なやみ一覧</h2>
@@ -50,6 +54,7 @@ const ConcernIndex = ({ concerns, onConcernListChanged }: Props) => {
               concernId={selectedId}
               onConcernListChanged={onConcernListChanged}
               onConcernDeleted={handleConcernDeleted}
+              onConcernArchived={handleConcernArchived}
             />
           )}
         </DialogContent>

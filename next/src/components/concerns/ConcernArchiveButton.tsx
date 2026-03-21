@@ -22,7 +22,7 @@ const ConcernArchiveButton = ({ id, onArchived }: Props) => {
       setIsArchiving(true);
       setApiError(null);
 
-      await concernApi.archive(id);
+      await concernApi.archiveConcern(id);
 
       await onArchived?.();
     } catch (error) {

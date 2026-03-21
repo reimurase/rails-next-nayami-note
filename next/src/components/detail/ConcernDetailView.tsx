@@ -15,6 +15,7 @@ type Props = {
   onIssueListChanged?: () => void | Promise<void>;
   onRoadmapListChanged?: () => void | Promise<void>;
   onConcernDeleted?: () => void | Promise<void>;
+  onConcernArchived?: () => void | Promise<void>;
 };
 
 export default function ConcernDetailView({
@@ -23,6 +24,7 @@ export default function ConcernDetailView({
   onIssueListChanged,
   onRoadmapListChanged,
   onConcernDeleted,
+  onConcernArchived,
 }: Props) {
   const {
     data: detail,
@@ -37,6 +39,7 @@ export default function ConcernDetailView({
     await mutate();
   };
 
+  // concernの一覧と詳細を更新
   const handleConcernChanged = async () => {
     await refreshDetail();
     await onConcernListChanged?.();
@@ -46,11 +49,17 @@ export default function ConcernDetailView({
     await onConcernDeleted?.();
   };
 
+  const handleConcernArchived = async () => {
+    await onConcernArchived?.();
+  };
+
+  // issueの一覧と詳細を更新
   const handleIssueChanged = async () => {
     await refreshDetail();
     await onIssueListChanged?.();
   };
 
+  // roadmapの一覧と詳細を更新
   const handleRoadmapChanged = async () => {
     await refreshDetail();
     await onRoadmapListChanged?.();
@@ -91,6 +100,7 @@ export default function ConcernDetailView({
         concern={detail.concern}
         onConcernUpdated={handleConcernChanged}
         onConcernDeleted={handleConcernDeleted}
+        onConcernArchived={handleConcernArchived}
       />
 
       <IssueSection

@@ -7,7 +7,7 @@ import { concernApi } from "@/lib/api/concern";
 
 jest.mock("@/lib/api/concern", () => ({
   concernApi: {
-    archive: jest.fn(),
+    archiveConcern: jest.fn(),
   },
 }));
 const mockedConcernApi = concernApi as jest.Mocked<typeof concernApi>;
@@ -19,7 +19,7 @@ describe("ConcernArchiveButton 正常系", () => {
   });
 
   test("ライブラリボタンをクリックするとアーカイブAPIが呼ばれ、onArchivedも呼ばれる", async () => {
-    mockedConcernApi.archive.mockResolvedValue({} as any);
+    mockedConcernApi.archiveConcern.mockResolvedValue({} as any);
 
     const onArchivedMock = jest.fn();
 
@@ -30,9 +30,9 @@ describe("ConcernArchiveButton 正常系", () => {
     // confirm が呼ばれる
     expect(window.confirm).toHaveBeenCalledWith("本当にライブラリへ移動しますか？");
 
-    // ConcernApi.archive が呼ばれる
+    // ConcernApi.archiveConcern が呼ばれる
     await waitFor(() => {
-      expect(mockedConcernApi.archive).toHaveBeenCalledWith(1, null);
+      expect(mockedConcernApi.archiveConcern).toHaveBeenCalledWith(1, null);
     });
 
     // APIが終わって onArchived が呼ばれる
@@ -42,7 +42,7 @@ describe("ConcernArchiveButton 正常系", () => {
   });
 
   test("移動中はボタンが '移動中...' に変わる", async () => {
-    mockedConcernApi.archive.mockResolvedValue({} as any);
+    mockedConcernApi.archiveConcern.mockResolvedValue({} as any);
     window.confirm = jest.fn().mockReturnValue(true);
 
     render(<ConcernArchiveButton id={1} />);
@@ -65,7 +65,7 @@ describe("ConcernArchiveButton 異常系", () => {
   test("ライブラリへの移動が失敗したらエラーが表示され、onArchived は呼ばれず、ボタンは元に戻る", async () => {
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
-    mockedConcernApi.archive.mockRejectedValueOnce(new Error("archive failed"));
+    mockedConcernApi.archiveConcern.mockRejectedValueOnce(new Error("archiveConcern failed"));
 
     const onArchivedMock = jest.fn();
     render(<ConcernArchiveButton id={1} onArchived={onArchivedMock} />);

@@ -57,11 +57,11 @@ export const concernApi = {
     return res.data.map(toConcern);
   },
 
-  archive: async (id: number): Promise<void> => {
+  archiveConcern: async (id: number): Promise<void> => {
     await api.patch<ConcernResponse>(`/api/v1/concerns/${id}/archive`);
   },
 
-  unarchive: async (id: number): Promise<void> => {
+  unarchiveConcern: async (id: number): Promise<void> => {
     await api.patch<ConcernResponse>(`/api/v1/concerns/${id}/unarchive`);
   },
 };

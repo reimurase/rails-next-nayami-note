@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import ConcernDeleteButton from "../concerns/ConcernDeleteButton";
+import ConcernArchiveButton from "../concerns/ConcernArchiveButton";
 
 import ConcernEditor from "./ConcernEditor";
 
@@ -12,9 +13,15 @@ type Props = {
   concern: Concern;
   onConcernUpdated?: () => void | Promise<void>;
   onConcernDeleted?: () => void | Promise<void>;
+  onConcernArchived?: () => void | Promise<void>;
 };
 
-export default function ConcernSection({ concern, onConcernUpdated, onConcernDeleted }: Props) {
+export default function ConcernSection({
+  concern,
+  onConcernUpdated,
+  onConcernDeleted,
+  onConcernArchived,
+}: Props) {
   const [isEditing, setIsEditing] = useState(false);
 
   const startEditing = () => {
@@ -39,6 +46,8 @@ export default function ConcernSection({ concern, onConcernUpdated, onConcernDel
   return (
     <div>
       <h3>Concern</h3>
+
+      <ConcernArchiveButton id={concern.id} onArchived={onConcernArchived} />
 
       {isEditing ? (
         <ConcernEditor concern={concern} onSaved={handleSaved} onCancel={handleCancelEdit} />
