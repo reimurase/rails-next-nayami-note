@@ -37,6 +37,7 @@ export default function ConcernDetailView({
     await mutate();
   };
 
+  // concernの一覧と詳細を更新
   const handleConcernChanged = async () => {
     await refreshDetail();
     await onConcernListChanged?.();
@@ -46,11 +47,13 @@ export default function ConcernDetailView({
     await onConcernDeleted?.();
   };
 
+  // issueの一覧と詳細を更新
   const handleIssueChanged = async () => {
     await refreshDetail();
     await onIssueListChanged?.();
   };
 
+  // roadmapの一覧と詳細を更新
   const handleRoadmapChanged = async () => {
     await refreshDetail();
     await onRoadmapListChanged?.();
@@ -91,6 +94,7 @@ export default function ConcernDetailView({
         concern={detail.concern}
         onConcernUpdated={handleConcernChanged}
         onConcernDeleted={handleConcernDeleted}
+        onConcernArchived={handleConcernChanged}
       />
 
       <IssueSection

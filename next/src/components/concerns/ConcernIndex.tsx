@@ -35,7 +35,7 @@ const ConcernIndex = ({ concerns, onConcernListChanged }: Props) => {
             <li key={concern.id} style={{ listStyle: "none" }}>
               <ConcernRow
                 concern={concern}
-                onChanged={onConcernListChanged}
+                onConcernListChanged={onConcernListChanged}
                 onOpenDetail={() => setSelectedId(concern.id)}
               />
             </li>
