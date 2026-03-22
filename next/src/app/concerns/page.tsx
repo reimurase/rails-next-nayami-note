@@ -1,4 +1,4 @@
-import ConcernPageClient from "./ConcernPageClient";
+import ConcernPageClient from "./PageClient";
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
