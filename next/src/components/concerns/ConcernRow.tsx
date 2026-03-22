@@ -25,7 +25,11 @@ const ConcernRow = ({ concern, onConcernListChanged, onOpenDetail }: Props) => {
         onDeleted={onConcernListChanged} // 削除成功時も一覧更新
       />
 
-      <ConcernArchiveButton id={concern.id} onArchived={onConcernListChanged} />
+      <ConcernArchiveButton
+        id={concern.id}
+        archivedAt={concern.archivedAt}
+        onArchiveChanged={onConcernListChanged}
+      />
     </div>
   );
 };

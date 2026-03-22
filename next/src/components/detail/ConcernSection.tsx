@@ -47,7 +47,11 @@ export default function ConcernSection({
     <div>
       <h3>Concern</h3>
 
-      <ConcernArchiveButton id={concern.id} onArchived={onConcernArchived} />
+      <ConcernArchiveButton
+        id={concern.id}
+        archivedAt={concern.archivedAt}
+        onArchiveChanged={onConcernArchived}
+      />
 
       {isEditing ? (
         <ConcernEditor concern={concern} onSaved={handleSaved} onCancel={handleCancelEdit} />

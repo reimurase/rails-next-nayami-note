@@ -1,5 +1,6 @@
 // src/components/concerns/ConcernArchiveButton.test.tsx
 import { render, screen, fireEvent, waitFor } from "@testing-library/react";
+import { useState } from "react";
 
 import ConcernArchiveButton from "./ConcernArchiveButton";
 
@@ -12,18 +13,32 @@ jest.mock("@/lib/api/concern", () => ({
 }));
 const mockedConcernApi = concernApi as jest.Mocked<typeof concernApi>;
 
+const Wrapper = () => {
+  const [archivedAt, setArchivedAt] = useState<string | null>(null);
+
+  return (
+    <ConcernArchiveButton
+      id={1}
+      archivedAt={archivedAt}
+      onArchiveChanged={() => setArchivedAt("2026-03-22T00:00:00.000Z")}
+    />
+  );
+};
+
 describe("ConcernArchiveButton 正常系", () => {
   beforeEach(() => {
     // window.confirm をモック（JSDOMでは実装されていないため）
     window.confirm = jest.fn().mockReturnValue(true);
   });
 
-  test("ライブラリボタンをクリックするとアーカイブAPIが呼ばれ、onArchivedも呼ばれる", async () => {
+  test("ライブラリボタンをクリックするとアーカイブAPIが呼ばれ、onArchiveChangedも呼ばれる", async () => {
     mockedConcernApi.archiveConcern.mockResolvedValue({} as any);
 
-    const onArchivedMock = jest.fn();
+    const onArchiveChangedMock = jest.fn();
 
-    render(<ConcernArchiveButton id={1} onArchived={onArchivedMock} />);
+    render(
+      <ConcernArchiveButton id={1} archivedAt={null} onArchiveChanged={onArchiveChangedMock} />
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "ライブラリへ" }));
 
@@ -32,12 +47,25 @@ describe("ConcernArchiveButton 正常系", () => {
 
     // ConcernApi.archiveConcern が呼ばれる
     await waitFor(() => {
-      expect(mockedConcernApi.archiveConcern).toHaveBeenCalledWith(1, null);
+      expect(mockedConcernApi.archiveConcern).toHaveBeenCalledWith(1);
     });
 
-    // APIが終わって onArchived が呼ばれる
+    // APIが終わって onArchiveChanged が呼ばれる
     await waitFor(() => {
-      expect(onArchivedMock).toHaveBeenCalled();
+      expect(onArchiveChangedMock).toHaveBeenCalled();
+    });
+  });
+
+  test("移動後に archivedAt が更新されると 'ノートに戻す' に切り替わる", async () => {
+    mockedConcernApi.archiveConcern.mockResolvedValue({} as any);
+    window.confirm = jest.fn().mockReturnValue(true);
+
+    render(<Wrapper />);
+
+    fireEvent.click(screen.getByRole("button", { name: "ライブラリへ" }));
+
+    await waitFor(() => {
+      expect(screen.getByRole("button")).toHaveTextContent("ノートへ戻す");
     });
   });
 
@@ -45,7 +73,7 @@ describe("ConcernArchiveButton 正常系", () => {
     mockedConcernApi.archiveConcern.mockResolvedValue({} as any);
     window.confirm = jest.fn().mockReturnValue(true);
 
-    render(<ConcernArchiveButton id={1} />);
+    render(<ConcernArchiveButton id={1} archivedAt={null} />);
 
     fireEvent.click(screen.getByRole("button", { name: "ライブラリへ" }));
 
@@ -62,20 +90,22 @@ describe("ConcernArchiveButton 正常系", () => {
 });
 
 describe("ConcernArchiveButton 異常系", () => {
-  test("ライブラリへの移動が失敗したらエラーが表示され、onArchived は呼ばれず、ボタンは元に戻る", async () => {
+  test("ライブラリへの移動が失敗したらエラーが表示され、onArchiveChanged は呼ばれず、ボタンは元に戻る", async () => {
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
     mockedConcernApi.archiveConcern.mockRejectedValueOnce(new Error("archiveConcern failed"));
 
-    const onArchivedMock = jest.fn();
-    render(<ConcernArchiveButton id={1} onArchived={onArchivedMock} />);
+    const onArchiveChangedMock = jest.fn();
+    render(
+      <ConcernArchiveButton id={1} archivedAt={null} onArchiveChanged={onArchiveChangedMock} />
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "ライブラリへ" }));
 
     // エラー表示
     expect(await screen.findByRole("alert")).toHaveTextContent("移動に失敗しました");
-    // onArchived は呼ばれない
-    expect(onArchivedMock).not.toHaveBeenCalled();
+    // onArchiveChanged は呼ばれない
+    expect(onArchiveChangedMock).not.toHaveBeenCalled();
 
     // ボタンが元に戻る（移動中...解除）
     await waitFor(() => {
