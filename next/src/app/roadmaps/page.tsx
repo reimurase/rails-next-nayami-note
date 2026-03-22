@@ -1,4 +1,4 @@
-import RoadmapPageClient from "./RoadmapPageClient";
+import RoadmapPageClient from "./PageClient";
 
 import { AuthGuard } from "@/components/auth/AuthGuard";
 
