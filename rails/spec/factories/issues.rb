@@ -4,5 +4,6 @@ FactoryBot.define do
     association :concern
     title { "テストのタイトル" }
     content { "テストの問題" }
+    archived_at { nil }
   end
 end
