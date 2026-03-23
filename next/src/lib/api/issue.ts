@@ -6,6 +6,7 @@ const toIssue = (data: IssueResponse): Issue => ({
   title: data.title,
   content: data.content,
   concernId: data.concern_id,
+  archivedAt: data.archived_at,
 });
 
 export const issueApi = {
@@ -29,4 +30,9 @@ export const issueApi = {
   },
 
   remove: (concernId: number) => api.delete(`/api/v1/concerns/${concernId}/issue`),
+
+  getArchivedIssues: async (): Promise<Issue[]> => {
+    const res = await api.get<IssueResponse[]>("/api/v1/issues/archived");
+    return res.data.map(toIssue);
+  },
 };

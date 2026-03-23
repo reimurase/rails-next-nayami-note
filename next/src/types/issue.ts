@@ -3,6 +3,7 @@ export type IssueResponse = {
   title: string;
   content: string;
   concern_id: number;
+  archived_at: string | null;
 };
 
 export type Issue = {
@@ -10,6 +11,7 @@ export type Issue = {
   title: string;
   content: string;
   concernId: number;
+  archivedAt: string | null;
 };
 
 export type IssueInput = {
