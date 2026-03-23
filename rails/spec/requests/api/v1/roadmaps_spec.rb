@@ -21,11 +21,15 @@ RSpec.describe "Api::V1::Roadmaps", type: :request do
       end
     end
 
-    context "roadmapが複数件の場合" do
+    context "自分と他人の roadmap が存在する場合" do
       let!(:concerns) { create_list(:concern, 3, user: user) }
       let!(:roadmaps) do
         concerns.map {|c| create(:roadmap, user: user, concern: c) }
       end
+
+      let!(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_concern) { create(:concern, user: other_user) }
+      let!(:other_roadmap) { create(:roadmap, user: other_user, concern: other_concern) }
 
       before do
         request_api
@@ -35,8 +39,12 @@ RSpec.describe "Api::V1::Roadmaps", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it "roadmaps が期待した件数返ること" do
+      it "自分の roadmaps のみが返ること" do
         expect(json.length).to eq(3)
+        returned_ids = json.map {|item| item["id"] }
+
+        expect(returned_ids).to match_array(roadmaps.map(&:id))
+        expect(returned_ids).not_to include(other_roadmap.id)
       end
 
       it "各 roadmap の内容が正しいこと" do
