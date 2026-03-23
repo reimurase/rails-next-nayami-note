@@ -88,6 +88,9 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     context "concernが複数件の場合" do
       let!(:concerns) { create_list(:concern, 3, user: user) }
 
+      let!(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_concern) { create(:concern, user: other_user) }
+
       before do
         request_api
       end
@@ -97,8 +100,6 @@ RSpec.describe "Api::V1::Concerns", type: :request do
       end
 
       it "自分の concerns のみが期待した件数返ること" do
-        other_user = create(:user, email: "other@email.com")
-        create(:concern, user: other_user)
         expect(json.length).to eq(3)
       end
 
