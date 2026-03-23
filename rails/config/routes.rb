@@ -22,7 +22,16 @@ Rails.application.routes.draw do
       end
 
       # 一覧表示用
-      resources :issues, only: [:index]
+      resources :issues, only: [:index] do
+        collection do
+          get :archived
+        end
+
+        member do
+          patch :archive
+          patch :unarchive
+        end
+      end
       resources :roadmaps, only: [:index]
     end
   end

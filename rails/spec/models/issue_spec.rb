@@ -68,4 +68,48 @@ RSpec.describe Issue, type: :model do
       end
     end
   end
+
+  describe "archive scopes and methods" do
+    let(:user) { create(:user) }
+    let(:active_concern) { create(:concern, user: user) }
+    let(:archived_concern) { create(:concern, user: user) }
+
+    describe ".active" do
+      let!(:active_issue) { create(:issue, user: user, archived_at: nil, concern: active_concern) }
+      let!(:archived_issue) { create(:issue, user: user, archived_at: Time.current, concern: archived_concern) }
+
+      it "未アーカイブの issue のみを返すこと" do
+        expect(Issue.active).to contain_exactly(active_issue)
+      end
+    end
+
+    describe ".archived" do
+      let!(:active_issue) { create(:issue, user: user, archived_at: nil, concern: active_concern) }
+      let!(:archived_issue) { create(:issue, user: user, archived_at: Time.current, concern: archived_concern) }
+
+      it "アーカイブ済みの issue のみを返すこと" do
+        expect(Issue.archived).to contain_exactly(archived_issue)
+      end
+    end
+
+    describe "#archive!" do
+      let(:issue) { create(:issue, user: user, archived_at: nil, concern: active_concern) }
+
+      it "archived_at に現在時刻が入ること" do
+        expect { issue.archive! }.
+          to change { issue.reload.archived_at }.
+               from(nil)
+      end
+    end
+
+    describe "#unarchive!" do
+      let(:issue) { create(:issue, user: user, archived_at: Time.current, concern: archived_concern) }
+
+      it "archived_at に nil が入ること" do
+        expect { issue.unarchive! }.
+          to change { issue.reload.archived_at }.
+               to(nil)
+      end
+    end
+  end
 end
