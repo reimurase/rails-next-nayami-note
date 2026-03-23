@@ -21,7 +21,7 @@ RSpec.describe "Api::V1::Concerns::Roadmaps", type: :request do
     context "パラメータが正しいとき" do
       let(:params) { valid_params }
 
-      it "レコードを1件作成し、201を返す" do
+      it "roadmap を1件作成し、201を返す" do
         expect { request_api }.to change { Roadmap.count }.by(1)
         expect(response).to have_http_status(:created)
 

@@ -21,11 +21,15 @@ RSpec.describe "Api::V1::Issues", type: :request do
       end
     end
 
-    context "issueが複数件の場合" do
+    context "自分と他人の issue が存在する場合" do
       let!(:concerns) { create_list(:concern, 3, user: user) }
       let!(:issues) do
         concerns.map {|c| create(:issue, user: user, concern: c) }
       end
+
+      let!(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_concern) { create(:concern, user: other_user) }
+      let!(:other_issue) { create(:issue, user: other_user, concern: other_concern) }
 
       before do
         request_api
@@ -35,8 +39,12 @@ RSpec.describe "Api::V1::Issues", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it "issues が期待した件数返ること" do
+      it "自分の issues のみが返ること" do
         expect(json.length).to eq(3)
+        returned_ids = json.map {|item| item["id"] }
+
+        expect(returned_ids).to match_array(issues.map(&:id))
+        expect(returned_ids).not_to include(other_issue.id)
       end
 
       it "各 issue の内容が正しいこと" do

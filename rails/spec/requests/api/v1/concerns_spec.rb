@@ -31,13 +31,16 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     context "パラメータが正しいとき" do
       let(:params) { valid_params }
 
-      it "レコードを1件作成し、201を返す" do
+      it "current_user に紐づく concern を1件作成し、201を返す" do
         expect { request_api }.to change { user.concerns.count }.by(1)
 
         expect(response).to have_http_status(:created)
         json = JSON.parse(response.body)
         expect(json["trigger_event"]).to eq "テストのきっかけ"
         expect(json["content"]).to eq "テストの悩み"
+
+        created_concern = user.concerns.order(:id).last
+        expect(created_concern.user_id).to eq(user.id)
       end
     end
 
@@ -85,6 +88,9 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     context "concernが複数件の場合" do
       let!(:concerns) { create_list(:concern, 3, user: user) }
 
+      let!(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_concern) { create(:concern, user: other_user) }
+
       before do
         request_api
       end
@@ -93,7 +99,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it "concerns が期待した件数返ること" do
+      it "自分の concerns のみが期待した件数返ること" do
         expect(json.length).to eq(3)
       end
 
@@ -238,6 +244,17 @@ RSpec.describe "Api::V1::Concerns", type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context "他人のconcernを読み取ろうとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_concern) { create(:concern, user: other_user) }
+      let(:concern_id) { other_concern.id }
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   describe "PATCH /api/v1/concerns/:id" do
@@ -316,7 +333,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
 
     context "他人のconcernを更新しようとした場合" do
-      let(:other_user) { create(:user, email: "other@email.com", password: "password") }
+      let(:other_user) { create(:user, email: "other@email.com") }
       let!(:other_concern) { create(:concern, user: other_user, content: "他人の内容") }
       let(:concern_id) { other_concern.id }
 
@@ -360,7 +377,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
 
     context "他人のconcernを削除しようとした場合" do
-      let(:other_user) { create(:user, email: "other@email.com", password: "password") }
+      let(:other_user) { create(:user, email: "other@email.com") }
       let!(:other_concern) { create(:concern, user: other_user) }
       let(:concern_id) { other_concern.id }
 
