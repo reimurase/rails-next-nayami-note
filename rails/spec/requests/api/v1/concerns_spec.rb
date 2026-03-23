@@ -93,7 +93,9 @@ RSpec.describe "Api::V1::Concerns", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it "concerns が期待した件数返ること" do
+      it "自分の concerns のみが期待した件数返ること" do
+        other_user = create(:user, email: "other@email.com")
+        create(:concern, user: other_user)
         expect(json.length).to eq(3)
       end
 
@@ -238,6 +240,17 @@ RSpec.describe "Api::V1::Concerns", type: :request do
         expect(response).to have_http_status(:not_found)
       end
     end
+
+    context "他人のconcernを読み取ろうとした場合" do
+      let(:other_user) { create(:user, email: "other@email.com") }
+      let!(:other_concern) { create(:concern, user: other_user) }
+      let(:concern_id) { other_concern.id }
+
+      it "404 Not Found が返ること（存在を隠す）" do
+        request_api
+        expect(response).to have_http_status(:not_found)
+      end
+    end
   end
 
   describe "PATCH /api/v1/concerns/:id" do
@@ -316,7 +329,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
 
     context "他人のconcernを更新しようとした場合" do
-      let(:other_user) { create(:user, email: "other@email.com", password: "password") }
+      let(:other_user) { create(:user, email: "other@email.com") }
       let!(:other_concern) { create(:concern, user: other_user, content: "他人の内容") }
       let(:concern_id) { other_concern.id }
 
@@ -360,7 +373,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     end
 
     context "他人のconcernを削除しようとした場合" do
-      let(:other_user) { create(:user, email: "other@email.com", password: "password") }
+      let(:other_user) { create(:user, email: "other@email.com") }
       let!(:other_concern) { create(:concern, user: other_user) }
       let(:concern_id) { other_concern.id }
 
