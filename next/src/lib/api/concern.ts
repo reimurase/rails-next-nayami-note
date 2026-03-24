@@ -1,3 +1,5 @@
+import { toIssue } from "./issue";
+
 import { api } from "@/lib/api/client";
 import type {
   ConcernResponse,
@@ -16,7 +18,7 @@ const toConcern = (data: ConcernResponse): Concern => ({
 
 const toConcernDetail = (data: ConcernDetailResponse): ConcernDetail => ({
   concern: toConcern(data.concern),
-  issue: data.issue,
+  issue: data.issue ? toIssue(data.issue) : null,
   roadmap: data.roadmap,
 });
 

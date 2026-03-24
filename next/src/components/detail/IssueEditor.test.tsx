@@ -26,7 +26,7 @@ describe("IssueEditor", () => {
     render(
       <IssueEditor
         concernId={1}
-        issue={{ id: 10, title: "旧タイトル", content: "旧内容", concernId: 1 }}
+        issue={{ id: 10, title: "旧タイトル", content: "旧内容", concernId: 1, archivedAt: null }}
         onSaved={handleCreated}
         onCancel={handleCancelEdit}
       />

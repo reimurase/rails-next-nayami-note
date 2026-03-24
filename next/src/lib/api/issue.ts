@@ -1,7 +1,7 @@
 import { api } from "@/lib/api/client";
 import { IssueResponse, Issue, IssueInput } from "@/types/issue";
 
-const toIssue = (data: IssueResponse): Issue => ({
+export const toIssue = (data: IssueResponse): Issue => ({
   id: data.id,
   title: data.title,
   content: data.content,
@@ -34,5 +34,13 @@ export const issueApi = {
   getArchivedIssues: async (): Promise<Issue[]> => {
     const res = await api.get<IssueResponse[]>("/api/v1/issues/archived");
     return res.data.map(toIssue);
+  },
+
+  archiveIssue: async (issueId: number): Promise<void> => {
+    await api.patch<IssueResponse>(`/api/v1/issues/${issueId}/archive`);
+  },
+
+  unarchiveIssue: async (issueId: number): Promise<void> => {
+    await api.patch<IssueResponse>(`/api/v1/issues/${issueId}/unarchive`);
   },
 };

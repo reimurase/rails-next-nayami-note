@@ -1,12 +1,13 @@
 "use client";
 
 import IssueDeleteButton from "./IssueDeleteButton";
+import IssueArchiveButton from "./IssueArchiveButton";
 
 import type { Issue } from "@/types/issue";
 
 type Props = {
   issue: Issue;
-  onIssueListChanged?: () => void;
+  onIssueListChanged?: () => void | Promise<void>;
   onOpenDetail?: () => void;
 };
 
@@ -18,10 +19,15 @@ const IssueRow = ({ issue, onIssueListChanged, onOpenDetail }: Props) => {
         <span>{issue.content}</span>
       </div>
 
-      {/* 既存の削除ボタンはそのまま使える */}
       <IssueDeleteButton
         concernId={issue.concernId}
         onDeleted={onIssueListChanged} // 削除成功時も一覧更新
+      />
+
+      <IssueArchiveButton
+        issueId={issue.id}
+        archivedAt={issue.archivedAt}
+        onArchiveChanged={onIssueListChanged}
       />
     </div>
   );
