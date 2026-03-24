@@ -32,7 +32,17 @@ Rails.application.routes.draw do
           patch :unarchive
         end
       end
-      resources :roadmaps, only: [:index]
+
+      resources :roadmaps, only: [:index] do
+        collection do
+          get :archived
+        end
+
+        member do
+          patch :archive
+          patch :unarchive
+        end
+      end
     end
   end
 
