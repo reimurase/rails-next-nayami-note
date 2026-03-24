@@ -1,4 +1,4 @@
-import { Issue } from "./issue";
+import { Issue, IssueResponse } from "./issue";
 import { Roadmap } from "./roadmap";
 
 export type ConcernResponse = {
@@ -10,7 +10,7 @@ export type ConcernResponse = {
 
 export type ConcernDetailResponse = {
   concern: ConcernResponse;
-  issue: Issue | null;
+  issue: IssueResponse | null;
   roadmap: Roadmap | null;
 };
 

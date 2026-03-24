@@ -18,8 +18,8 @@ describe("IssueIndex", () => {
 
   test("issues が取得できたら一覧を表示する", () => {
     const mockData = [
-      { id: 1, title: "タイトルA", content: "問題A", concernId: 1 },
-      { id: 2, title: "タイトルB", content: "問題B", concernId: 2 },
+      { id: 1, title: "タイトルA", content: "問題A", concernId: 1, archivedAt: null },
+      { id: 2, title: "タイトルB", content: "問題B", concernId: 2, archivedAt: null },
     ];
 
     render(<IssueIndex issues={mockData} />);
@@ -32,8 +32,8 @@ describe("IssueIndex", () => {
 
   test("行をクリックすると詳細が開く", () => {
     const issues = [
-      { id: 1, title: "a", content: "c1", concernId: 1 },
-      { id: 2, title: "b", content: "c2", concernId: 2 },
+      { id: 1, title: "a", content: "c1", concernId: 1, archivedAt: null },
+      { id: 2, title: "b", content: "c2", concernId: 2, archivedAt: null },
     ];
 
     render(<IssueIndex issues={issues} />);
@@ -43,7 +43,7 @@ describe("IssueIndex", () => {
   });
 
   test("ESCで詳細が閉じる", () => {
-    const issues = [{ id: 1, title: "a", content: "c1", concernId: 1 }];
+    const issues = [{ id: 1, title: "a", content: "c1", concernId: 1, archivedAt: null }];
     render(<IssueIndex issues={issues} />);
 
     fireEvent.click(screen.getByText("c1"));
