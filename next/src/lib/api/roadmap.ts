@@ -31,7 +31,7 @@ export const roadmapApi = {
 
   remove: (concernId: number) => api.delete(`/api/v1/concerns/${concernId}/roadmap`),
 
-  getArchivedRoadmap: async (): Promise<Roadmap[]> => {
+  getArchivedRoadmaps: async (): Promise<Roadmap[]> => {
     const res = await api.get<RoadmapResponse[]>("/api/v1/roadmaps/archived");
     return res.data.map(toRoadmap);
   },
