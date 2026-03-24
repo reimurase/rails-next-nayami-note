@@ -18,8 +18,8 @@ describe("RoadmapIndex", () => {
 
   test("roadmaps が取得できたら一覧を表示する", () => {
     const mockData = [
-      { id: 1, goal: "ゴールA", content: "ロードマップA", concernId: 1 },
-      { id: 2, goal: "ゴールB", content: "ロードマップB", concernId: 2 },
+      { id: 1, goal: "ゴールA", content: "ロードマップA", concernId: 1, archivedAt: null },
+      { id: 2, goal: "ゴールB", content: "ロードマップB", concernId: 2, archivedAt: null },
     ];
 
     render(<RoadmapIndex roadmaps={mockData} />);
@@ -31,7 +31,7 @@ describe("RoadmapIndex", () => {
   });
 
   test("行をクリックすると詳細が開く", () => {
-    const roadmaps = [{ id: 1, goal: "a", content: "c1", concernId: 1 }];
+    const roadmaps = [{ id: 1, goal: "a", content: "c1", concernId: 1, archivedAt: null }];
 
     render(<RoadmapIndex roadmaps={roadmaps} />);
 
@@ -40,7 +40,7 @@ describe("RoadmapIndex", () => {
   });
 
   test("ESCで詳細が閉じる", () => {
-    const roadmaps = [{ id: 1, goal: "a", content: "c1", concernId: 1 }];
+    const roadmaps = [{ id: 1, goal: "a", content: "c1", concernId: 1, archivedAt: null }];
     render(<RoadmapIndex roadmaps={roadmaps} />);
 
     fireEvent.click(screen.getByText("c1"));
