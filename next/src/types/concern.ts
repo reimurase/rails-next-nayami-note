@@ -1,5 +1,5 @@
 import { Issue, IssueResponse } from "./issue";
-import { Roadmap } from "./roadmap";
+import { Roadmap, RoadmapResponse } from "./roadmap";
 
 export type ConcernResponse = {
   id: number;
@@ -11,7 +11,7 @@ export type ConcernResponse = {
 export type ConcernDetailResponse = {
   concern: ConcernResponse;
   issue: IssueResponse | null;
-  roadmap: Roadmap | null;
+  roadmap: RoadmapResponse | null;
 };
 
 export type Concern = {

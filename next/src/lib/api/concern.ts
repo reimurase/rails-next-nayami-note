@@ -1,4 +1,5 @@
 import { toIssue } from "./issue";
+import { toRoadmap } from "./roadmap";
 
 import { api } from "@/lib/api/client";
 import type {
@@ -19,7 +20,7 @@ const toConcern = (data: ConcernResponse): Concern => ({
 const toConcernDetail = (data: ConcernDetailResponse): ConcernDetail => ({
   concern: toConcern(data.concern),
   issue: data.issue ? toIssue(data.issue) : null,
-  roadmap: data.roadmap,
+  roadmap: data.roadmap ? toRoadmap(data.roadmap) : null,
 });
 
 const toConcernPayload = (input: ConcernInput) => ({
