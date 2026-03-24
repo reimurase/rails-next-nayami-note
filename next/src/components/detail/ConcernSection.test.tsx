@@ -5,7 +5,11 @@ import ConcernSection from "./ConcernSection";
 
 describe("ConcernSection", () => {
   test("編集を押すと編集モードに切り替わる", () => {
-    render(<ConcernSection concern={{ id: 10, triggerEvent: "旧きっかけ", content: "旧内容" }} />);
+    render(
+      <ConcernSection
+        concern={{ id: 10, triggerEvent: "旧きっかけ", content: "旧内容", archivedAt: null }}
+      />
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "編集" }));
 

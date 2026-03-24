@@ -10,7 +10,7 @@ jest.mock("../detail/ConcernDetailView", () => ({
 
 describe("ConcernIndex", () => {
   test("concernsが0件の場合のメッセージ表示が出る", () => {
-    render(<ConcernIndex concerns={[]} onChanged={jest.fn()} />);
+    render(<ConcernIndex concerns={[]} onConcernListChanged={jest.fn()} />);
 
     expect(screen.getByText("なやみ一覧")).toBeInTheDocument();
     expect(screen.getByText("まだなやみはありません")).toBeInTheDocument();
@@ -18,11 +18,11 @@ describe("ConcernIndex", () => {
 
   test("concerns が取得できたら一覧を表示する", () => {
     const mockData = [
-      { id: 1, triggerEvent: "きっかけA", content: "悩みA" },
-      { id: 2, triggerEvent: "きっかけB", content: "悩みB" },
+      { id: 1, triggerEvent: "きっかけA", content: "悩みA", archivedAt: null },
+      { id: 2, triggerEvent: "きっかけB", content: "悩みB", archivedAt: null },
     ];
 
-    render(<ConcernIndex concerns={mockData} onChanged={jest.fn()} />);
+    render(<ConcernIndex concerns={mockData} onConcernListChanged={jest.fn()} />);
 
     expect(screen.getByText("きっかけA")).toBeInTheDocument();
     expect(screen.getByText("きっかけB")).toBeInTheDocument();
@@ -32,8 +32,8 @@ describe("ConcernIndex", () => {
 
   test("行をクリックすると詳細が開く", () => {
     const concerns = [
-      { id: 1, triggerEvent: "a", content: "c1" },
-      { id: 2, triggerEvent: "b", content: "c2" },
+      { id: 1, triggerEvent: "a", content: "c1", archivedAt: null },
+      { id: 2, triggerEvent: "b", content: "c2", archivedAt: null },
     ];
 
     render(<ConcernIndex concerns={concerns} />);
@@ -43,7 +43,7 @@ describe("ConcernIndex", () => {
   });
 
   test("ESCで詳細が閉じる", () => {
-    const concerns = [{ id: 1, triggerEvent: "a", content: "c1" }];
+    const concerns = [{ id: 1, triggerEvent: "a", content: "c1", archivedAt: null }];
     render(<ConcernIndex concerns={concerns} />);
 
     fireEvent.click(screen.getByText("c1"));

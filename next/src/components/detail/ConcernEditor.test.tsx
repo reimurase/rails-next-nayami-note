@@ -25,7 +25,7 @@ describe("ConcernEditor", () => {
 
     render(
       <ConcernEditor
-        concern={{ id: 1, triggerEvent: "旧きっかけ", content: "旧内容" }}
+        concern={{ id: 1, triggerEvent: "旧きっかけ", content: "旧内容", archivedAt: null }}
         onSaved={handleCreated}
         onCancel={handleCancelEdit}
       />
@@ -58,7 +58,12 @@ describe("ConcernEditor 異常系", () => {
     mockedConcernApi.update.mockReset();
   });
   test("content を空にして保存すると必須エラーが出て update は呼ばれない", async () => {
-    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
+    const concern = {
+      id: 1,
+      triggerEvent: "もとのきっかけ",
+      content: "もとの内容",
+      archivedAt: null,
+    };
     const onSaved = jest.fn();
     const onCancel = jest.fn();
 
@@ -83,7 +88,12 @@ describe("ConcernEditor 異常系", () => {
   });
 
   test("content が1001文字だと文字数エラーが出て保存ボタンが押せない", () => {
-    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
+    const concern = {
+      id: 1,
+      triggerEvent: "もとのきっかけ",
+      content: "もとの内容",
+      archivedAt: null,
+    };
     const onSaved = jest.fn();
     const onCancel = jest.fn();
 
@@ -102,7 +112,12 @@ describe("ConcernEditor 異常系", () => {
   });
 
   test("triggerEvent が121文字だと文字数エラーが出て保存ボタンが押せない", () => {
-    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
+    const concern = {
+      id: 1,
+      triggerEvent: "もとのきっかけ",
+      content: "もとの内容",
+      archivedAt: null,
+    };
     const onSaved = jest.fn();
     const onCancel = jest.fn();
 
@@ -121,7 +136,12 @@ describe("ConcernEditor 異常系", () => {
   test("更新が失敗したらエラーが表示され、編集モードのままで onSaved は呼ばれない", async () => {
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
 
-    const concern = { id: 1, triggerEvent: "もとのきっかけ", content: "もとの内容" };
+    const concern = {
+      id: 1,
+      triggerEvent: "もとのきっかけ",
+      content: "もとの内容",
+      archivedAt: null,
+    };
     const onSaved = jest.fn();
     const onCancel = jest.fn();
 
