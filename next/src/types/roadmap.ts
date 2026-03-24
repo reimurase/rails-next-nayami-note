@@ -3,6 +3,7 @@ export type RoadmapResponse = {
   goal: string;
   content: string;
   concern_id: number;
+  archived_at: string | null;
 };
 
 export type Roadmap = {
@@ -10,6 +11,7 @@ export type Roadmap = {
   goal: string;
   content: string;
   concernId: number;
+  archivedAt: string | null;
 };
 
 export type RoadmapInput = {

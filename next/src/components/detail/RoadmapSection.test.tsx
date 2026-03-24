@@ -8,7 +8,7 @@ describe("RoadmapSection", () => {
     render(
       <RoadmapSection
         concernId={1}
-        roadmap={{ id: 10, goal: "旧ゴール", content: "旧内容", concernId: 1 }}
+        roadmap={{ id: 10, goal: "旧ゴール", content: "旧内容", concernId: 1, archivedAt: null }}
       />
     );
 
