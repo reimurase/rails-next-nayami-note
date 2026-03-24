@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import IssueCreateSheet from "../issues/IssueCreateSheet";
 import IssueDeleteButton from "../issues/IssueDeleteButton";
+import IssueArchiveButton from "../issues/IssueArchiveButton";
 
 import IssueEditor from "./IssueEditor";
 
@@ -13,9 +14,10 @@ type Props = {
   concernId: number;
   issue: Issue | null;
   onIssueChanged?: () => void | Promise<void>;
+  onIssueArchived?: () => void | Promise<void>;
 };
 
-export default function IssueSection({ concernId, issue, onIssueChanged }: Props) {
+export default function IssueSection({ concernId, issue, onIssueChanged, onIssueArchived }: Props) {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
 
@@ -67,6 +69,11 @@ export default function IssueSection({ concernId, issue, onIssueChanged }: Props
         />
       ) : (
         <div>
+          <IssueArchiveButton
+            issueId={issue.id}
+            archivedAt={issue.archivedAt}
+            onArchiveChanged={onIssueArchived}
+          />
           <ul>
             <li>タイトル: {issue.title || "なし"}</li>
             <li>内容: {issue.content || "なし"}</li>

@@ -101,6 +101,7 @@ export default function ConcernDetailView({
         concernId={detail.concern.id}
         issue={detail.issue}
         onIssueChanged={handleIssueChanged}
+        onIssueArchived={handleIssueChanged}
       />
 
       <RoadmapSection
