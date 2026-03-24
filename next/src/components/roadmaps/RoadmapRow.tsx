@@ -1,6 +1,7 @@
 "use client";
 
 import RoadmapDeleteButton from "./RoadmapDeleteButton";
+import RoadmapArchiveButton from "./RoadmapArchiveButton";
 
 import { Roadmap } from "@/types/roadmap";
 
@@ -18,8 +19,13 @@ const RoadmapRow = ({ roadmap, onRoadmapListChanged, onOpenDetail }: Props) => {
         <span>{roadmap.content}</span>
       </div>
 
-      {/* 既存の削除ボタンはそのまま使える */}
       <RoadmapDeleteButton concernId={roadmap.concernId} onDeleted={onRoadmapListChanged} />
+
+      <RoadmapArchiveButton
+        roadmapId={roadmap.id}
+        archivedAt={roadmap.archivedAt}
+        onArchiveChanged={onRoadmapListChanged}
+      />
     </div>
   );
 };

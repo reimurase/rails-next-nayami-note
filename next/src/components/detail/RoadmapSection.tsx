@@ -4,6 +4,7 @@ import { useState } from "react";
 
 import RoadmapCreateSheet from "../roadmaps/RoadmapCreateSheet";
 import RoadmapDeleteButton from "../roadmaps/RoadmapDeleteButton";
+import RoadmapArchiveButton from "../roadmaps/RoadmapArchiveButton";
 
 import RoadmapEditor from "./RoadmapEditor";
 
@@ -67,6 +68,11 @@ export default function RoadmapSection({ concernId, roadmap, onRoadmapChanged }:
         />
       ) : (
         <div>
+          <RoadmapArchiveButton
+            roadmapId={roadmap.id}
+            archivedAt={roadmap.archivedAt}
+            onArchiveChanged={onRoadmapChanged}
+          />
           <ul>
             <li>タイトル: {roadmap.goal || "なし"}</li>
             <li>内容: {roadmap.content || "なし"}</li>

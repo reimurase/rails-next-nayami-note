@@ -1,7 +1,7 @@
 import { api } from "@/lib/api/client";
 import { RoadmapResponse, Roadmap, RoadmapInput } from "@/types/roadmap";
 
-const toRoadmap = (data: RoadmapResponse): Roadmap => ({
+export const toRoadmap = (data: RoadmapResponse): Roadmap => ({
   id: data.id,
   goal: data.goal,
   content: data.content,
@@ -34,5 +34,13 @@ export const roadmapApi = {
   getArchivedRoadmaps: async (): Promise<Roadmap[]> => {
     const res = await api.get<RoadmapResponse[]>("/api/v1/roadmaps/archived");
     return res.data.map(toRoadmap);
+  },
+
+  archiveRoadmap: async (roadmapId: number): Promise<void> => {
+    await api.patch<RoadmapResponse>(`/api/v1/roadmaps/${roadmapId}/archive`);
+  },
+
+  unarchiveRoadmap: async (roadmapId: number): Promise<void> => {
+    await api.patch<RoadmapResponse>(`/api/v1/roadmaps/${roadmapId}/unarchive`);
   },
 };
