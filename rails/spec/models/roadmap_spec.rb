@@ -68,4 +68,48 @@ RSpec.describe Roadmap, type: :model do
       end
     end
   end
+
+  describe "archive scopes and methods" do
+    let(:user) { create(:user) }
+    let(:active_concern) { create(:concern, user: user) }
+    let(:archived_concern) { create(:concern, user: user) }
+
+    describe ".active" do
+      let!(:active_roadmap) { create(:roadmap, user: user, archived_at: nil, concern: active_concern) }
+      let!(:archived_roadmap) { create(:roadmap, user: user, archived_at: Time.current, concern: archived_concern) }
+
+      it "未アーカイブの roadmap のみを返すこと" do
+        expect(Roadmap.active).to contain_exactly(active_roadmap)
+      end
+    end
+
+    describe ".archived" do
+      let!(:active_roadmap) { create(:roadmap, user: user, archived_at: nil, concern: active_concern) }
+      let!(:archived_roadmap) { create(:roadmap, user: user, archived_at: Time.current, concern: archived_concern) }
+
+      it "アーカイブ済みの roadmap のみを返すこと" do
+        expect(Roadmap.archived).to contain_exactly(archived_roadmap)
+      end
+    end
+
+    describe "#archive!" do
+      let(:roadmap) { create(:roadmap, user: user, archived_at: nil, concern: active_concern) }
+
+      it "archived_at に現在時刻が入ること" do
+        expect { roadmap.archive! }.
+          to change { roadmap.reload.archived_at }.
+               from(nil)
+      end
+    end
+
+    describe "#unarchive!" do
+      let(:roadmap) { create(:roadmap, user: user, archived_at: Time.current, concern: archived_concern) }
+
+      it "archived_at に nil が入ること" do
+        expect { roadmap.unarchive! }.
+          to change { roadmap.reload.archived_at }.
+               to(nil)
+      end
+    end
+  end
 end
