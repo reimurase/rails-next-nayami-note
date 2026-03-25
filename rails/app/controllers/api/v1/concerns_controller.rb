@@ -31,7 +31,11 @@ class Api::V1::ConcernsController < ApplicationController
   end
 
   def create
-    concern = current_user.concerns.new(concern_params)
+    concern = current_user.concerns.new(
+      concern_params.merge(
+        auto_archive_at: current_user.auto_archive_enabled? ? Time.current + Concern::AUTO_ARCHIVE_PERIOD : nil,
+      ),
+    )
     concern.save!
     render json: concern, status: :created
   end

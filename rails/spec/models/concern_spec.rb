@@ -91,22 +91,51 @@ RSpec.describe Concern, type: :model do
     end
 
     describe "#archive!" do
-      let(:concern) { create(:concern, user: user, archived_at: nil) }
+      let(:concern) { create(:concern, user: user, archived_at: nil, auto_archive_at: Time.current + Concern::AUTO_ARCHIVE_PERIOD) }
 
       it "archived_at に現在時刻が入ること" do
         expect { concern.archive! }.
           to change { concern.reload.archived_at }.
                from(nil)
       end
+
+      it "auto_archive_at に nil が入ること" do
+        expect(concern.auto_archive_at).not_to be_nil
+
+        concern.archive!
+        expect(concern.reload.auto_archive_at).to be_nil
+      end
     end
 
     describe "#unarchive!" do
+      subject(:unarchive) { concern.unarchive! }
+
       let(:concern) { create(:concern, user: user, archived_at: Time.current) }
 
       it "archived_at に nil が入ること" do
-        expect { concern.unarchive! }.
+        expect { unarchive }.
           to change { concern.reload.archived_at }.
                to(nil)
+      end
+
+      context "user.auto_archive_enabled が true の場合" do
+        let(:user) { create(:user, auto_archive_enabled: true) }
+        let(:concern) { create(:concern, user: user, archived_at: Time.current, auto_archive_at: nil) }
+
+        it "auto_archive_at に予約時刻が入ること" do
+          unarchive
+          expect(concern.reload.auto_archive_at).to be_present
+        end
+      end
+
+      context "user.auto_archive_enabled が false の場合" do
+        let(:user) { create(:user, auto_archive_enabled: false) }
+        let(:concern) { create(:concern, user: user, archived_at: Time.current, auto_archive_at: nil) }
+
+        it "auto_archive_at に nil が入ること" do
+          unarchive
+          expect(concern.reload.auto_archive_at).to be_nil
+        end
       end
     end
   end
