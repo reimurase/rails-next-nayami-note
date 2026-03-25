@@ -54,6 +54,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_03_25_014607) do
     t.string "password_digest", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.boolean "auto_archive_enabled", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
   end
 
