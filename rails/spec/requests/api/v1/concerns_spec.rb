@@ -141,7 +141,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     subject(:request_api) { patch "/api/v1/concerns/#{concern_id}/archive", headers: csrf_headers }
 
     context "archived_at が nil の場合" do
-      let!(:concern) { create(:concern, user: user, archived_at: nil) }
+      let!(:concern) { create(:concern, user: user, archived_at: nil, auto_archive_at: 7.days.from_now) }
       let(:concern_id) { concern.id }
 
       it "200 OK が返ること" do
@@ -154,6 +154,13 @@ RSpec.describe "Api::V1::Concerns", type: :request do
           to change { concern.reload.archived_at }.
                from(nil)
         expect(concern.reload.archived_at).to be_present
+      end
+
+      it "アーカイブ時に予約日時も消えること" do
+        request_api
+
+        concern.reload
+        expect(concern.auto_archive_at).to be_nil
       end
     end
 
@@ -173,7 +180,7 @@ RSpec.describe "Api::V1::Concerns", type: :request do
     subject(:request_api) { patch "/api/v1/concerns/#{concern_id}/unarchive", headers: csrf_headers }
 
     context "archived_at が存在する場合" do
-      let!(:concern) { create(:concern, user: user, archived_at: Time.current) }
+      let!(:concern) { create(:concern, user: user, archived_at: Time.current, auto_archive_at: nil) }
       let(:concern_id) { concern.id }
 
       it "200 OK が返ること" do
@@ -186,6 +193,28 @@ RSpec.describe "Api::V1::Concerns", type: :request do
           to change { concern.reload.archived_at }.
                from(concern.archived_at).
                to(nil)
+      end
+
+      context "自動アーカイブON の場合" do
+        it "予約が再設定されること" do
+          user.update!(auto_archive_enabled: true)
+
+          request_api
+
+          concern.reload
+          expect(concern.auto_archive_at).to be_present
+        end
+      end
+
+      context "自動アーカイブOFF の場合" do
+        it "予約が入らないこと" do
+          user.update!(auto_archive_enabled: false)
+
+          request_api
+
+          concern.reload
+          expect(concern.auto_archive_at).to be_nil
+        end
       end
     end
 
