@@ -76,16 +76,43 @@ RSpec.describe "Api::V1::Concerns", type: :request do
 
     let(:json) { JSON.parse(response.body) }
 
-    it "未アーカイブのみ返ること" do
-      active_concern = create(:concern, user: user, archived_at: nil)
-      create(:concern, user: user, archived_at: Time.current)
+    context "アーカイブ済みの concern がある場合" do
+      it "アーカイブ済み concern を除いて返すこと" do
+        active_concern = create(:concern, user: user, archived_at: nil)
+        create(:concern, user: user, archived_at: Time.current)
 
-      request_api
+        request_api
 
-      expect(response).to have_http_status(:ok)
-      expect(json.length).to eq(1)
-      expect(json[0]["id"]).to eq(active_concern.id)
-      expect(json[0]["archived_at"]).to be_nil
+        expect(response).to have_http_status(:ok)
+        expect(json.length).to eq(1)
+        expect(json[0]["id"]).to eq(active_concern.id)
+        expect(json[0]["archived_at"]).to be_nil
+      end
+    end
+
+    context "期限切れの auto_archive_at を持つ concern がある場合" do
+      let!(:expired_concern) do
+        create(:concern, user: user, archived_at: nil, auto_archive_at: 1.day.ago)
+      end
+      let!(:active_concern) do
+        create(:concern, user: user, archived_at: nil, auto_archive_at: 1.day.from_now)
+      end
+
+      before do
+        request_api
+      end
+
+      it "未アーカイブのみ返ること" do
+        expect(response).to have_http_status(:ok)
+        expect(json.length).to eq(1)
+        expect(json[0]["id"]).to eq(active_concern.id)
+      end
+
+      it "期限切れの concern を自動アーカイブすること" do
+        expired_concern.reload
+        expect(expired_concern.archived_at).to be_present
+        expect(expired_concern.auto_archive_at).to be_nil
+      end
     end
 
     context "concernが0件の場合" do
