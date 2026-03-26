@@ -10,6 +10,11 @@ class Concern < ApplicationRecord
 
   scope :active, -> { where(archived_at: nil) }
   scope :archived, -> { where.not(archived_at: nil) }
+  scope :auto_archivable, -> {
+    where(archived_at: nil).
+      where.not(auto_archive_at: nil).
+      where("auto_archive_at <= ?", Time.current)
+  }
 
   AUTO_ARCHIVE_PERIOD = 7.days
 

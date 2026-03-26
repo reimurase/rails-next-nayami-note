@@ -1,5 +1,7 @@
 class Api::V1::ConcernsController < ApplicationController
   def index
+    current_user.concerns.auto_archivable.find_each(&:archive!)
+
     concerns = current_user.concerns.active.order(created_at: :desc, id: :desc)
     render json: concerns
   end
