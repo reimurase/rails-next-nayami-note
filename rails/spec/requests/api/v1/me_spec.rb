@@ -50,4 +50,82 @@ RSpec.describe "Api::V1::Me", type: :request do
       end
     end
   end
+
+  describe "PATCH /api/v1/me/auto_archive" do
+    subject(:request_api) do
+      patch "/api/v1/me/auto_archive",
+            params: request_params.to_json,
+            headers: csrf_headers
+    end
+
+    let(:user) { create(:user) }
+    let(:false_params) { { auto_archive_enabled: false } }
+    let(:true_params) { { auto_archive_enabled: true } }
+
+    before do
+      login_as(user)
+    end
+
+    context "自動アーカイブ設定をOFFにする場合" do
+      let(:request_params) { false_params }
+
+      before do
+        user.update!(auto_archive_enabled: true)
+      end
+
+      it "OFFにできること" do
+        request_api
+
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.auto_archive_enabled).to be(false)
+      end
+
+      it "未アーカイブ concern の予約が消えること" do
+        scheduled_concern = create(
+          :concern,
+          user: user,
+          archived_at: nil,
+          auto_archive_at: 7.days.from_now,
+        )
+
+        request_api
+
+        expect(scheduled_concern.reload.auto_archive_at).to be_nil
+      end
+
+      it "auto_archive_at が nil の concern はそのまま nil が返ること" do
+        unscheduled_concern = create(
+          :concern,
+          user: user,
+          archived_at: nil,
+          auto_archive_at: nil,
+        )
+
+        request_api
+
+        expect(unscheduled_concern.reload.auto_archive_at).to be_nil
+      end
+    end
+
+    context "自動アーカイブ設定をONにする場合" do
+      let(:request_params) { true_params }
+
+      it "既存の未アーカイブ concern に予約を付け直さないこと" do
+        user.update!(auto_archive_enabled: false)
+
+        concern = create(
+          :concern,
+          user: user,
+          archived_at: nil,
+          auto_archive_at: nil,
+        )
+
+        request_api
+
+        expect(response).to have_http_status(:ok)
+        expect(user.reload.auto_archive_enabled).to be(true)
+        expect(concern.reload.auto_archive_at).to be_nil
+      end
+    end
+  end
 end

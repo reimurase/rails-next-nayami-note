@@ -3,6 +3,7 @@ Rails.application.routes.draw do
     namespace :v1 do
       get "health_check", to: "health_check#index"
       get "me", to: "me#show"
+      patch "me/auto_archive", to: "me#update_auto_archive"
       resource :csrf, only: [:show], controller: "csrf"
       resources :users, only: [:create]
       resource :session, only: [:create, :destroy]
