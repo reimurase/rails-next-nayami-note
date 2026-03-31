@@ -5,20 +5,33 @@ import useSWR from "swr";
 
 import ConcernIndex from "@/components/concerns/ConcernIndex";
 import ConcernCreateSheet from "@/components/concerns/ConcernCreateSheet";
+import AutoArchiveSetting from "@/components/settings/AutoArchiveSetting";
 import { concernApi } from "@/lib/api/concern";
+import { authApi } from "@/lib/api/auth";
 
 export default function ConcernPageClient() {
   const [isSheetOpen, setIsSheetOpen] = useState(false);
 
   const {
     data: concerns,
-    error,
-    isLoading,
-    mutate,
+    error: concernsError,
+    isLoading: concernsLoading,
+    mutate: concernMutate,
   } = useSWR("/api/v1/concerns", () => concernApi.getConcerns());
 
+  const {
+    data: me,
+    error: meError,
+    isLoading: meLoading,
+    mutate: meMutate,
+  } = useSWR("/api/v1/me", () => authApi.me());
+
   const refreshConcernList = async () => {
-    await mutate();
+    await concernMutate();
+  };
+
+  const refreshAutoArchive = async () => {
+    await meMutate();
   };
 
   const handleCreated = async () => {
@@ -26,8 +39,10 @@ export default function ConcernPageClient() {
     setIsSheetOpen(false);
   };
 
-  if (isLoading) return <div>読み込み中...</div>;
-  if (error) return <div>エラーが発生しました {String(error)}</div>;
+  if (concernsLoading || meLoading) return <div>読み込み中...</div>;
+  if (concernsError) return <div>エラーが発生しました {String(concernsError)}</div>;
+  if (meError) return <div>エラーが発生しました {String(meError)}</div>;
+  if (!me) return <div>ユーザー情報の取得に失敗しました</div>;
 
   return (
     <div style={{ paddingBottom: isSheetOpen ? 160 : 0 }}>
@@ -39,6 +54,10 @@ export default function ConcernPageClient() {
           +
         </button>
       </header>
+
+      <div style={{ marginBottom: 16 }}>
+        <AutoArchiveSetting enabled={me.autoArchiveEnabled} onUpdated={refreshAutoArchive} />
+      </div>
 
       <ConcernIndex concerns={concerns ?? []} onConcernListChanged={refreshConcernList} />
 
