@@ -4,6 +4,7 @@ class Api::V1::MeController < ApplicationController
     render json: {
       id: current_user.id,
       email: current_user.email,
+      auto_archive_enabled: current_user.auto_archive_enabled,
     }, status: :ok
   end
 

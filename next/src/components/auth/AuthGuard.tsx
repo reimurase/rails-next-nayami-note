@@ -15,7 +15,7 @@ function isUnauthorized(err: unknown): boolean {
 }
 
 export function AuthGuard({ children }: Props) {
-  const { error, isLoading } = useSWR("me", async () => (await authApi.me()).data, {
+  const { error, isLoading } = useSWR("me", () => authApi.me(), {
     revalidateOnFocus: false,
     shouldRetryOnError: false,
   });
