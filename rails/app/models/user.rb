@@ -15,6 +15,22 @@ class User < ApplicationRecord
   has_many :issues, dependent: :destroy
   has_many :roadmaps, dependent: :destroy
 
+  def generate_reset_password_token
+    token = SecureRandom.urlsafe_base64
+    self.reset_password_digest = Digest::SHA256.hexdigest(token)
+    self.reset_password_sent_at = Time.current
+    save!
+    token
+  end
+
+  def reset_password_token_valid?(token)
+    Digest::SHA256.hexdigest(token) == reset_password_digest
+  end
+
+  def reset_password_token_expired?
+    reset_password_sent_at < 1.hour.ago
+  end
+
   private
 
     def downcase_email
