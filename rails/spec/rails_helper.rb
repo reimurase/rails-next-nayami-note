@@ -50,6 +50,11 @@ RSpec.configure do |config|
   config.use_transactional_fixtures = true
 
   config.include ActiveSupport::Testing::TimeHelpers
+  config.before(:each) do
+    ActionMailer::Base.delivery_method = :test
+    ActionMailer::Base.perform_deliveries = true
+    ActionMailer::Base.deliveries = []
+  end
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 

@@ -48,3 +48,8 @@ group :development, :test do
   gem "rubocop-rails"
   gem "rubocop-rspec"
 end
+
+group :development do
+  # 　開発環境用にメールをブラウザで確認する
+  gem "letter_opener"
+end

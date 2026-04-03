@@ -7,6 +7,12 @@ Rails.application.routes.draw do
       resource :csrf, only: [:show], controller: "csrf"
       resources :users, only: [:create]
       resource :session, only: [:create, :destroy]
+      resource :password, only: [], controller: "passwords" do
+        collection do
+          post :reset_request
+          post :reset
+        end
+      end
 
       resources :concerns, only: [:index, :show, :create, :update, :destroy] do
         resource :issue, module: :concerns, only: [:create, :update, :destroy]
