@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Link from "next/link";
 
 import { authApi } from "@/lib/api/auth";
 import { clearCsrfTokenCache } from "@/lib/api/csrf";
@@ -111,6 +112,8 @@ export const AuthForm = ({ mode }: Props) => {
       <button type="submit" disabled={submitting}>
         {submitting ? "Submitting..." : buttonLabel}
       </button>
+
+      {mode === "login" && <Link href="/reset-password">パスワードを忘れた方はこちら</Link>}
     </form>
   );
 };

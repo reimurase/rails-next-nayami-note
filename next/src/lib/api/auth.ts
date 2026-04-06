@@ -27,3 +27,10 @@ export const authApi = {
     return toMe(res.data);
   },
 };
+
+export const passwordApi = {
+  resetRequest: (email: string) => api.post("/api/v1/password/reset_request", { email }),
+
+  reset: (token: string, password: string) =>
+    api.post("/api/v1/password/reset", { token, password }),
+};
