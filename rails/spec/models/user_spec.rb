@@ -106,4 +106,58 @@ RSpec.describe User, type: :model do
       expect(result).to be false
     end
   end
+
+  describe "reset password" do
+    let(:user) { create(:user) }
+
+    describe "#generate_reset_password_token" do
+      it "生のトークンを返すこと" do
+        token = user.generate_reset_password_token
+        expect(token).to be_present
+      end
+
+      it "reset_password_digestが保存されること" do
+        expect {
+          user.generate_reset_password_token
+        }.to change { user.reload.reset_password_digest }.from(nil)
+      end
+
+      it "reset_password_sent_atが保存されること" do
+        expect {
+          user.generate_reset_password_token
+        }.to change { user.reload.reset_password_sent_at }.from(nil)
+      end
+
+      it "生のトークンとdigestが対応していること" do
+        token = user.generate_reset_password_token
+        expect(Digest::SHA256.hexdigest(token)).to eq(user.reset_password_digest)
+      end
+    end
+
+    describe "#reset_password_token_valid?" do
+      it "正しいトークンならtrueを返すこと" do
+        token = user.generate_reset_password_token
+        expect(user.reset_password_token_valid?(token)).to be true
+      end
+
+      it "間違ったトークンならfalseを返すこと" do
+        user.generate_reset_password_token
+        expect(user.reset_password_token_valid?("wrong_token")).to be false
+      end
+    end
+
+    describe "#reset_password_token_expired?" do
+      it "1時間以内ならfalseを返すこと" do
+        user.generate_reset_password_token
+        expect(user.reset_password_token_expired?).to be false
+      end
+
+      it "1時間を超えたらtrueを返すこと" do
+        user.generate_reset_password_token
+        travel_to 61.minutes.from_now do
+          expect(user.reset_password_token_expired?).to be true
+        end
+      end
+    end
+  end
 end
