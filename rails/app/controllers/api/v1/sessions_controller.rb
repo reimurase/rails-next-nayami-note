@@ -1,5 +1,5 @@
 class Api::V1::SessionsController < ApplicationController
-  skip_before_action :require_login, only: [:create]
+  skip_before_action :require_login, only: [:create, :guest_login]
   rate_limit to: 10, within: 3.minutes, only: :create,
              by: -> { request.remote_ip },
              store: Rails.cache,
@@ -15,6 +15,13 @@ class Api::V1::SessionsController < ApplicationController
     else
       render json: { error: "Invalid email or password" }, status: :unauthorized
     end
+  end
+
+  def guest_login
+    user = User.create_guest
+    reset_session
+    session[:user_id] = user.id
+    render head: :ok
   end
 
   def destroy
