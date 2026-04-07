@@ -68,6 +68,20 @@ export const AuthForm = ({ mode }: Props) => {
     }
   };
 
+  const handleGuestLogin = async () => {
+    setSubmitting(true);
+    setError(null);
+    try {
+      await authApi.guestLogin();
+      clearCsrfTokenCache();
+      router.replace(next);
+    } catch (err: unknown) {
+      setError(getErrorMessage(err));
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
   return (
     <form onSubmit={handleSubmit}>
       <h1>{title}</h1>
@@ -114,6 +128,9 @@ export const AuthForm = ({ mode }: Props) => {
       </button>
 
       {mode === "login" && <Link href="/reset-password">パスワードを忘れた方はこちら</Link>}
+      <button type="button" onClick={handleGuestLogin} disabled={submitting}>
+        ゲストとして試す
+      </button>
     </form>
   );
 };

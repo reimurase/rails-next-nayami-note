@@ -13,6 +13,8 @@ export const authApi = {
 
   login: (params: LoginParams) => api.post("/api/v1/session", { session: params }),
 
+  guestLogin: () => api.post("/api/v1/guest_login"),
+
   logout: () => api.delete("/api/v1/session"),
 
   me: async (): Promise<Me> => {
