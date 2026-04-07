@@ -39,4 +39,28 @@ RSpec.describe "Api::V1::Sessions", type: :request do
       end
     end
   end
+
+  describe "POST /api/v1/guest_login" do
+    subject(:request_api) {
+      post "/api/v1/guest_login", headers: csrf_headers
+    }
+
+    it "200を返す" do
+      request_api
+      expect(response).to have_http_status(:ok)
+    end
+
+    it "guestユーザーが生成されること" do
+      expect {
+        request_api
+      }.to change { User.count }.by(1)
+    end
+
+    it "呼ぶたびに別のguestユーザーが生成されること" do
+      post "/api/v1/guest_login", headers: csrf_headers
+      post "/api/v1/guest_login", headers: csrf_headers
+
+      expect(User.where(guest: true).count).to eq(2)
+    end
+  end
 end

@@ -159,5 +159,22 @@ RSpec.describe User, type: :model do
         end
       end
     end
+
+    describe ".create_guest" do
+      it "guestユーザーが生成されること" do
+        expect { User.create_guest }.to change { User.count }.by(1)
+      end
+
+      it "guest: trueで生成されること" do
+        user = User.create_guest
+        expect(user.guest).to be true
+      end
+
+      it "呼ぶたびに異なるemailで生成されること" do
+        user1 = User.create_guest
+        user2 = User.create_guest
+        expect(user1.email).not_to eq(user2.email)
+      end
+    end
   end
 end

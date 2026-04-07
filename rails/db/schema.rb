@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2026_04_01_021240) do
+ActiveRecord::Schema[8.0].define(version: 2026_04_07_021828) do
   create_table "concerns", charset: "utf8mb4", collation: "utf8mb4_0900_ai_ci", force: :cascade do |t|
     t.text "content"
     t.datetime "created_at", null: false
@@ -57,6 +57,7 @@ ActiveRecord::Schema[8.0].define(version: 2026_04_01_021240) do
     t.boolean "auto_archive_enabled", default: false, null: false
     t.string "reset_password_digest"
     t.datetime "reset_password_sent_at"
+    t.boolean "guest", default: false, null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_digest"], name: "index_users_on_reset_password_digest", unique: true
   end
