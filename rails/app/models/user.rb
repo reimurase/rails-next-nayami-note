@@ -15,6 +15,16 @@ class User < ApplicationRecord
   has_many :issues, dependent: :destroy
   has_many :roadmaps, dependent: :destroy
 
+  # ゲストログイン用メソッド
+  def self.create_guest
+    User.create!(
+      email: "guest_#{SecureRandom.hex(8)}@example.com",
+      password: SecureRandom.hex(16),
+      guest: true,
+    )
+  end
+
+  # パスワードリセット用メソッド
   def generate_reset_password_token
     token = SecureRandom.urlsafe_base64
     self.reset_password_digest = Digest::SHA256.hexdigest(token)
