@@ -12,7 +12,7 @@ import {
   validateRequired,
   type IssueErrors,
   mapIssueValidationErrors,
-} from "@/lib/issueValidation";
+} from "@/lib/validations/issueValidation";
 
 type IssueFormProps = {
   concernId: number;

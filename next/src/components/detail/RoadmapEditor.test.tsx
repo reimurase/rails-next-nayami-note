@@ -53,3 +53,125 @@ describe("RoadmapEditor", () => {
     });
   });
 });
+
+describe("RoadmapEditor 異常系", () => {
+  beforeEach(() => {
+    mockedRoadmapApi.update.mockReset();
+  });
+  test("content を空にして保存すると必須エラーが出て update は呼ばれない", async () => {
+    const roadmap = {
+      id: 1,
+      concernId: 1,
+      goal: "もとのゴール",
+      content: "もとの内容",
+      archivedAt: null,
+    };
+    const onSaved = jest.fn();
+    const onCancel = jest.fn();
+
+    mockedRoadmapApi.update.mockResolvedValue({} as any);
+
+    render(<RoadmapEditor concernId={1} roadmap={roadmap} onSaved={onSaved} onCancel={onCancel} />);
+
+    const inputs = screen.getAllByRole("textbox");
+    const [, contentInput] = inputs;
+
+    // content を空にする
+    fireEvent.change(contentInput, { target: { value: "" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "保存" }));
+
+    // 必須エラーが出る
+    expect(await screen.findByText("ロードマップは必須です")).toBeInTheDocument();
+
+    // update は呼ばれない
+    expect(mockedRoadmapApi.update).not.toHaveBeenCalled();
+    expect(onSaved).not.toHaveBeenCalled();
+  });
+
+  test("content が1001文字だと文字数エラーが出て保存ボタンが押せない", () => {
+    const roadmap = {
+      id: 1,
+      concernId: 1,
+      goal: "もとのゴール",
+      content: "もとの内容",
+      archivedAt: null,
+    };
+    const onSaved = jest.fn();
+    const onCancel = jest.fn();
+
+    render(<RoadmapEditor concernId={1} roadmap={roadmap} onSaved={onSaved} onCancel={onCancel} />);
+
+    const inputs = screen.getAllByRole("textbox");
+    const [, contentInput] = inputs;
+
+    const longText = "a".repeat(1001);
+    fireEvent.change(contentInput, { target: { value: longText } });
+
+    expect(screen.getByText("ロードマップは1000文字以内です")).toBeInTheDocument();
+
+    // 超過中は保存が disabled（今回仕様）
+    expect(screen.getByRole("button", { name: "保存" })).toBeDisabled();
+  });
+
+  test("goal が121文字だと文字数エラーが出て保存ボタンが押せない", () => {
+    const roadmap = {
+      id: 1,
+      concernId: 1,
+      goal: "もとのゴール",
+      content: "もとの内容",
+      archivedAt: null,
+    };
+    const onSaved = jest.fn();
+    const onCancel = jest.fn();
+
+    render(<RoadmapEditor concernId={1} roadmap={roadmap} onSaved={onSaved} onCancel={onCancel} />);
+
+    const inputs = screen.getAllByRole("textbox");
+    const [triggerInput] = inputs;
+
+    const longText = "a".repeat(121);
+    fireEvent.change(triggerInput, { target: { value: longText } });
+
+    expect(screen.getByText("ゴールは120文字以内です")).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: "保存" })).toBeDisabled();
+  });
+
+  test("更新が失敗したらエラーが表示され、編集モードのままで onSaved は呼ばれない", async () => {
+    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
+
+    const roadmap = {
+      id: 1,
+      concernId: 1,
+      goal: "もとのゴール",
+      content: "もとの内容",
+      archivedAt: null,
+    };
+    const onSaved = jest.fn();
+    const onCancel = jest.fn();
+
+    mockedRoadmapApi.update.mockRejectedValueOnce(new Error("update failed"));
+
+    render(<RoadmapEditor concernId={1} roadmap={roadmap} onSaved={onSaved} onCancel={onCancel} />);
+
+    const inputs = screen.getAllByRole("textbox");
+    const [, contentInput] = inputs;
+    fireEvent.change(contentInput, { target: { value: "更新後の内容" } });
+
+    fireEvent.click(screen.getByRole("button", { name: "保存" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "更新に失敗しました。時間を置いて再度お試しください。"
+    );
+
+    expect(screen.getAllByRole("textbox")).toHaveLength(2);
+
+    expect(onSaved).not.toHaveBeenCalled();
+
+    await waitFor(() => {
+      expect(screen.getByRole("button", { name: "保存" })).toBeEnabled();
+    });
+
+    consoleSpy.mockRestore();
+  });
+});

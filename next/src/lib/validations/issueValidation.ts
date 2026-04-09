@@ -1,4 +1,3 @@
-// src/lib/validation/issue.ts
 import type { ApiFieldError } from "@/lib/api/error";
 
 export const CONCERN_LIMITS = {
