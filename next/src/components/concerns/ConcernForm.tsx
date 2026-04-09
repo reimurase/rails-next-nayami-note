@@ -12,7 +12,7 @@ import {
   validateRequired,
   type ConcernErrors,
   mapConcernValidationErrors,
-} from "@/lib/concernValidation";
+} from "@/lib/validations/concernValidation";
 
 type ConcernFormProps = {
   onCreated: () => void;

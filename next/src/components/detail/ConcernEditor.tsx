@@ -13,7 +13,7 @@ import {
   CONCERN_LIMITS,
   type ConcernErrors,
   mapConcernValidationErrors,
-} from "@/lib/concernValidation";
+} from "@/lib/validations/concernValidation";
 
 type Props = {
   concern: Concern;
