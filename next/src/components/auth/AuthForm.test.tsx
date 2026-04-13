@@ -153,6 +153,42 @@ describe("AuthForm 異常系", () => {
     expect(mockedAuthApi.signup).not.toHaveBeenCalled();
   });
 
+  test("サインアップ時にネットワークエラーが発生するとエラーメッセージが表示される", async () => {
+    mockedAuthApi.signup.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: undefined,
+    });
+
+    const user = await setupSignupForm({
+      email: "test@example.com",
+      password: "password",
+      passwordConfirmation: "password",
+    });
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent("通信に失敗しました");
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  test("サインアップ時に予期しないエラーが発生するとフォールバックメッセージが表示される", async () => {
+    mockedAuthApi.signup.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: { status: 500, data: {} },
+    });
+
+    const user = await setupSignupForm({
+      email: "test@example.com",
+      password: "password",
+      passwordConfirmation: "password",
+    });
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+
+    expect(await screen.findByRole("alert")).toHaveTextContent(
+      "エラーが発生しました。時間を置いて再度お試しください。"
+    );
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
   test("ログイン失敗（401）後、曖昧なエラーメッセージが表示される", async () => {
     const user = userEvent.setup();
     mockedAuthApi.login.mockRejectedValueOnce({
