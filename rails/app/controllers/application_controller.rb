@@ -30,7 +30,6 @@ class ApplicationController < ActionController::API
           meta = {}
           meta[:max] = h[:count] if code == "too_long"
           meta[:min] = h[:count] if code == "too_short"
-          Rails.logger.debug meta
           meta = nil if meta.empty?
           meta ? { code: code, meta: meta } : { code: code }
         end
