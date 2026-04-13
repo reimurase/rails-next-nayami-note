@@ -6,26 +6,21 @@ import Link from "next/link";
 
 import { authApi } from "@/lib/api/auth";
 import { clearCsrfTokenCache } from "@/lib/api/csrf";
+import { normalizeApiError } from "@/lib/api/error";
+import {
+  hasErrors,
+  validateSignupOnSubmit,
+  validateLoginOnSubmit,
+  mapAuthValidationErrors,
+  LOGIN_CREDENTIAL_ERROR,
+  type AuthErrors,
+  type SignupValues,
+  type LoginValues,
+} from "@/lib/validations/authValidation";
 
 type Props = {
   mode: "signup" | "login";
 };
-
-function getErrorMessage(err: unknown): string {
-  if (typeof err === "object" && err !== null && "response" in err) {
-    const data = (err as any).response?.data;
-    if (data && typeof data === "object") {
-      const maybeError = (data as any).error;
-      const maybeErrors = (data as any).errors;
-
-      if (typeof maybeError === "string" && maybeError.length > 0) return maybeError;
-      if (Array.isArray(maybeErrors) && maybeErrors.every((x) => typeof x === "string")) {
-        return maybeErrors.join(", ");
-      }
-    }
-  }
-  return "Failed. Please check your email/password.";
-}
 
 export const AuthForm = ({ mode }: Props) => {
   const router = useRouter();
@@ -37,21 +32,38 @@ export const AuthForm = ({ mode }: Props) => {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [submitted, setSubmitted] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+  const [serverErrors, setServerErrors] = useState<AuthErrors>({});
 
   const title = mode === "signup" ? "Signup" : "Login";
   const buttonLabel = mode === "signup" ? "Create account" : "Login";
 
+  const signupValues: SignupValues = { email, password, passwordConfirmation };
+  const loginValues: LoginValues = { email, password };
+
+  const clientErrors: AuthErrors = submitted
+    ? mode === "signup"
+      ? validateSignupOnSubmit(signupValues)
+      : validateLoginOnSubmit(loginValues)
+    : {};
+
+  const emailError = serverErrors.email ?? clientErrors.email;
+  const passwordError = serverErrors.password ?? clientErrors.password;
+  const passwordConfirmationError =
+    serverErrors.passwordConfirmation ?? clientErrors.passwordConfirmation;
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
-    setError(null);
+    setSubmitted(true);
+    setApiError(null);
+    setServerErrors({});
 
-    if (mode === "signup" && password !== passwordConfirmation) {
-      setError("Password confirmation doesn't match.");
-      setSubmitting(false);
-      return;
-    }
+    const nextErrors =
+      mode === "signup" ? validateSignupOnSubmit(signupValues) : validateLoginOnSubmit(loginValues);
+    if (hasErrors(nextErrors)) return;
+
+    setSubmitting(true);
 
     try {
       if (mode === "signup") {
@@ -62,7 +74,24 @@ export const AuthForm = ({ mode }: Props) => {
       clearCsrfTokenCache();
       router.replace(next);
     } catch (err: unknown) {
-      setError(getErrorMessage(err));
+      const appError = normalizeApiError(err);
+
+      if (appError.type === "validation") {
+        setServerErrors(mapAuthValidationErrors(appError.errors));
+        return;
+      }
+
+      if (appError.type === "unauthorized") {
+        setApiError(LOGIN_CREDENTIAL_ERROR);
+        return;
+      }
+
+      if (appError.type === "network") {
+        setApiError(appError.message);
+        return;
+      }
+
+      setApiError("エラーが発生しました。時間を置いて再度お試しください。");
     } finally {
       setSubmitting(false);
     }
@@ -70,21 +99,28 @@ export const AuthForm = ({ mode }: Props) => {
 
   const handleGuestLogin = async () => {
     setSubmitting(true);
-    setError(null);
+    setApiError(null);
     try {
       await authApi.guestLogin();
       clearCsrfTokenCache();
       router.replace(next);
     } catch (err: unknown) {
-      setError(getErrorMessage(err));
+      const appError = normalizeApiError(err);
+      setApiError(
+        appError.type === "network"
+          ? appError.message
+          : "エラーが発生しました。時間を置いて再度お試しください。"
+      );
     } finally {
       setSubmitting(false);
     }
   };
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit} noValidate>
       <h1>{title}</h1>
+
+      {apiError && <p role="alert">{apiError}</p>}
 
       <label>
         Email
@@ -92,10 +128,14 @@ export const AuthForm = ({ mode }: Props) => {
           name="email"
           type="email"
           value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          onChange={(e) => {
+            setEmail(e.target.value);
+            setServerErrors((prev) => ({ ...prev, email: undefined }));
+          }}
           autoComplete="email"
         />
       </label>
+      {emailError && <p role="alert">{emailError}</p>}
 
       <label>
         Password
@@ -103,25 +143,33 @@ export const AuthForm = ({ mode }: Props) => {
           name="password"
           type="password"
           value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          onChange={(e) => {
+            setPassword(e.target.value);
+            setServerErrors((prev) => ({ ...prev, password: undefined }));
+          }}
           autoComplete={mode === "signup" ? "new-password" : "current-password"}
         />
       </label>
+      {passwordError && <p role="alert">{passwordError}</p>}
 
       {mode === "signup" && (
-        <label>
-          Password confirmation
-          <input
-            name="password_confirmation"
-            type="password"
-            value={passwordConfirmation}
-            onChange={(e) => setPasswordConfirmation(e.target.value)}
-            autoComplete="new-password"
-          />
-        </label>
+        <>
+          <label>
+            Password confirmation
+            <input
+              name="password_confirmation"
+              type="password"
+              value={passwordConfirmation}
+              onChange={(e) => {
+                setPasswordConfirmation(e.target.value);
+                setServerErrors((prev) => ({ ...prev, passwordConfirmation: undefined }));
+              }}
+              autoComplete="new-password"
+            />
+          </label>
+          {passwordConfirmationError && <p role="alert">{passwordConfirmationError}</p>}
+        </>
       )}
-
-      {error && <p role="alert">{error}</p>}
 
       <button type="submit" disabled={submitting}>
         {submitting ? "Submitting..." : buttonLabel}

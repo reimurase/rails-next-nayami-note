@@ -30,6 +30,7 @@
 
 # curl cookie jar
 cookie.txt
+cookies.txt
 *.cookie
 
 # ローカル証明書
