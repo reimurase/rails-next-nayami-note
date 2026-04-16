@@ -8,7 +8,7 @@
 
 ## サービス概要 / 作成背景
 興味がある方はご覧ください
-#54(https://github.com/reimurase/rails-next-nayami-note/issues/54)
+(https://github.com/reimurase/rails-next-nayami-note/issues/54)
 
 ## 機能
 
@@ -65,19 +65,72 @@
 
 ## ローカル環境構築手順
 
-### 前提
-- Ruby 3.4.6
-- Node.js 20.18.0
-- MySQL 9.4.0
+### Docker を使う場合（推奨）
 
-### 1. リポジトリをクローン
+#### 前提
+- Docker / Docker Compose
+
+#### 1. リポジトリをクローン
 
 ```bash
 git clone https://github.com/reimurase/rails-next-nayami-note.git
 cd rails-next-nayami-note
 ```
 
-### 2. Rails セットアップ
+#### 2. 環境変数を設定
+
+```bash
+cp .env.example .env
+```
+
+`.env` を編集して `DB_PASSWORD` に任意のパスワードを設定します。
+
+```
+DB_PASSWORD=yourpassword
+DB_NAME_DEV=nayami_note_development
+DB_NAME_TEST=nayami_note_test
+```
+
+#### 3. イメージをビルド
+
+```bash
+docker compose build
+```
+
+#### 4. DB のセットアップ
+
+```bash
+docker compose run --rm rails rails db:create db:migrate db:seed
+```
+
+#### 5. 起動
+
+```bash
+docker compose up
+```
+
+ブラウザで `https://localhost:3001` にアクセスします。
+
+> Next.js は HTTPS で起動するため、初回はオレオレ証明書の警告が出ます。「詳細設定 → 続行」を選択してください。
+
+---
+
+<details>
+<summary>手動セットアップ（Docker を使わない場合）</summary>
+
+#### 前提
+- Ruby 3.4.6
+- Node.js 20.18.0
+- MySQL 9.4.0
+
+#### 1. リポジトリをクローン
+
+```bash
+git clone https://github.com/reimurase/rails-next-nayami-note.git
+cd rails-next-nayami-note
+```
+
+#### 2. Rails セットアップ
 
 ```bash
 cd rails
@@ -90,7 +143,7 @@ bundle install
 rails db:create db:migrate db:seed
 ```
 
-### 3. Next.js セットアップ
+#### 3. Next.js セットアップ
 
 ```bash
 cd ../next
@@ -104,7 +157,7 @@ NEXT_PUBLIC_API_BASE_URL=https://localhost:3000
 API_BASE_URL=https://localhost:3000
 ```
 
-### 4. 起動
+#### 4. 起動
 
 ターミナルを2つ使って、それぞれ起動します。
 
@@ -123,6 +176,8 @@ npm run dev
 ブラウザで `https://localhost:3001` にアクセスします。
 
 > Next.js は `--experimental-https` で起動するため、初回はオレオレ証明書の警告が出ます。ブラウザで「詳細設定 → 続行」を選択してください。
+
+</details>
 
 ### GitHub Actionsの設定
 - GitHub Actions では MySQL の root 接続を許可するため
