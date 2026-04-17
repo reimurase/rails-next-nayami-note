@@ -4,7 +4,7 @@ import { fetchCsrfToken, isMutatingMethod, isCsrfError, clearCsrfTokenCache } fr
 
 import { notifyUnauthorized } from "@/lib/api/onUnauthorized";
 
-const baseURL = process.env.NEXT_PUBLIC_API_BASE_URL ?? "https://localhost:3000";
+const baseURL = process.env.NODE_ENV === "production" ? "" : "https://localhost:3000";
 
 // ---- Axios config拡張（内部フラグ用）----
 declare module "axios" {
