@@ -2,6 +2,7 @@ FROM ruby:3.4.6-slim
 
 RUN apt-get update -qq && apt-get install -y \
     build-essential default-libmysqlclient-dev pkg-config git libyaml-dev \
+    ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
@@ -12,4 +13,4 @@ RUN bundle install
 COPY . .
 
 EXPOSE 3000
-CMD ["rails", "exec", "rails", "server"]
+CMD ["bash", "-c", "bundle exec rails db:migrate && bundle exec rails server -b 0.0.0.0"]
