@@ -23,11 +23,20 @@ jest.mock("axios", () => ({
   isAxiosError: (error: any) => error?.isAxiosError === true,
 }));
 
+jest.mock("swr", () => ({
+  __esModule: true,
+  default: jest.fn(),
+  mutate: jest.fn(),
+}));
+
 jest.mock("@/lib/api/auth", () => ({
   authApi: {
     signup: jest.fn(),
     login: jest.fn(),
     guestLogin: jest.fn(),
+    me: jest
+      .fn()
+      .mockResolvedValue({ id: 1, email: "test@example.com", autoArchiveEnabled: false }),
   },
 }));
 
