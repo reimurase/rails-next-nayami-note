@@ -4,17 +4,14 @@ import userEvent from "@testing-library/user-event";
 
 import { AppHeader } from "./AppHeader";
 
-import { clearCsrfTokenCache } from "@/lib/api/csrf";
+import type { Me } from "@/types/auth";
 
 // ---- mocks ----
 const replaceMock = jest.fn();
-const clearCsrfTokenCacheMock = clearCsrfTokenCache as unknown as jest.Mock;
-
 jest.mock("next/navigation", () => ({
   useRouter: () => ({ replace: replaceMock }),
 }));
 
-// next/link はテストでは単なる <a> に落とすのが簡単
 jest.mock("next/link", () => {
   return function Link(props: any) {
     const { href, children, ...rest } = props;
@@ -26,34 +23,63 @@ jest.mock("next/link", () => {
   };
 });
 
+const mockMe: { data: Me | undefined } = { data: undefined };
 const mutateMock = jest.fn();
+
 jest.mock("swr", () => ({
+  __esModule: true,
+  default: () => mockMe,
   mutate: (...args: any[]) => mutateMock(...args),
 }));
 
 const logoutMock = jest.fn();
 jest.mock("@/lib/api/auth", () => ({
   authApi: {
-    logout: (...args: any[]) => logoutMock(...args),
+    logout: () => logoutMock(),
   },
 }));
 
+const clearCsrfTokenCacheMock = jest.fn();
 jest.mock("@/lib/api/csrf", () => ({
-  clearCsrfTokenCache: jest.fn(),
+  clearCsrfTokenCache: () => clearCsrfTokenCacheMock(),
 }));
 
 beforeEach(() => {
   jest.clearAllMocks();
 });
 
-describe("AppHeader (happy path)", () => {
-  test("リンクが描画されること", () => {
-    render(<AppHeader />);
+describe("AppHeader", () => {
+  describe("未ログイン時", () => {
+    beforeEach(() => {
+      mockMe.data = undefined;
+    });
 
-    expect(screen.getByRole("link", { name: "なやみノート" })).toHaveAttribute("href", "/");
-    expect(screen.getByRole("link", { name: "Signup" })).toHaveAttribute("href", "/signup");
-    expect(screen.getByRole("link", { name: "Login" })).toHaveAttribute("href", "/login");
-    expect(screen.getByRole("button", { name: "Logout" })).toBeInTheDocument();
+    it("サインアップ/ログインボタンが描画される", () => {
+      render(<AppHeader />);
+      expect(screen.getByText("ログイン")).toBeInTheDocument();
+      expect(screen.getByText("サインアップ")).toBeInTheDocument();
+    });
+
+    it("ハンバーガーメニューが表示されない", () => {
+      render(<AppHeader />);
+      expect(screen.queryByLabelText("メニューを開閉")).not.toBeInTheDocument();
+    });
+  });
+
+  describe("ログイン時", () => {
+    beforeEach(() => {
+      mockMe.data = { id: 1, email: "test@example.com", autoArchiveEnabled: false };
+    });
+
+    it("ログアウトボタンが表示される", () => {
+      render(<AppHeader />);
+      expect(screen.getByText("ログアウト")).toBeInTheDocument();
+    });
+
+    it("ハンバーガーメニューが表示される", () => {
+      render(<AppHeader />);
+      expect(screen.getByLabelText("メニューを開閉")).toBeInTheDocument();
+    });
   });
 
   test("ログアウトが成功した場合：logout、meのキャッシュをクリア、csrfキャッシュをクリア、そしてリダイレクトが実行される", async () => {
@@ -62,7 +88,7 @@ describe("AppHeader (happy path)", () => {
     const user = userEvent.setup();
     render(<AppHeader />);
 
-    await user.click(screen.getByRole("button", { name: "Logout" }));
+    await user.click(screen.getByRole("button", { name: "ログアウト" }));
 
     await waitFor(() => {
       expect(logoutMock).toHaveBeenCalledTimes(1);
