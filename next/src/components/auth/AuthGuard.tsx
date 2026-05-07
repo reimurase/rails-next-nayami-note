@@ -2,11 +2,12 @@
 
 import useSWR from "swr";
 import type { AxiosError } from "axios";
+import { type ReactNode } from "react";
 
 import { authApi } from "@/lib/api/auth";
 
 type Props = {
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 function isUnauthorized(err: unknown): boolean {

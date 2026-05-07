@@ -9,7 +9,10 @@ import { Geist, Geist_Mono } from "next/font/google";
 import { AppRouterCacheProvider } from "@mui/material-nextjs/v15-appRouter";
 
 import MuiProvider from "@/providers/MuiProvider";
+import { SidebarProvider } from "@/providers/SidebarProvider";
 import { AppHeader } from "@/components/AppHeader";
+import { MainContent } from "@/components/MainContent";
+import { AppSidebar } from "@/components/AppSidebar";
 import "./globals.css";
 import { UnauthorizedHandler } from "@/components/auth/UnauthorizedHandler";
 
@@ -34,9 +37,12 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         <AppRouterCacheProvider options={{ key: "mui" }}>
           <MuiProvider>
-            <UnauthorizedHandler />
-            <AppHeader />
-            {children}
+            <SidebarProvider>
+              <UnauthorizedHandler />
+              <AppHeader />
+              <AppSidebar />
+              <MainContent>{children}</MainContent>
+            </SidebarProvider>
           </MuiProvider>
         </AppRouterCacheProvider>
       </body>

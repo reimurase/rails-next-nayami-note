@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { mutate } from "swr";
 
 import { authApi } from "@/lib/api/auth";
 import { clearCsrfTokenCache } from "@/lib/api/csrf";
@@ -72,6 +73,7 @@ export const AuthForm = ({ mode }: Props) => {
         await authApi.login({ email, password });
       }
       clearCsrfTokenCache();
+      await mutate("me", authApi.me());
       router.replace(next);
     } catch (err: unknown) {
       const appError = normalizeApiError(err);
@@ -103,6 +105,7 @@ export const AuthForm = ({ mode }: Props) => {
     try {
       await authApi.guestLogin();
       clearCsrfTokenCache();
+      await mutate("me", authApi.me());
       router.replace(next);
     } catch (err: unknown) {
       const appError = normalizeApiError(err);
