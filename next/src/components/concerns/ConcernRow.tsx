@@ -1,5 +1,7 @@
 "use client";
 
+import { Typography } from "@mui/material";
+
 import ConcernDeleteButton from "./ConcernDeleteButton";
 import ConcernArchiveButton from "./ConcernArchiveButton";
 
@@ -11,12 +13,37 @@ type Props = {
   onOpenDetail?: () => void;
 };
 
+const TRIGGER_EVENT_LINE_LIMIT = 2;
+const CONTENT_LINE_LIMIT = 3;
+
 const ConcernRow = ({ concern, onConcernListChanged, onOpenDetail }: Props) => {
   return (
     <div style={{ display: "flex", gap: 8, alignItems: "center", cursor: "pointer" }}>
       <div onClick={onOpenDetail}>
-        <span>{concern.triggerEvent}</span>
-        <span>{concern.content}</span>
+        <Typography
+          variant="body1"
+          sx={{
+            display: "-webkit-box",
+            WebkitLineClamp: TRIGGER_EVENT_LINE_LIMIT,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            wordBreak: "break-word",
+          }}
+        >
+          {concern.triggerEvent}
+        </Typography>
+        <Typography
+          variant="body2"
+          sx={{
+            display: "-webkit-box",
+            WebkitLineClamp: CONTENT_LINE_LIMIT,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            wordBreak: "break-word",
+          }}
+        >
+          {concern.content}
+        </Typography>
       </div>
 
       {/* 既存の削除ボタンはそのまま使える */}
