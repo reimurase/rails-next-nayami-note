@@ -1,6 +1,11 @@
 "use client";
 
 import useSWR from "swr";
+import Box from "@mui/material/Box";
+import Card from "@mui/material/Card";
+import CardContent from "@mui/material/CardContent";
+import Typography from "@mui/material/Typography";
+import { CircularProgress } from "@mui/material";
 
 import ConcernSection from "./ConcernSection";
 import IssueSection from "./IssueSection";
@@ -61,54 +66,68 @@ export default function ConcernDetailView({
 
   if (isLoading) {
     return (
-      <div>
-        <h2>詳細ページ</h2>
-        <p>読み込み中...</p>
-      </div>
+      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+        <CardContent sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+          <CircularProgress size={20} />
+          <Typography color="text.secondary">読み込み中...</Typography>
+        </CardContent>
+      </Card>
     );
   }
 
   if (error) {
     return (
-      <div>
-        <h2>詳細ページ</h2>
-        <p>エラーが発生しました</p>
-      </div>
+      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+        <CardContent>
+          <Typography color="error">エラーが発生しました</Typography>
+        </CardContent>
+      </Card>
     );
   }
 
   if (!detail) {
     return (
-      <div>
-        <h2>詳細ページ</h2>
-        <p>データがありません</p>
-      </div>
+      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+        <CardContent>
+          <Typography color="text.secondary">データがありません</Typography>
+        </CardContent>
+      </Card>
     );
   }
 
   return (
-    <div>
-      <h2>詳細ページ</h2>
+    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+        <CardContent>
+          <ConcernSection
+            concern={detail.concern}
+            onConcernUpdated={handleConcernChanged}
+            onConcernDeleted={handleConcernDeleted}
+            onConcernArchived={handleConcernChanged}
+          />
+        </CardContent>
+      </Card>
 
-      <ConcernSection
-        concern={detail.concern}
-        onConcernUpdated={handleConcernChanged}
-        onConcernDeleted={handleConcernDeleted}
-        onConcernArchived={handleConcernChanged}
-      />
+      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+        <CardContent>
+          <IssueSection
+            concernId={detail.concern.id}
+            issue={detail.issue}
+            onIssueChanged={handleIssueChanged}
+            onIssueArchived={handleIssueChanged}
+          />
+        </CardContent>
+      </Card>
 
-      <IssueSection
-        concernId={detail.concern.id}
-        issue={detail.issue}
-        onIssueChanged={handleIssueChanged}
-        onIssueArchived={handleIssueChanged}
-      />
-
-      <RoadmapSection
-        concernId={detail.concern.id}
-        roadmap={detail.roadmap}
-        onRoadmapChanged={handleRoadmapChanged}
-      />
-    </div>
+      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+        <CardContent>
+          <RoadmapSection
+            concernId={detail.concern.id}
+            roadmap={detail.roadmap}
+            onRoadmapChanged={handleRoadmapChanged}
+          />
+        </CardContent>
+      </Card>
+    </Box>
   );
 }
