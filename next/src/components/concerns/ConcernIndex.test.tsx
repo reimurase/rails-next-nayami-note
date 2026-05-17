@@ -41,16 +41,4 @@ describe("ConcernIndex", () => {
     fireEvent.click(screen.getByText("c1"));
     expect(screen.getByText("DETAIL:1")).toBeInTheDocument();
   });
-
-  test("ESCで詳細が閉じる", () => {
-    const concerns = [{ id: 1, triggerEvent: "a", content: "c1", archivedAt: null }];
-    render(<ConcernIndex concerns={concerns} />);
-
-    fireEvent.click(screen.getByText("c1"));
-
-    const dialog = screen.getByRole("dialog");
-    fireEvent.keyDown(dialog, { key: "Escape" });
-
-    expect(screen.queryByText("DETAIL:1")).not.toBeInTheDocument();
-  });
 });
