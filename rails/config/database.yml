@@ -30,3 +30,5 @@ production:
     <<: *default
     database: <%= ENV["DB_NAME"] || "myapp_production" %>
     migrations_paths: db/cache_migrate
+    ssl_mode: verify_identity
+    ssl_ca:   /etc/ssl/certs/ca-certificates.crt
