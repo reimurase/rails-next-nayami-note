@@ -30,6 +30,9 @@ gem "bcrypt", "~> 3.1", ">= 3.1.12"
 # 言語の翻訳や多言語サポート機能を提供する
 gem "rails-i18n", "~> 8.1"
 
+# キャッシュをデータベースに保存する
+gem "solid_cache", "~> 1.0", ">= 1.0.10"
+
 group :development, :test do
   # テスト用データを作成する
   gem "factory_bot_rails"
