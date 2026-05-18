@@ -1,4 +1,6 @@
 class Api::V1::SessionsController < ApplicationController
+  DUMMY_DIGEST = BCrypt::Password.create("dummy", cost: BCrypt::Engine::DEFAULT_COST).freeze
+
   skip_before_action :require_login, only: [:create, :guest_login]
   rate_limit to: 10, within: 3.minutes, only: :create,
              by: -> { request.remote_ip },
@@ -8,12 +10,20 @@ class Api::V1::SessionsController < ApplicationController
   def create
     user = User.find_by(email: session_params[:email])
 
-    if user&.authenticate(session_params[:password])
+    authed =
+      if user
+        user.authenticate(session_params[:password])
+      else
+        BCrypt::Password.new(DUMMY_DIGEST).is_password?(session_params[:password].to_s)
+        false
+      end
+
+    if authed
       reset_session
       session[:user_id] = user.id
       head :ok
     else
-      render json: { error: "Invalid email or password" }, status: :unauthorized
+      render json: { error: { code: "invalid_credentials" } }, status: :unauthorized
     end
   end
 

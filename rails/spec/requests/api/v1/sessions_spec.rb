@@ -24,6 +24,7 @@ RSpec.describe "Api::V1::Sessions", type: :request do
              headers: csrf_headers
 
         expect(response).to have_http_status(:unauthorized)
+        expect(response.parsed_body.dig("error", "code")).to eq("invalid_credentials")
       end
     end
   end
