@@ -18,6 +18,7 @@ import {
   type SignupValues,
   type LoginValues,
 } from "@/lib/validations/authValidation";
+import { safeNext } from "@/utils/safeNext";
 
 type Props = {
   mode: "signup" | "login";
@@ -27,7 +28,7 @@ export const AuthForm = ({ mode }: Props) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
-  const next = searchParams.get("next") ?? "/concerns";
+  const next = safeNext(searchParams.get("next"));
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
