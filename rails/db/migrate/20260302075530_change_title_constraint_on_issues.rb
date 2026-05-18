@@ -1,5 +1,5 @@
 class ChangeTitleConstraintOnIssues < ActiveRecord::Migration[8.0]
-  def change
+  def up
     execute "UPDATE issues SET title = '' WHERE title IS NULL"
 
     # NULL禁止 + default 空文字

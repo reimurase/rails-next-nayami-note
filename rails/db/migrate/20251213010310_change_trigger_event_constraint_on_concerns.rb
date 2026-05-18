@@ -1,5 +1,5 @@
 class ChangeTriggerEventConstraintOnConcerns < ActiveRecord::Migration[8.0]
-  def change
+  def up
     execute "UPDATE concerns SET trigger_event = '' WHERE trigger_event IS NULL"
 
     # NULL禁止 + default 空文字
