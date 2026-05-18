@@ -49,6 +49,7 @@ RSpec.describe "Api::V1::Sessions", type: :request do
     it "200を返す" do
       request_api
       expect(response).to have_http_status(:ok)
+      expect(response.body).to be_empty
     end
 
     it "guestユーザーが生成されること" do

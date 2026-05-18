@@ -7,6 +7,11 @@ class Api::V1::SessionsController < ApplicationController
              store: Rails.cache,
              with: -> { render_rate_limited }
 
+  rate_limit to: 3, within: 5.minutes, only: :guest_login,
+             by: -> { request.remote_ip },
+             store: Rails.cache,
+             with: -> { render_rate_limited }
+
   def create
     user = User.find_by(email: session_params[:email])
 
@@ -31,7 +36,7 @@ class Api::V1::SessionsController < ApplicationController
     user = User.create_guest
     reset_session
     session[:user_id] = user.id
-    render head: :ok
+    head :ok
   end
 
   def destroy
