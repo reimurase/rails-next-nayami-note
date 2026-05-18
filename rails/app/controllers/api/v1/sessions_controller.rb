@@ -23,7 +23,7 @@ class Api::V1::SessionsController < ApplicationController
       session[:user_id] = user.id
       head :ok
     else
-      render json: { error: "invalid_credentials" }, status: :unauthorized
+      render json: { error: { code: "invalid_credentials" } }, status: :unauthorized
     end
   end
 
