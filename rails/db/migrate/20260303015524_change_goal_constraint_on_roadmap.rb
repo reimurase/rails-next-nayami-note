@@ -1,5 +1,5 @@
 class ChangeGoalConstraintOnRoadmap < ActiveRecord::Migration[8.0]
-  def change
+  def up
     execute "UPDATE roadmaps SET goal = '' WHERE goal IS NULL"
 
     # NULL禁止 + default 空文字
