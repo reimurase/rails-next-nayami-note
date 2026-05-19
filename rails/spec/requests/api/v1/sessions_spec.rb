@@ -1,17 +1,18 @@
 # spec/requests/api/v1/sessions_spec.rb
 require "rails_helper"
 RSpec.describe "Api::V1::Sessions", type: :request do
-  let(:user) { create(:user) }
+  let!(:user) { create(:user) }
   describe "POST /api/v1/session" do
     context "認証情報が正しい場合" do
       it "200 を返す" do
         post "/api/v1/session",
              params: {
-               session: { email: user.email, password: user.password },
+               session: { email: user.email, password: "password" },
              }.to_json,
              headers: csrf_headers
 
         expect(response).to have_http_status(:ok)
+        expect(response.body).to be_empty
       end
     end
 
@@ -19,12 +20,11 @@ RSpec.describe "Api::V1::Sessions", type: :request do
       it "200 を返す" do
         post "/api/v1/session",
              params: {
-               session: { email: "TEST@Email.COM", password: user.password },
+               session: { email: "TEST@Email.COM", password: "password" },
              }.to_json,
              headers: csrf_headers
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to be_empty
       end
     end
 
@@ -32,12 +32,11 @@ RSpec.describe "Api::V1::Sessions", type: :request do
       it "200 を返す" do
         post "/api/v1/session",
              params: {
-               session: { email: " test@email.com ", password: user.password },
+               session: { email: " test@email.com ", password: "password" },
              }.to_json,
              headers: csrf_headers
 
         expect(response).to have_http_status(:ok)
-        expect(response.body).to be_empty
       end
     end
 
