@@ -13,7 +13,8 @@ class Api::V1::SessionsController < ApplicationController
              with: -> { render_rate_limited }
 
   def create
-    user = User.find_by(email: session_params[:email])
+    normalized_email = session_params[:email].to_s.strip.downcase
+    user = User.find_by(email: normalized_email)
 
     authed =
       if user
