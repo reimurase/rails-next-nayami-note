@@ -12,7 +12,7 @@ Rails.application.config.middleware.insert_before 0, Rack::Cors do
     origins(*allowed_origins)
 
     resource "/api/*",
-             headers: :any,
+             headers: %w[Content-Type Accept X-CSRF-Token X-Requested-With],
              methods: [:get, :post, :put, :patch, :delete, :options, :head],
              credentials: true
   end
