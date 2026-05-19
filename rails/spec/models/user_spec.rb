@@ -176,5 +176,16 @@ RSpec.describe User, type: :model do
         expect(user1.email).not_to eq(user2.email)
       end
     end
+
+    describe "password reset invalidates sessions" do
+      it "session_version が増えること" do
+        user = create(:user, session_version: 0)
+
+        expect {
+          user.update!(password: "new_password")
+          user.update!(session_version: user.session_version + 1)
+        }.to change { user.reload.session_version }.from(0).to(1)
+      end
+    end
   end
 end

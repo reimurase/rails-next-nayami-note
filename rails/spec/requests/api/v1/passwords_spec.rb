@@ -72,6 +72,26 @@ RSpec.describe "Api::V1::Passwords", type: :request do
       end
     end
 
+    it "パスワードリセット前のセッションが無効化されること" do
+      # ログインしてセッションを確立
+      post "/api/v1/session", params: {
+        session: { email: user.email, password: "password" },
+      }.to_json, headers: csrf_headers
+
+      # この時点で認証が通ることを確認
+      get "/api/v1/me"
+      expect(response).to have_http_status(:ok)
+
+      post "/api/v1/password/reset", params: {
+        token: valid_token,
+        password: "new_password123",
+      }.to_json, headers: json_headers
+
+      # 旧セッションでのアクセスが弾かれること
+      get "/api/v1/me"
+      expect(response).to have_http_status(:unauthorized)
+    end
+
     context "無効なトークンの場合" do
       let(:token) { invalid_token }
 
