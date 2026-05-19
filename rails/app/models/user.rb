@@ -38,6 +38,9 @@ class User < ApplicationRecord
   end
 
   def reset_password_token_expired?
+    # true は期限切れ false は有効
+    return true if reset_password_sent_at.nil?
+
     reset_password_sent_at < 1.hour.ago
   end
 
