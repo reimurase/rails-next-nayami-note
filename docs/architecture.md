@@ -18,6 +18,11 @@
 
   XSS 対策としては、Rails API モードで HTML を返さない構成にしていること、React のデフォルトの自動エスケープに乗っていることが主な防御である。dangerouslySetInnerHTML は使っていない。
 
+CookieStore の制約と許容範囲：
+  本実装は CookieStore を採用しているため、reset_session でログアウトしても、ログアウト前にコピーされた古いセッション Cookie はsecret_key_base がローテートされるまでサーバー側で無効化できない。
+  HttpOnly + Secure + HTTPSで窃取自体を困難にすることを前提に、ポートフォリオ規模ではこの制約を許容する。
+  ユーザー数が増えた段階で、サーバーサイドセッション（solid_cache_store によるキャッシュベース、または session_version カラムによる versioning）へ移行する余地がある。
+
 user / session / me という3エンドポイント構成にした理由：RESTの設計思想とセッション管理の分離
 
   責務の分離
