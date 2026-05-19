@@ -7,11 +7,37 @@ RSpec.describe "Api::V1::Sessions", type: :request do
       it "200 を返す" do
         post "/api/v1/session",
              params: {
-               session: { email: user.email, password: "password" },
+               session: { email: user.email, password: user.password },
              }.to_json,
              headers: csrf_headers
 
         expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "email の文字の大きさが違う場合" do
+      it "200 を返す" do
+        post "/api/v1/session",
+             params: {
+               session: { email: "TEST@Email.COM", password: user.password },
+             }.to_json,
+             headers: csrf_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to be_empty
+      end
+    end
+
+    context "email の前後に空白がある場合" do
+      it "200 を返す" do
+        post "/api/v1/session",
+             params: {
+               session: { email: " test@email.com ", password: user.password },
+             }.to_json,
+             headers: csrf_headers
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to be_empty
       end
     end
 
