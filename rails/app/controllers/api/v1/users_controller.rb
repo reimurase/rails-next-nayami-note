@@ -13,6 +13,7 @@ class Api::V1::UsersController < ApplicationController
     user.save!
     reset_session
     session[:user_id] = user.id
+    session[:session_version] = user.session_version
     head :created
   end
 

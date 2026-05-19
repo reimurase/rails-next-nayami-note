@@ -27,6 +27,7 @@ class Api::V1::SessionsController < ApplicationController
     if authed
       reset_session
       session[:user_id] = user.id
+      session[:session_version] = user.session_version
       head :ok
     else
       render json: { error: { code: "invalid_credentials" } }, status: :unauthorized

@@ -46,7 +46,12 @@ class ApplicationController < ActionController::API
       return @current_user if defined?(@current_user)
 
       user_id = session[:user_id]
-      @current_user = user_id && User.find_by(id: user_id)
+      user = user_id && User.find_by(id: user_id)
+      @current_user = if user && session[:session_version] == user.session_version
+                        user
+                      else
+                        nil
+                      end
     end
 
     def require_login

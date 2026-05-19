@@ -27,6 +27,7 @@ class Api::V1::PasswordsController < ApplicationController
     end
 
     if user.update(password: params[:password], reset_password_digest: nil, reset_password_sent_at: nil)
+      user.update!(session_version: user.session_version + 1)
       render json: { message: "パスワードを再設定しました" }, status: :ok
     else
       render json: { errors: user.errors }, status: :unprocessable_content
