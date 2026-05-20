@@ -1,7 +1,7 @@
 "use client";
 
 import useSWR from "swr";
-import type { AxiosError } from "axios";
+import axios from "axios";
 import { type ReactNode } from "react";
 
 import { authApi } from "@/lib/api/auth";
@@ -11,8 +11,7 @@ type Props = {
 };
 
 function isUnauthorized(err: unknown): boolean {
-  const e = err as AxiosError | undefined;
-  return !!e && typeof e === "object" && (e as any).response?.status === 401;
+  return axios.isAxiosError(err) && err.response?.status === 401;
 }
 
 export function AuthGuard({ children }: Props) {

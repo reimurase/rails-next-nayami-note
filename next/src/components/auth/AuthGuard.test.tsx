@@ -3,6 +3,7 @@
 import React from "react";
 import { render, screen } from "@testing-library/react";
 import useSWR from "swr";
+import axios from "axios";
 
 import { AuthGuard } from "./AuthGuard";
 
@@ -22,7 +23,13 @@ jest.mock("@/lib/api/auth", () => ({
 }));
 
 function axios401Error() {
-  return { response: { status: 401 } };
+  return new axios.AxiosError("Unauthorized", "ERR_BAD_RESPONSE", undefined, undefined, {
+    status: 401,
+    data: null,
+    headers: {},
+    config: {} as any,
+    statusText: "Unauthorized",
+  });
 }
 
 describe("AuthGuard", () => {
