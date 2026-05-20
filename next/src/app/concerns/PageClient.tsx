@@ -2,15 +2,17 @@
 
 import { useState } from "react";
 import useSWR, { mutate } from "swr";
+import { IconButton } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 import ConcernIndex from "@/components/concerns/ConcernIndex";
-import ConcernCreateSheet from "@/components/concerns/ConcernCreateSheet";
+import ConcernCreateDialog from "@/components/concerns/ConcernCreateDialog";
 import AutoArchiveSetting from "@/components/settings/AutoArchiveSetting";
 import { concernApi } from "@/lib/api/concern";
 import type { Me } from "@/types/auth";
 
 export default function ConcernPageClient() {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const {
     data: concerns,
@@ -31,21 +33,18 @@ export default function ConcernPageClient() {
 
   const handleCreated = async () => {
     await refreshConcernList();
-    setIsSheetOpen(false);
+    setIsDialogOpen(false);
   };
 
   if (concernsLoading) return <div>読み込み中...</div>;
   if (concernsError) return <div>エラーが発生しました {String(concernsError)}</div>;
 
   return (
-    <div style={{ paddingBottom: isSheetOpen ? 160 : 0 }}>
+    <div style={{ paddingBottom: isDialogOpen ? 160 : 0 }}>
       <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <button
-          onClick={() => setIsSheetOpen(true)}
-          style={{ fontSize: 24, width: 40, height: 40, borderRadius: "50%" }}
-        >
-          +
-        </button>
+        <IconButton color="primary" onClick={() => setIsDialogOpen(true)} aria-label="なやみを追加">
+          <AddIcon />
+        </IconButton>
       </header>
 
       <div style={{ marginBottom: 16 }}>
@@ -57,9 +56,9 @@ export default function ConcernPageClient() {
 
       <ConcernIndex concerns={concerns ?? []} onConcernListChanged={refreshConcernList} />
 
-      <ConcernCreateSheet
-        isOpen={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
+      <ConcernCreateDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
         onCreated={handleCreated}
       />
     </div>

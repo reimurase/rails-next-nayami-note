@@ -4,11 +4,11 @@ import { useState } from "react";
 import useSWR from "swr";
 
 import ConcernIndex from "@/components/concerns/ConcernIndex";
-import ConcernCreateSheet from "@/components/concerns/ConcernCreateSheet";
+import ConcernCreateDialog from "@/components/concerns/ConcernCreateDialog";
 import { concernApi } from "@/lib/api/concern";
 
 export default function PageClient() {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const {
     data: concerns,
@@ -23,17 +23,17 @@ export default function PageClient() {
 
   const handleCreated = async () => {
     await refreshConcernList();
-    setIsSheetOpen(false);
+    setIsDialogOpen(false);
   };
 
   if (isLoading) return <div>読み込み中...</div>;
   if (error) return <div>エラーが発生しました {String(error)}</div>;
 
   return (
-    <div style={{ paddingBottom: isSheetOpen ? 160 : 0 }}>
+    <div style={{ paddingBottom: isDialogOpen ? 160 : 0 }}>
       <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
         <button
-          onClick={() => setIsSheetOpen(true)}
+          onClick={() => setIsDialogOpen(true)}
           style={{ fontSize: 24, width: 40, height: 40, borderRadius: "50%" }}
         >
           +
@@ -42,9 +42,9 @@ export default function PageClient() {
 
       <ConcernIndex concerns={concerns ?? []} onConcernListChanged={refreshConcernList} />
 
-      <ConcernCreateSheet
-        isOpen={isSheetOpen}
-        onClose={() => setIsSheetOpen(false)}
+      <ConcernCreateDialog
+        isOpen={isDialogOpen}
+        onClose={() => setIsDialogOpen(false)}
         onCreated={handleCreated}
       />
     </div>
