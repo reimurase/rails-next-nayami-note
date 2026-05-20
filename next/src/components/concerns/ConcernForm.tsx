@@ -15,7 +15,7 @@ import {
 } from "@/lib/validations/concernValidation";
 
 type ConcernFormProps = {
-  onCreated: () => void;
+  onCreated?: () => void;
 };
 
 const ConcernForm = ({ onCreated }: ConcernFormProps) => {
@@ -58,7 +58,7 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
       setTriggerEvent("");
       setContent("");
       setSubmitted(false);
-      onCreated();
+      onCreated?.();
     } catch (error: unknown) {
       const appError = normalizeApiError(error);
 
