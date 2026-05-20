@@ -16,6 +16,7 @@ import {
 import EditNoteIcon from "@mui/icons-material/EditNote";
 import ReportProblemIcon from "@mui/icons-material/ReportProblem";
 import MapIcon from "@mui/icons-material/Map";
+import AddIcon from "@mui/icons-material/Add";
 import { useRouter, usePathname } from "next/navigation";
 import { type ReactNode } from "react";
 
@@ -27,11 +28,13 @@ type Mode = "note" | "library";
 
 const NAV_ITEMS: Record<Mode, { label: string; path: string; icon: ReactNode }[]> = {
   note: [
+    { label: "なやみを書く", path: "/concerns/new", icon: <AddIcon /> },
     { label: "なやみ", path: "/concerns", icon: <EditNoteIcon /> },
     { label: "問題", path: "/issues", icon: <ReportProblemIcon /> },
     { label: "ロードマップ", path: "/roadmaps", icon: <MapIcon /> },
   ],
   library: [
+    { label: "なやみを書く", path: "/concerns/new", icon: <AddIcon /> },
     { label: "なやみ", path: "/library/concerns", icon: <EditNoteIcon /> },
     { label: "問題", path: "/library/issues", icon: <ReportProblemIcon /> },
     { label: "ロードマップ", path: "/library/roadmaps", icon: <MapIcon /> },
