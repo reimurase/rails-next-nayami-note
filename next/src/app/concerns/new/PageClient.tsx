@@ -1,5 +1,6 @@
 "use client";
 
+import { mutate } from "swr";
 import { Box, Typography, Paper } from "@mui/material";
 
 import ConcernForm from "@/components/concerns/ConcernForm";
@@ -14,7 +15,7 @@ export default function ConcernNewPageClient() {
       </Box>
 
       <Paper variant="outlined" sx={{ p: 3 }}>
-        <ConcernForm />
+        <ConcernForm onCreated={() => mutate("/api/v1/concerns")} />
       </Paper>
     </Box>
   );

@@ -18,8 +18,20 @@ describe("ConcernIndex", () => {
 
   test("concerns が取得できたら一覧を表示する", () => {
     const mockData = [
-      { id: 1, triggerEvent: "きっかけA", content: "悩みA", archivedAt: null },
-      { id: 2, triggerEvent: "きっかけB", content: "悩みB", archivedAt: null },
+      {
+        id: 1,
+        triggerEvent: "きっかけA",
+        content: "悩みA",
+        archivedAt: null,
+        createdAt: "2025-01-01T00:00:00Z",
+      },
+      {
+        id: 2,
+        triggerEvent: "きっかけB",
+        content: "悩みB",
+        archivedAt: null,
+        createdAt: "2025-01-01T00:00:00Z",
+      },
     ];
 
     render(<ConcernIndex concerns={mockData} onConcernListChanged={jest.fn()} />);
@@ -32,8 +44,20 @@ describe("ConcernIndex", () => {
 
   test("行をクリックすると詳細が開く", () => {
     const concerns = [
-      { id: 1, triggerEvent: "a", content: "c1", archivedAt: null },
-      { id: 2, triggerEvent: "b", content: "c2", archivedAt: null },
+      {
+        id: 1,
+        triggerEvent: "a",
+        content: "c1",
+        archivedAt: null,
+        createdAt: "2025-01-01T00:00:00Z",
+      },
+      {
+        id: 2,
+        triggerEvent: "b",
+        content: "c2",
+        archivedAt: null,
+        createdAt: "2025-01-01T00:00:00Z",
+      },
     ];
 
     render(<ConcernIndex concerns={concerns} />);

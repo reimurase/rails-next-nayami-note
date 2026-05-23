@@ -6,6 +6,7 @@ export type ConcernResponse = {
   trigger_event: string;
   content: string;
   archived_at: string | null;
+  created_at: string;
 };
 
 export type ConcernDetailResponse = {
@@ -19,6 +20,7 @@ export type Concern = {
   triggerEvent: string;
   content: string;
   archivedAt: string | null;
+  createdAt: string;
 };
 
 export type ConcernInput = {

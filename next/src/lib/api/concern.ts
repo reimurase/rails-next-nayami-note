@@ -15,6 +15,7 @@ const toConcern = (data: ConcernResponse): Concern => ({
   triggerEvent: data.trigger_event,
   content: data.content,
   archivedAt: data.archived_at,
+  createdAt: data.created_at,
 });
 
 const toConcernDetail = (data: ConcernDetailResponse): ConcernDetail => ({
