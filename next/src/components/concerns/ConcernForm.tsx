@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 
 import { normalizeApiError } from "@/lib/api/error";
 import { concernApi } from "@/lib/api/concern";
@@ -80,63 +85,58 @@ const ConcernForm = ({ onCreated }: ConcernFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {apiError && (
-        <p role="alert" style={{ color: "tomato", fontSize: 12 }}>
-          {apiError}
-        </p>
-      )}
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+      <Stack spacing={2}>
+        {apiError && (
+          <Alert severity="error" onClose={() => setApiError(null)}>
+            {apiError}
+          </Alert>
+        )}
 
-      <textarea
-        placeholder="何があって、どう思ったんだろう。（任意）"
-        value={triggerEvent}
-        onChange={(e) => {
-          setTriggerEvent(e.target.value);
-          setServerErrors((prev) => ({ ...prev, triggerEvent: undefined }));
-        }}
-        rows={4}
-        style={{
-          width: "600px",
-          padding: "8px",
-          fontSize: "16px",
-        }}
-      />
-      {triggerEventError && <p style={{ color: "tomato", fontSize: 12 }}>{triggerEventError}</p>}
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {triggerEvent.length}/{CONCERN_LIMITS.triggerEvent}
-      </p>
+        <TextField
+          label="きっかけ（任意）"
+          placeholder="何があって、どう思ったんだろう"
+          value={triggerEvent}
+          onChange={(e) => {
+            setTriggerEvent(e.target.value);
+            setServerErrors((prev) => ({ ...prev, triggerEvent: undefined }));
+          }}
+          multiline
+          minRows={3}
+          maxRows={5}
+          fullWidth
+          error={Boolean(triggerEventError)}
+          helperText={
+            triggerEventError ?? `${triggerEvent.length} / ${CONCERN_LIMITS.triggerEvent}`
+          }
+        />
 
-      <textarea
-        placeholder="とりあえず、今のなやみを書いてみよう（必須）"
-        value={content}
-        onChange={(e) => {
-          setContent(e.target.value);
-          setServerErrors((prev) => ({ ...prev, content: undefined }));
-        }}
-        rows={4}
-        style={{
-          width: "600px",
-          padding: "8px",
-          fontSize: "16px",
-        }}
-      />
-      {contentError && <p style={{ color: "tomato", fontSize: 12 }}>{contentError}</p>}
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {content.length}/{CONCERN_LIMITS.content}
-      </p>
+        <TextField
+          label="なやみ（必須）"
+          placeholder="とりあえず、今のなやみを書いてみよう"
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+            setServerErrors((prev) => ({ ...prev, content: undefined }));
+          }}
+          multiline
+          minRows={8}
+          maxRows={17}
+          fullWidth
+          error={Boolean(contentError)}
+          helperText={contentError ?? `${content.length} / ${CONCERN_LIMITS.content}`}
+        />
 
-      <button
-        type="submit"
-        disabled={isSubmitting || overTrigger || overContent}
-        style={{
-          marginLeft: "8px",
-          padding: "8px 16px",
-          fontSize: "16px",
-        }}
-      >
-        {isSubmitting ? "追加中..." : "追加"}
-      </button>
-    </form>
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={isSubmitting || overTrigger || overContent}
+          sx={{ alignSelf: "flex-end" }}
+        >
+          {isSubmitting ? "追加中..." : "追加"}
+        </Button>
+      </Stack>
+    </Box>
   );
 };
 

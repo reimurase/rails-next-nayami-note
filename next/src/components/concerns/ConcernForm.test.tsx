@@ -25,12 +25,12 @@ describe("ConcernForm API 呼び出し", () => {
     render(<ConcernForm onCreated={mockOnCreated} />);
 
     // きっかけを入力
-    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう。（任意）"), {
+    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう"), {
       target: { value: "テストのきっかけ" },
     });
 
     // なやみを入力
-    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう（必須）"), {
+    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう"), {
       target: { value: "テストのなやみ" },
     });
 
@@ -79,7 +79,7 @@ describe("ConcernForm 異常系", () => {
 
     const longText = "a".repeat(1001);
 
-    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう（必須）"), {
+    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう"), {
       target: { value: longText },
     });
 
@@ -95,11 +95,11 @@ describe("ConcernForm 異常系", () => {
 
     const longText = "a".repeat(121);
 
-    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう。（任意）"), {
+    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう"), {
       target: { value: longText },
     });
 
-    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう（必須）"), {
+    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう"), {
       target: { value: "なやみ" },
     });
 
@@ -127,10 +127,10 @@ describe("ConcernForm 異常系", () => {
     const mockOnCreated = jest.fn();
     render(<ConcernForm onCreated={mockOnCreated} />);
 
-    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう。（任意）"), {
+    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう"), {
       target: { value: "テストのきっかけ" },
     });
-    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう（必須）"), {
+    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう"), {
       target: { value: "テストのなやみ" },
     });
 
@@ -171,10 +171,10 @@ describe("ConcernForm 異常系", () => {
     render(<ConcernForm onCreated={mockOnCreated} />);
 
     // フロントの必須チェックは通し、サーバーの422表示だけを検証する
-    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう。（任意）"), {
+    fireEvent.change(screen.getByPlaceholderText("何があって、どう思ったんだろう"), {
       target: { value: "テストのきっかけ" },
     });
-    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう（必須）"), {
+    fireEvent.change(screen.getByPlaceholderText("とりあえず、今のなやみを書いてみよう"), {
       target: { value: "テストのなやみ" },
     });
 

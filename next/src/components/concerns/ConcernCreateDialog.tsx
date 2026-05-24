@@ -22,7 +22,8 @@ const ConcernCreateDialog = ({ isOpen, onClose, onCreated }: Props) => {
           <CloseIcon />
         </IconButton>
       </DialogTitle>
-      <DialogContent>
+      {/* 子要素が親の境界を超えても描画されるように設定 */}
+      <DialogContent sx={{ overflow: "visible" }}>
         <ConcernForm onCreated={onCreated} />
       </DialogContent>
     </Dialog>
