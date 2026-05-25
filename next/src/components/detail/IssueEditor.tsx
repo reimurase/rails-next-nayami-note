@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 
 import { normalizeApiError } from "@/lib/api/error";
 import type { Issue } from "@/types/issue";
@@ -38,10 +43,9 @@ export default function IssueEditor({ concernId, issue, onSaved, onCancel }: Pro
   const requiredErrors = submitted ? validateRequired(values) : {};
 
   const titleError = serverErrors.title ?? requiredErrors.title ?? lengthErrors.title;
-
   const contentError = serverErrors.content ?? requiredErrors.content ?? lengthErrors.content;
 
-  const overTrigger = Boolean(lengthErrors.title);
+  const overTitle = Boolean(lengthErrors.title);
   const overContent = Boolean(lengthErrors.content);
 
   const handleSave = async () => {
@@ -80,52 +84,72 @@ export default function IssueEditor({ concernId, issue, onSaved, onCancel }: Pro
   };
 
   return (
-    <div>
+    <Box>
       {apiError && (
-        <p role="alert" style={{ color: "tomato", fontSize: 12 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {apiError}
-        </p>
+        </Alert>
       )}
 
-      <textarea
+      <TextField
+        label="タイトル（任意）"
+        fullWidth
+        multiline
+        minRows={3}
+        maxRows={5}
         value={title}
-        placeholder="タイトル（任意）"
+        placeholder="タイトル"
         onChange={(e) => {
           setTitle(e.target.value);
           setServerErrors((prev) => ({ ...prev, title: undefined }));
         }}
         disabled={isSaving}
+        error={Boolean(titleError)}
+        helperText={titleError || `${title.length}/${CONCERN_LIMITS.title}`}
+        slotProps={{
+          formHelperText: {
+            sx: titleError ? undefined : { textAlign: "right" },
+          },
+        }}
+        sx={{ mb: 2 }}
       />
 
-      {titleError && <p style={{ color: "tomato", fontSize: 12 }}>{titleError}</p>}
-
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {title.length}/{CONCERN_LIMITS.title}
-      </p>
-
-      <textarea
+      <TextField
+        label="問題（必須）"
+        fullWidth
+        multiline
+        minRows={3}
+        maxRows={12}
         value={content}
-        placeholder="問題（必須）"
+        placeholder="問題"
         onChange={(e) => {
           setContent(e.target.value);
           setServerErrors((prev) => ({ ...prev, content: undefined }));
         }}
         disabled={isSaving}
+        error={Boolean(contentError)}
+        helperText={contentError || `${content.length}/${CONCERN_LIMITS.content}`}
+        slotProps={{
+          formHelperText: {
+            sx: contentError ? undefined : { textAlign: "right" },
+          },
+        }}
+        sx={{ mb: 2 }}
       />
 
-      {contentError && <p style={{ color: "tomato", fontSize: 12 }}>{contentError}</p>}
+      <Stack direction="row" spacing={1} justifyContent="flex-end">
+        <Button variant="text" onClick={onCancel} disabled={isSaving}>
+          キャンセル
+        </Button>
 
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {content.length}/{CONCERN_LIMITS.content}
-      </p>
-
-      <button onClick={handleSave} disabled={isSaving || overTrigger || overContent}>
-        {isSaving ? "保存中..." : "保存"}
-      </button>
-
-      <button onClick={onCancel} disabled={isSaving}>
-        キャンセル
-      </button>
-    </div>
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={isSaving || overTitle || overContent}
+        >
+          {isSaving ? "保存中..." : "保存"}
+        </Button>
+      </Stack>
+    </Box>
   );
 }
