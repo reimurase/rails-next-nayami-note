@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 
 import { normalizeApiError } from "@/lib/api/error";
 import type { Concern } from "@/types/concern";
@@ -80,52 +85,72 @@ export default function ConcernEditor({ concern, onSaved, onCancel }: Props) {
   };
 
   return (
-    <div>
+    <Box>
       {apiError && (
-        <p role="alert" style={{ color: "tomato", fontSize: 12 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {apiError}
-        </p>
+        </Alert>
       )}
 
-      <textarea
+      <TextField
+        label="きっかけ（任意）"
+        fullWidth
+        multiline
+        minRows={3}
+        maxRows={5}
         value={triggerEvent}
-        placeholder="何があって、どう思ったんだろう。（任意）"
+        placeholder="何があって、どう思ったんだろう"
         onChange={(e) => {
           setTriggerEvent(e.target.value);
           setServerErrors((prev) => ({ ...prev, triggerEvent: undefined }));
         }}
         disabled={isSaving}
+        error={Boolean(triggerEventError)}
+        helperText={triggerEventError || `${triggerEvent.length}/${CONCERN_LIMITS.triggerEvent}`}
+        slotProps={{
+          formHelperText: {
+            sx: triggerEventError ? undefined : { textAlign: "right" },
+          },
+        }}
+        sx={{ mb: 2 }}
       />
 
-      {triggerEventError && <p style={{ color: "tomato", fontSize: 12 }}>{triggerEventError}</p>}
-
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {triggerEvent.length}/{CONCERN_LIMITS.triggerEvent}
-      </p>
-
-      <textarea
+      <TextField
+        label="なやみ（必須）"
+        fullWidth
+        multiline
+        minRows={3}
+        maxRows={12}
         value={content}
-        placeholder="とりあえず、今のなやみを書いてみよう（必須）"
+        placeholder="とりあえず、今のなやみを書いてみよう"
         onChange={(e) => {
           setContent(e.target.value);
           setServerErrors((prev) => ({ ...prev, content: undefined }));
         }}
         disabled={isSaving}
+        error={Boolean(contentError)}
+        helperText={contentError || `${content.length}/${CONCERN_LIMITS.content}`}
+        slotProps={{
+          formHelperText: {
+            sx: contentError ? undefined : { textAlign: "right" },
+          },
+        }}
+        sx={{ mb: 2 }}
       />
 
-      {contentError && <p style={{ color: "tomato", fontSize: 12 }}>{contentError}</p>}
+      <Stack direction="row" spacing={1} justifyContent="flex-end">
+        <Button variant="text" onClick={onCancel} disabled={isSaving}>
+          キャンセル
+        </Button>
 
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {content.length}/{CONCERN_LIMITS.content}
-      </p>
-
-      <button type="button" onClick={handleSave} disabled={isSaving || overTrigger || overContent}>
-        {isSaving ? "保存中..." : "保存"}
-      </button>
-
-      <button type="button" onClick={onCancel} disabled={isSaving}>
-        キャンセル
-      </button>
-    </div>
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={isSaving || overTrigger || overContent}
+        >
+          {isSaving ? "保存中..." : "保存"}
+        </Button>
+      </Stack>
+    </Box>
   );
 }
