@@ -29,7 +29,7 @@ describe("AutoArchiveSetting", () => {
 
     render(<AutoArchiveSetting enabled={true} onUpdated={handleUpdate} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "OFFにする" }));
+    fireEvent.click(screen.getByRole("switch"));
 
     await waitFor(() => {
       expect(mockedAuthApi.updateAutoArchive).toHaveBeenCalledWith(false);
@@ -51,7 +51,7 @@ describe("AutoArchiveSetting", () => {
 
     render(<AutoArchiveSetting enabled={false} onUpdated={handleUpdate} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "ONにする" }));
+    fireEvent.click(screen.getByRole("switch"));
 
     await waitFor(() => {
       expect(mockedAuthApi.updateAutoArchive).toHaveBeenCalledWith(true);
