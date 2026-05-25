@@ -7,7 +7,13 @@ describe("ConcernSection", () => {
   test("編集を押すと編集モードに切り替わる", () => {
     render(
       <ConcernSection
-        concern={{ id: 10, triggerEvent: "旧きっかけ", content: "旧内容", archivedAt: null }}
+        concern={{
+          id: 10,
+          triggerEvent: "旧きっかけ",
+          content: "旧内容",
+          archivedAt: null,
+          createdAt: "2025-01-01T00:00:00Z",
+        }}
       />
     );
 
