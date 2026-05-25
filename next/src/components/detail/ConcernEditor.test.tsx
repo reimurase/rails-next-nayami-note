@@ -25,7 +25,13 @@ describe("ConcernEditor", () => {
 
     render(
       <ConcernEditor
-        concern={{ id: 1, triggerEvent: "旧きっかけ", content: "旧内容", archivedAt: null }}
+        concern={{
+          id: 1,
+          triggerEvent: "旧きっかけ",
+          content: "旧内容",
+          archivedAt: null,
+          createdAt: "2025-01-01T00:00:00Z",
+        }}
         onSaved={handleCreated}
         onCancel={handleCancelEdit}
       />
@@ -63,6 +69,7 @@ describe("ConcernEditor 異常系", () => {
       triggerEvent: "もとのきっかけ",
       content: "もとの内容",
       archivedAt: null,
+      createdAt: "2025-01-01T00:00:00Z",
     };
     const onSaved = jest.fn();
     const onCancel = jest.fn();
@@ -93,6 +100,7 @@ describe("ConcernEditor 異常系", () => {
       triggerEvent: "もとのきっかけ",
       content: "もとの内容",
       archivedAt: null,
+      createdAt: "2025-01-01T00:00:00Z",
     };
     const onSaved = jest.fn();
     const onCancel = jest.fn();
@@ -117,6 +125,7 @@ describe("ConcernEditor 異常系", () => {
       triggerEvent: "もとのきっかけ",
       content: "もとの内容",
       archivedAt: null,
+      createdAt: "2025-01-01T00:00:00Z",
     };
     const onSaved = jest.fn();
     const onCancel = jest.fn();
@@ -141,6 +150,7 @@ describe("ConcernEditor 異常系", () => {
       triggerEvent: "もとのきっかけ",
       content: "もとの内容",
       archivedAt: null,
+      createdAt: "2025-01-01T00:00:00Z",
     };
     const onSaved = jest.fn();
     const onCancel = jest.fn();

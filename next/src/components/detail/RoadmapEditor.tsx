@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 
 import { normalizeApiError } from "@/lib/api/error";
 import type { Roadmap } from "@/types/roadmap";
@@ -38,10 +43,9 @@ export default function RoadmapEditor({ concernId, roadmap, onSaved, onCancel }:
   const requiredErrors = submitted ? validateRequired(values) : {};
 
   const goalError = serverErrors.goal ?? requiredErrors.goal ?? lengthErrors.goal;
-
   const contentError = serverErrors.content ?? requiredErrors.content ?? lengthErrors.content;
 
-  const overTrigger = Boolean(lengthErrors.goal);
+  const overGoal = Boolean(lengthErrors.goal);
   const overContent = Boolean(lengthErrors.content);
 
   const handleSave = async () => {
@@ -80,52 +84,72 @@ export default function RoadmapEditor({ concernId, roadmap, onSaved, onCancel }:
   };
 
   return (
-    <div>
+    <Box>
       {apiError && (
-        <p role="alert" style={{ color: "tomato", fontSize: 12 }}>
+        <Alert severity="error" sx={{ mb: 2 }}>
           {apiError}
-        </p>
+        </Alert>
       )}
 
-      <textarea
+      <TextField
+        label="ゴール（任意）"
+        fullWidth
+        multiline
+        minRows={3}
+        maxRows={5}
         value={goal}
-        placeholder="ゴール（任意）"
+        placeholder="目指すゴールはどこか"
         onChange={(e) => {
           setGoal(e.target.value);
           setServerErrors((prev) => ({ ...prev, goal: undefined }));
         }}
         disabled={isSaving}
+        error={Boolean(goalError)}
+        helperText={goalError || `${goal.length}/${CONCERN_LIMITS.goal}`}
+        slotProps={{
+          formHelperText: {
+            sx: goalError ? undefined : { textAlign: "right" },
+          },
+        }}
+        sx={{ mb: 2 }}
       />
 
-      {goalError && <p style={{ color: "tomato", fontSize: 12 }}>{goalError}</p>}
-
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {goal.length}/{CONCERN_LIMITS.goal}
-      </p>
-
-      <textarea
+      <TextField
+        label="進め方（必須）"
+        fullWidth
+        multiline
+        minRows={3}
+        maxRows={12}
         value={content}
-        placeholder="ロードマップ（必須）"
+        placeholder="ゴールまでにどんな問題があるか書いていこう"
         onChange={(e) => {
           setContent(e.target.value);
           setServerErrors((prev) => ({ ...prev, content: undefined }));
         }}
         disabled={isSaving}
+        error={Boolean(contentError)}
+        helperText={contentError || `${content.length}/${CONCERN_LIMITS.content}`}
+        slotProps={{
+          formHelperText: {
+            sx: contentError ? undefined : { textAlign: "right" },
+          },
+        }}
+        sx={{ mb: 2 }}
       />
 
-      {contentError && <p style={{ color: "tomato", fontSize: 12 }}>{contentError}</p>}
+      <Stack direction="row" spacing={1} justifyContent="flex-end">
+        <Button variant="text" onClick={onCancel} disabled={isSaving}>
+          キャンセル
+        </Button>
 
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {content.length}/{CONCERN_LIMITS.content}
-      </p>
-
-      <button onClick={handleSave} disabled={isSaving || overTrigger || overContent}>
-        {isSaving ? "保存中..." : "保存"}
-      </button>
-
-      <button onClick={onCancel} disabled={isSaving}>
-        キャンセル
-      </button>
-    </div>
+        <Button
+          variant="contained"
+          onClick={handleSave}
+          disabled={isSaving || overGoal || overContent}
+        >
+          {isSaving ? "保存中..." : "保存"}
+        </Button>
+      </Stack>
+    </Box>
   );
 }
