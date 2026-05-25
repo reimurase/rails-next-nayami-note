@@ -47,7 +47,7 @@ export default function ConcernPageClient() {
         </IconButton>
       </header>
 
-      <div style={{ marginBottom: 16 }}>
+      <div style={{ display: "flex", justifyContent: "flex-end", marginBottom: 8 }}>
         <AutoArchiveSetting
           enabled={me?.autoArchiveEnabled ?? false}
           onUpdated={refreshAutoArchive}
