@@ -2,6 +2,10 @@
 
 import { useState } from "react";
 import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 import ConcernEditor from "./ConcernEditor";
 
@@ -27,17 +31,9 @@ export default function ConcernSection({
 
   const isArchived = concern.archivedAt !== null;
 
-  const startEditing = () => {
-    setIsEditing(true);
-  };
-
   const handleSaved = async () => {
     setIsEditing(false);
     await onConcernUpdated?.();
-  };
-
-  const handleCancelEdit = () => {
-    setIsEditing(false);
   };
 
   const handleDelete = async () => {
@@ -55,7 +51,7 @@ export default function ConcernSection({
     }
   };
 
-  const handleArchiveToggle = async () => {
+  const handleArchive = async () => {
     if (
       !window.confirm(
         isArchived ? "本当にノートへ戻しますか？" : "本当にライブラリへ移動しますか？"
@@ -80,34 +76,66 @@ export default function ConcernSection({
   };
 
   return (
-    <div>
-      <h3>Concern</h3>
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        なやみ
+      </Typography>
 
       {apiError && (
-        <Alert severity="error" onClose={() => setApiError(null)}>
+        <Alert severity="error" onClose={() => setApiError(null)} sx={{ mb: 2 }}>
           {apiError}
         </Alert>
       )}
 
-      <button onClick={handleArchiveToggle} disabled={isProcessing}>
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={handleArchive}
+        disabled={isProcessing}
+        sx={{ mb: 2 }}
+      >
         {isArchived ? "ノートへ戻す" : "ライブラリへ"}
-      </button>
+      </Button>
 
       {isEditing ? (
-        <ConcernEditor concern={concern} onSaved={handleSaved} onCancel={handleCancelEdit} />
+        <ConcernEditor
+          concern={concern}
+          onSaved={handleSaved}
+          onCancel={() => setIsEditing(false)}
+        />
       ) : (
-        <div>
-          <ul>
-            <li>きっかけ: {concern.triggerEvent || "なし"}</li>
-            <li>内容: {concern.content || "なし"}</li>
-          </ul>
+        <Box>
+          <Stack spacing={1} sx={{ mb: 2 }}>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                きっかけ
+              </Typography>
+              <Typography variant="body2">{concern.triggerEvent || "なし"}</Typography>
+            </Box>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                内容
+              </Typography>
+              <Typography variant="body2">{concern.content}</Typography>
+            </Box>
+          </Stack>
 
-          <button onClick={startEditing}>編集</button>
-          <button onClick={handleDelete} disabled={isProcessing} style={{ color: "tomato" }}>
-            削除
-          </button>
-        </div>
+          <Stack direction="row" spacing={1}>
+            <Button variant="outlined" size="small" onClick={() => setIsEditing(true)}>
+              編集
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              color="error"
+              onClick={handleDelete}
+              disabled={isProcessing}
+            >
+              削除
+            </Button>
+          </Stack>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
