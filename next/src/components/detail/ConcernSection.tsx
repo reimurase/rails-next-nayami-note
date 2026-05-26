@@ -1,12 +1,11 @@
 "use client";
 
 import { useState } from "react";
-
-import ConcernDeleteButton from "../concerns/ConcernDeleteButton";
-import ConcernArchiveButton from "../concerns/ConcernArchiveButton";
+import Alert from "@mui/material/Alert";
 
 import ConcernEditor from "./ConcernEditor";
 
+import { concernApi } from "@/lib/api/concern";
 import type { Concern } from "@/types/concern";
 
 type Props = {
@@ -23,6 +22,10 @@ export default function ConcernSection({
   onConcernArchived,
 }: Props) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
+
+  const isArchived = concern.archivedAt !== null;
 
   const startEditing = () => {
     setIsEditing(true);
@@ -30,8 +33,6 @@ export default function ConcernSection({
 
   const handleSaved = async () => {
     setIsEditing(false);
-
-    // concernページ / 詳細のconcernを更新
     await onConcernUpdated?.();
   };
 
@@ -39,19 +40,58 @@ export default function ConcernSection({
     setIsEditing(false);
   };
 
-  const handleConcernDeleted = async () => {
-    await onConcernDeleted?.();
+  const handleDelete = async () => {
+    if (!window.confirm("本当に削除しますか？")) return;
+    try {
+      setIsProcessing(true);
+      setApiError(null);
+      await concernApi.remove(concern.id);
+      await onConcernDeleted?.();
+    } catch (error) {
+      console.error(error);
+      setApiError("削除に失敗しました");
+    } finally {
+      setIsProcessing(false);
+    }
+  };
+
+  const handleArchiveToggle = async () => {
+    if (
+      !window.confirm(
+        isArchived ? "本当にノートへ戻しますか？" : "本当にライブラリへ移動しますか？"
+      )
+    )
+      return;
+    try {
+      setIsProcessing(true);
+      setApiError(null);
+      if (isArchived) {
+        await concernApi.unarchiveConcern(concern.id);
+      } else {
+        await concernApi.archiveConcern(concern.id);
+      }
+      await onConcernArchived?.();
+    } catch (error) {
+      console.error(error);
+      setApiError(isArchived ? "戻すのに失敗しました" : "移動に失敗しました");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
     <div>
       <h3>Concern</h3>
 
-      <ConcernArchiveButton
-        id={concern.id}
-        archivedAt={concern.archivedAt}
-        onArchiveChanged={onConcernArchived}
-      />
+      {apiError && (
+        <Alert severity="error" onClose={() => setApiError(null)}>
+          {apiError}
+        </Alert>
+      )}
+
+      <button onClick={handleArchiveToggle} disabled={isProcessing}>
+        {isArchived ? "ノートへ戻す" : "ライブラリへ"}
+      </button>
 
       {isEditing ? (
         <ConcernEditor concern={concern} onSaved={handleSaved} onCancel={handleCancelEdit} />
@@ -63,10 +103,9 @@ export default function ConcernSection({
           </ul>
 
           <button onClick={startEditing}>編集</button>
-          <ConcernDeleteButton
-            id={concern.id}
-            onDeleted={handleConcernDeleted} // 削除成功時も一覧更新
-          />
+          <button onClick={handleDelete} disabled={isProcessing} style={{ color: "tomato" }}>
+            削除
+          </button>
         </div>
       )}
     </div>
