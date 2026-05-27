@@ -15,13 +15,15 @@ function isUnauthorized(err: unknown): boolean {
 }
 
 export function AuthGuard({ children }: Props) {
-  const { error, isLoading } = useSWR("me", () => authApi.me(), {
+  const { data, error, isLoading } = useSWR("me", () => authApi.me(), {
     revalidateOnFocus: false,
     shouldRetryOnError: false,
   });
 
   // /me確認中 or 401でリダイレクト中は何も出さない
   if (isLoading) return null;
+  // 外部がmutateを更新して、キャッシュ情報をクリアにした場合
+  if (!data && !error) return null;
   if (isUnauthorized(error)) return null;
 
   // 401以外のエラーは「表示する」

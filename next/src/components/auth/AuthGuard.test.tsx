@@ -75,8 +75,24 @@ describe("AuthGuard", () => {
     expect(screen.queryByText("child")).not.toBeInTheDocument();
   });
 
+  test("dataもerrorもない場合は何も描画しない（mutateによるキャッシュクリア時）", () => {
+    mockedUseSWR.mockReturnValue({ data: undefined, error: undefined, isLoading: false });
+
+    const { container } = render(
+      <AuthGuard>
+        <div>child</div>
+      </AuthGuard>
+    );
+
+    expect(container).toBeEmptyDOMElement();
+  });
+
   test("成功時はchildrenを表示する", () => {
-    mockedUseSWR.mockReturnValue({ error: undefined, isLoading: false });
+    mockedUseSWR.mockReturnValue({
+      data: { id: 1, email: "test@example.com", autoArchiveEnabled: false },
+      error: undefined,
+      isLoading: false,
+    });
 
     render(
       <AuthGuard>
