@@ -1,12 +1,15 @@
 "use client";
 
 import { useState } from "react";
-
-import ConcernDeleteButton from "../concerns/ConcernDeleteButton";
-import ConcernArchiveButton from "../concerns/ConcernArchiveButton";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
 import ConcernEditor from "./ConcernEditor";
 
+import { concernApi } from "@/lib/api/concern";
 import type { Concern } from "@/types/concern";
 
 type Props = {
@@ -23,52 +26,116 @@ export default function ConcernSection({
   onConcernArchived,
 }: Props) {
   const [isEditing, setIsEditing] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
+  const [apiError, setApiError] = useState<string | null>(null);
 
-  const startEditing = () => {
-    setIsEditing(true);
-  };
+  const isArchived = concern.archivedAt !== null;
 
   const handleSaved = async () => {
     setIsEditing(false);
-
-    // concernページ / 詳細のconcernを更新
     await onConcernUpdated?.();
   };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
+  const handleDelete = async () => {
+    if (!window.confirm("本当に削除しますか？")) return;
+    try {
+      setIsProcessing(true);
+      setApiError(null);
+      await concernApi.remove(concern.id);
+      await onConcernDeleted?.();
+    } catch (error) {
+      console.error(error);
+      setApiError("削除に失敗しました");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
-  const handleConcernDeleted = async () => {
-    await onConcernDeleted?.();
+  const handleArchive = async () => {
+    if (
+      !window.confirm(
+        isArchived ? "本当にノートへ戻しますか？" : "本当にライブラリへ移動しますか？"
+      )
+    )
+      return;
+    try {
+      setIsProcessing(true);
+      setApiError(null);
+      if (isArchived) {
+        await concernApi.unarchiveConcern(concern.id);
+      } else {
+        await concernApi.archiveConcern(concern.id);
+      }
+      await onConcernArchived?.();
+    } catch (error) {
+      console.error(error);
+      setApiError(isArchived ? "戻すのに失敗しました" : "移動に失敗しました");
+    } finally {
+      setIsProcessing(false);
+    }
   };
 
   return (
-    <div>
-      <h3>Concern</h3>
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        なやみ
+      </Typography>
 
-      <ConcernArchiveButton
-        id={concern.id}
-        archivedAt={concern.archivedAt}
-        onArchiveChanged={onConcernArchived}
-      />
+      {apiError && (
+        <Alert severity="error" onClose={() => setApiError(null)} sx={{ mb: 2 }}>
+          {apiError}
+        </Alert>
+      )}
+
+      <Button
+        variant="outlined"
+        size="small"
+        onClick={handleArchive}
+        disabled={isProcessing}
+        sx={{ mb: 2 }}
+      >
+        {isArchived ? "ノートへ戻す" : "ライブラリへ"}
+      </Button>
 
       {isEditing ? (
-        <ConcernEditor concern={concern} onSaved={handleSaved} onCancel={handleCancelEdit} />
+        <ConcernEditor
+          concern={concern}
+          onSaved={handleSaved}
+          onCancel={() => setIsEditing(false)}
+        />
       ) : (
-        <div>
-          <ul>
-            <li>きっかけ: {concern.triggerEvent || "なし"}</li>
-            <li>内容: {concern.content || "なし"}</li>
-          </ul>
+        <Box>
+          <Stack spacing={1} sx={{ mb: 2 }}>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                きっかけ
+              </Typography>
+              <Typography variant="body2">{concern.triggerEvent || "なし"}</Typography>
+            </Box>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                内容
+              </Typography>
+              <Typography variant="body2">{concern.content}</Typography>
+            </Box>
+          </Stack>
 
-          <button onClick={startEditing}>編集</button>
-          <ConcernDeleteButton
-            id={concern.id}
-            onDeleted={handleConcernDeleted} // 削除成功時も一覧更新
-          />
-        </div>
+          <Stack direction="row" spacing={1}>
+            <Button variant="outlined" size="small" onClick={() => setIsEditing(true)}>
+              編集
+            </Button>
+            <Button
+              variant="outlined"
+              size="small"
+              color="error"
+              onClick={handleDelete}
+              disabled={isProcessing}
+            >
+              削除
+            </Button>
+          </Stack>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

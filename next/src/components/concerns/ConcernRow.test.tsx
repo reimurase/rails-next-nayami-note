@@ -1,7 +1,7 @@
-// src/components/detail/ConcernSection.test.tsx
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+// src/components/concerns/ConcernRow.test.tsx
+import { render, screen, fireEvent, waitFor } from "@testing-library/react";
 
-import ConcernSection from "./ConcernSection";
+import ConcernRow from "./ConcernRow";
 
 import { concernApi } from "@/lib/api/concern";
 import type { Concern } from "@/types/concern";
@@ -23,7 +23,11 @@ const baseConcern: Concern = {
   createdAt: "2024-01-01T00:00:00Z",
 };
 
-describe("ConcernSection", () => {
+const openMenu = () => {
+  fireEvent.click(screen.getByRole("button", { name: "操作メニュー" }));
+};
+
+describe("ConcernRow", () => {
   beforeEach(() => {
     window.confirm = jest.fn().mockReturnValue(true);
     mockedConcernApi.remove.mockReset();
@@ -31,34 +35,29 @@ describe("ConcernSection", () => {
     mockedConcernApi.unarchiveConcern.mockReset();
   });
 
-  test("編集を押すと編集モードに切り替わる", () => {
+  test("行をクリックするとonOpenDetailが呼ばれる", () => {
+    const onOpenDetail = jest.fn();
+    render(<ConcernRow concern={baseConcern} onOpenDetail={onOpenDetail} />);
+
+    fireEvent.click(screen.getByText("テストのトリガー"));
+
+    expect(onOpenDetail).toHaveBeenCalledTimes(1);
+  });
+
+  test("削除するとAPIが呼ばれ、onConcernListChangedも呼ばれる", async () => {
+    mockedConcernApi.remove.mockResolvedValue({} as any);
+    const onConcernListChanged = jest.fn();
+
     render(
-      <ConcernSection
-        concern={{
-          id: 10,
-          triggerEvent: "旧きっかけ",
-          content: "旧内容",
-          archivedAt: null,
-          createdAt: "2025-01-01T00:00:00Z",
-        }}
+      <ConcernRow
+        concern={baseConcern}
+        onOpenDetail={jest.fn()}
+        onConcernListChanged={onConcernListChanged}
       />
     );
 
-    fireEvent.click(screen.getByRole("button", { name: "編集" }));
-
-    expect(screen.getByDisplayValue("旧きっかけ")).toBeInTheDocument();
-    expect(screen.getByDisplayValue("旧内容")).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "保存" })).toBeInTheDocument();
-    expect(screen.getByRole("button", { name: "キャンセル" })).toBeInTheDocument();
-  });
-
-  test("削除するとAPIが呼ばれ、onConcernDeletedも呼ばれる", async () => {
-    mockedConcernApi.remove.mockResolvedValue({} as any);
-    const onConcernDeleted = jest.fn();
-
-    render(<ConcernSection concern={baseConcern} onConcernDeleted={onConcernDeleted} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "削除" }));
+    openMenu();
+    fireEvent.click(screen.getByRole("menuitem", { name: "削除" }));
 
     expect(window.confirm).toHaveBeenCalledWith("本当に削除しますか？");
 
@@ -66,17 +65,24 @@ describe("ConcernSection", () => {
       expect(mockedConcernApi.remove).toHaveBeenCalledWith(1);
     });
     await waitFor(() => {
-      expect(onConcernDeleted).toHaveBeenCalledTimes(1);
+      expect(onConcernListChanged).toHaveBeenCalledTimes(1);
     });
   });
 
   test("アーカイブ済みでない場合、ライブラリへ移動APIが呼ばれる", async () => {
     mockedConcernApi.archiveConcern.mockResolvedValue({} as any);
-    const onConcernArchived = jest.fn();
+    const onConcernListChanged = jest.fn();
 
-    render(<ConcernSection concern={baseConcern} onConcernArchived={onConcernArchived} />);
+    render(
+      <ConcernRow
+        concern={baseConcern}
+        onOpenDetail={jest.fn()}
+        onConcernListChanged={onConcernListChanged}
+      />
+    );
 
-    fireEvent.click(screen.getByRole("button", { name: "ライブラリへ" }));
+    openMenu();
+    fireEvent.click(screen.getByRole("menuitem", { name: "ライブラリへ" }));
 
     expect(window.confirm).toHaveBeenCalledWith("本当にライブラリへ移動しますか？");
 
@@ -84,7 +90,7 @@ describe("ConcernSection", () => {
       expect(mockedConcernApi.archiveConcern).toHaveBeenCalledWith(1);
     });
     await waitFor(() => {
-      expect(onConcernArchived).toHaveBeenCalledTimes(1);
+      expect(onConcernListChanged).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -92,9 +98,10 @@ describe("ConcernSection", () => {
     mockedConcernApi.unarchiveConcern.mockResolvedValue({} as any);
     const archivedConcern: Concern = { ...baseConcern, archivedAt: "2024-01-02T00:00:00Z" };
 
-    render(<ConcernSection concern={archivedConcern} />);
+    render(<ConcernRow concern={archivedConcern} onOpenDetail={jest.fn()} />);
 
-    fireEvent.click(screen.getByRole("button", { name: "ノートへ戻す" }));
+    openMenu();
+    fireEvent.click(screen.getByRole("menuitem", { name: "ノートへ戻す" }));
 
     expect(window.confirm).toHaveBeenCalledWith("本当にノートへ戻しますか？");
 
@@ -103,17 +110,24 @@ describe("ConcernSection", () => {
     });
   });
 
-  test("削除が失敗したらエラーが表示され、onConcernDeletedは呼ばれない", async () => {
+  test("削除が失敗したらエラーが表示され、onConcernListChangedは呼ばれない", async () => {
     const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
     mockedConcernApi.remove.mockRejectedValueOnce(new Error("remove failed"));
-    const onConcernDeleted = jest.fn();
+    const onConcernListChanged = jest.fn();
 
-    render(<ConcernSection concern={baseConcern} onConcernDeleted={onConcernDeleted} />);
+    render(
+      <ConcernRow
+        concern={baseConcern}
+        onOpenDetail={jest.fn()}
+        onConcernListChanged={onConcernListChanged}
+      />
+    );
 
-    fireEvent.click(screen.getByRole("button", { name: "削除" }));
+    openMenu();
+    fireEvent.click(screen.getByRole("menuitem", { name: "削除" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("削除に失敗しました");
-    expect(onConcernDeleted).not.toHaveBeenCalled();
+    expect(onConcernListChanged).not.toHaveBeenCalled();
 
     consoleSpy.mockRestore();
   });
