@@ -71,7 +71,13 @@ export function AppSidebar() {
 
   const handleModeChange = (_: React.MouseEvent, newMode: Mode | null) => {
     if (!newMode) return;
-    const dest = newMode === "library" ? "/library/concerns" : "/concerns";
+
+    // /concerns/new にいる場合は "concerns" にマッチするので、
+    // モード切替時に /concerns または /library/concerns に遷移する（意図通り）
+    const resource =
+      pathname.split("/").find((s) => ["concerns", "issues", "roadmaps"].includes(s)) ?? "concerns";
+
+    const dest = newMode === "library" ? `/library/${resource}` : `/${resource}`;
     router.push(dest);
   };
 
