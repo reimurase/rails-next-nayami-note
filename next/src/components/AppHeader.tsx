@@ -36,7 +36,7 @@ export function AppHeader() {
 
   return (
     <>
-      <AppBar position="static" color="default" elevation={1}>
+      <AppBar position="fixed" color="default" elevation={1}>
         <Toolbar>
           {isLoggedIn && (
             <IconButton edge="start" aria-label="メニューを開閉" onClick={toggle} sx={{ mr: 1 }}>
@@ -73,6 +73,7 @@ export function AppHeader() {
           </Box>
         </Toolbar>
       </AppBar>
+      <Toolbar /> {/* スペーサー */}
     </>
   );
 }

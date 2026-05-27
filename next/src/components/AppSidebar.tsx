@@ -89,7 +89,8 @@ export function AppSidebar() {
           "& .MuiDrawer-paper": {
             width: SIDEBAR_WIDTH,
             boxSizing: "border-box",
-            top: "auto",
+            top: 63, // デフォルトのToolbarの高さ
+            height: "calc(100% - 64px)",
           },
         }}
       >
