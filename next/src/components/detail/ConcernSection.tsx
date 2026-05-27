@@ -110,13 +110,17 @@ export default function ConcernSection({
               <Typography variant="caption" color="text.secondary">
                 きっかけ
               </Typography>
-              <Typography variant="body2">{concern.triggerEvent || "なし"}</Typography>
+              <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                {concern.triggerEvent || "なし"}
+              </Typography>
             </Box>
             <Box>
               <Typography variant="caption" color="text.secondary">
                 内容
               </Typography>
-              <Typography variant="body2">{concern.content}</Typography>
+              <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                {concern.content}
+              </Typography>
             </Box>
           </Stack>
 
