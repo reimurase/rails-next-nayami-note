@@ -79,6 +79,11 @@ export const AuthForm = ({ mode }: Props) => {
     } catch (err: unknown) {
       const appError = normalizeApiError(err);
 
+      if (appError.type === "rate_limited") {
+        setApiError(appError.message);
+        return;
+      }
+
       if (appError.type === "validation") {
         setServerErrors(mapAuthValidationErrors(appError.errors));
         return;
@@ -110,11 +115,13 @@ export const AuthForm = ({ mode }: Props) => {
       router.replace(next);
     } catch (err: unknown) {
       const appError = normalizeApiError(err);
-      setApiError(
-        appError.type === "network"
-          ? appError.message
-          : "エラーが発生しました。時間を置いて再度お試しください。"
-      );
+
+      if (appError.type === "network" || appError.type === "rate_limited") {
+        setApiError(appError.message);
+        return;
+      }
+
+      setApiError("エラーが発生しました。時間を置いて再度お試しください。");
     } finally {
       setSubmitting(false);
     }
