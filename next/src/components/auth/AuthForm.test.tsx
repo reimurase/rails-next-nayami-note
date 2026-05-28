@@ -198,6 +198,23 @@ describe("AuthForm 異常系", () => {
     expect(replaceMock).not.toHaveBeenCalled();
   });
 
+  test("サインアップ時にレートリミットエラーが発生するとエラーメッセージが表示される", async () => {
+    mockedAuthApi.signup.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: { status: 429, data: {} },
+    });
+
+    const user = await setupSignupForm({
+      email: "test@example.com",
+      password: "password",
+      passwordConfirmation: "password",
+    });
+    await user.click(screen.getByRole("button", { name: "Create account" }));
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
   test("ログイン失敗（401）後、曖昧なエラーメッセージが表示される", async () => {
     const user = userEvent.setup();
     mockedAuthApi.login.mockRejectedValueOnce({
@@ -211,6 +228,20 @@ describe("AuthForm 異常系", () => {
     await user.click(screen.getByRole("button", { name: "Login" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(LOGIN_CREDENTIAL_ERROR);
+    expect(replaceMock).not.toHaveBeenCalled();
+  });
+
+  test("ゲストログイン時にレートリミットエラーが発生するとエラーメッセージが表示される", async () => {
+    mockedAuthApi.guestLogin.mockRejectedValueOnce({
+      isAxiosError: true,
+      response: { status: 429, data: {} },
+    });
+
+    const user = userEvent.setup();
+    render(<AuthForm mode="login" />);
+    await user.click(screen.getByRole("button", { name: "ゲストとして試す" }));
+
+    expect(await screen.findByRole("alert")).toBeInTheDocument();
     expect(replaceMock).not.toHaveBeenCalled();
   });
 });
