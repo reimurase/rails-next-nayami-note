@@ -71,7 +71,9 @@ describe("AuthGuard", () => {
       </AuthGuard>
     );
 
-    expect(screen.getByText("Failed to load session.")).toBeInTheDocument();
+    expect(
+      screen.getByText("セッションの読み込みに失敗しました。ページを再度更新してください。")
+    ).toBeInTheDocument();
     expect(screen.queryByText("child")).not.toBeInTheDocument();
   });
 
