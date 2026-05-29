@@ -3,6 +3,7 @@
 import { useState } from "react";
 
 import { passwordApi } from "@/lib/api/auth";
+import { normalizeApiError } from "@/lib/api/error";
 
 export const ResetRequestForm = () => {
   const [email, setEmail] = useState("");
@@ -18,8 +19,8 @@ export const ResetRequestForm = () => {
     try {
       await passwordApi.resetRequest(email);
       setSubmitted(true);
-    } catch {
-      setError("Failed. Please try again.");
+    } catch (err: unknown) {
+      setError(normalizeApiError(err).message);
     } finally {
       setSubmitting(false);
     }

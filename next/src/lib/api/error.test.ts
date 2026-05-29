@@ -15,4 +15,14 @@ describe("normalizeApiError", () => {
     expect(result).toMatchObject({ type: "rate_limited", status: 429 });
     expect((result as { message: string }).message).toBeTruthy();
   });
+
+  test("該当しないステータスはunknownを返す", () => {
+    const error = { isAxiosError: true, response: { status: 500, data: {} } };
+
+    expect(normalizeApiError(error)).toMatchObject({
+      type: "unknown",
+      status: 500,
+      message: expect.any(String),
+    });
+  });
 });

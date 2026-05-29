@@ -7,7 +7,7 @@ export type ApiFieldError = {
 };
 
 export type AppApiError =
-  | { type: "validation"; status: 422; errors: Record<string, ApiFieldError[]> }
+  | { type: "validation"; status: 422; message: string; errors: Record<string, ApiFieldError[]> }
   | { type: "unauthorized"; status: 401; message: string }
   | { type: "forbidden"; status: 403; message: string }
   | { type: "not_found"; status: 404; message: string }
@@ -41,6 +41,7 @@ export function normalizeApiError(error: unknown): AppApiError {
     return {
       type: "validation",
       status: 422,
+      message: "入力内容を確認してください",
       errors: data.errors,
     };
   }
@@ -68,6 +69,6 @@ export function normalizeApiError(error: unknown): AppApiError {
   return {
     type: "unknown",
     status,
-    message: "エラーが発生しました",
+    message: "エラーが発生しました。時間を置いて再度お試しください。",
   };
 }
