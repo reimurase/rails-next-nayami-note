@@ -106,16 +106,23 @@ export default function ConcernDetailView({
   };
 
   return (
-    <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
-      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "repeat(3, minmax(300px, 1fr))",
+        gap: 2,
+        height: "100%",
+      }}
+    >
+      <Card variant="outlined" sx={{ borderRadius: 3, overflow: "auto" }}>
         <CardContent>{renderConcernContent()}</CardContent>
       </Card>
 
-      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+      <Card variant="outlined" sx={{ borderRadius: 3, overflow: "auto" }}>
         <CardContent>{renderIssueContent()}</CardContent>
       </Card>
 
-      <Card variant="outlined" sx={{ borderRadius: 3 }}>
+      <Card variant="outlined" sx={{ borderRadius: 3, overflow: "auto" }}>
         <CardContent>{renderRoadmapContent()}</CardContent>
       </Card>
     </Box>

@@ -24,6 +24,8 @@ export function MainContent({ children }: Props) {
           }),
         marginLeft: open ? `${SIDEBAR_WIDTH}px` : 0,
         p: 2,
+        height: `calc(100vh - 64px)`, // スペーサーToolbar分を引く
+        boxSizing: "border-box", // paddingを高さに含める
       }}
     >
       {children}
