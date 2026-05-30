@@ -26,9 +26,20 @@ const ConcernIndex = ({ concerns, onConcernListChanged }: Props) => {
   };
 
   return (
-    <Box sx={{ display: "flex", gap: 3, alignItems: "flex-start", minWidth: 0 }}>
+    <Box
+      sx={{
+        display: "flex",
+        gap: 3,
+        alignItems: "stretch",
+        height: "100%",
+        overflow: "auto",
+      }}
+    >
       {/* 左カラム： 一覧 */}
-      <Card variant="outlined" sx={{ borderRadius: 3, minWidth: 200, maxWidth: 350 }}>
+      <Card
+        variant="outlined"
+        sx={{ borderRadius: 3, width: 200, flexShrink: 0, height: "100%", overflow: "auto" }}
+      >
         <CardContent>
           <Typography variant="h6" sx={{ mb: 2 }}>
             なやみ一覧
@@ -53,7 +64,7 @@ const ConcernIndex = ({ concerns, onConcernListChanged }: Props) => {
       </Card>
 
       {/* 右カラム： 詳細 */}
-      <Box sx={{ flex: 1, minWidth: 0 }}>
+      <Box sx={{ flex: 1, minWidth: 0, height: "100%" }}>
         <ConcernDetailView
           concernId={selectedId}
           onConcernListChanged={onConcernListChanged}

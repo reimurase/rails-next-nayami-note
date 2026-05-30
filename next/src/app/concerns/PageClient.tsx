@@ -40,7 +40,14 @@ export default function ConcernPageClient() {
   if (concernsError) return <div>エラーが発生しました {String(concernsError)}</div>;
 
   return (
-    <div style={{ paddingBottom: isDialogOpen ? 160 : 0 }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+        paddingBottom: isDialogOpen ? 160 : 0,
+      }}
+    >
       <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
         <IconButton color="primary" onClick={() => setIsDialogOpen(true)} aria-label="なやみを追加">
           <AddIcon />
@@ -54,7 +61,9 @@ export default function ConcernPageClient() {
         />
       </div>
 
-      <ConcernIndex concerns={concerns ?? []} onConcernListChanged={refreshConcernList} />
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <ConcernIndex concerns={concerns ?? []} onConcernListChanged={refreshConcernList} />
+      </div>
 
       <ConcernCreateDialog
         isOpen={isDialogOpen}

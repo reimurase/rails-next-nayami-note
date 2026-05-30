@@ -87,15 +87,29 @@ export default function ConcernSection({
         </Alert>
       )}
 
-      <Button
-        variant="outlined"
-        size="small"
-        onClick={handleArchive}
-        disabled={isProcessing}
-        sx={{ mb: 2 }}
-      >
-        {isArchived ? "ノートへ戻す" : "ライブラリへ"}
-      </Button>
+      <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+        <Button variant="outlined" size="small" onClick={handleArchive} disabled={isProcessing}>
+          {isArchived ? "ノートへ戻す" : "ライブラリへ"}
+        </Button>
+
+        {!isEditing && (
+          <>
+            <Button
+              variant="outlined"
+              size="small"
+              color="error"
+              onClick={handleDelete}
+              disabled={isProcessing}
+            >
+              削除
+            </Button>
+
+            <Button variant="outlined" size="small" onClick={() => setIsEditing(true)}>
+              編集
+            </Button>
+          </>
+        )}
+      </Stack>
 
       {isEditing ? (
         <ConcernEditor
@@ -122,21 +136,6 @@ export default function ConcernSection({
                 {concern.content}
               </Typography>
             </Box>
-          </Stack>
-
-          <Stack direction="row" spacing={1}>
-            <Button variant="outlined" size="small" onClick={() => setIsEditing(true)}>
-              編集
-            </Button>
-            <Button
-              variant="outlined"
-              size="small"
-              color="error"
-              onClick={handleDelete}
-              disabled={isProcessing}
-            >
-              削除
-            </Button>
           </Stack>
         </Box>
       )}
