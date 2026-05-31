@@ -1,7 +1,9 @@
 "use client";
 
 import { useState } from "react";
-import useSWR from "swr";
+import useSWR, { mutate as globalMutate } from "swr";
+import { IconButton } from "@mui/material";
+import AddIcon from "@mui/icons-material/Add";
 
 import RoadmapIndex from "@/components/roadmaps/RoadmapIndex";
 import ConcernCreateDialog from "@/components/concerns/ConcernCreateDialog";
@@ -22,7 +24,7 @@ export default function PageClient() {
   };
 
   const handleCreated = async () => {
-    await refreshRoadmapList();
+    await globalMutate("/api/v1/concerns");
     setIsDialogOpen(false);
   };
 
@@ -30,17 +32,22 @@ export default function PageClient() {
   if (error) return <div>エラーが発生しました {String(error)}</div>;
 
   return (
-    <div style={{ paddingBottom: isDialogOpen ? 160 : 0 }}>
+    <div
+      style={{
+        display: "flex",
+        flexDirection: "column",
+        height: "100%",
+      }}
+    >
       <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
-        <button
-          onClick={() => setIsDialogOpen(true)}
-          style={{ fontSize: 24, width: 40, height: 40, borderRadius: "50%" }}
-        >
-          +
-        </button>
+        <IconButton color="primary" onClick={() => setIsDialogOpen(true)} aria-label="なやみを追加">
+          <AddIcon />
+        </IconButton>
       </header>
 
-      <RoadmapIndex roadmaps={roadmaps ?? []} onRoadmapListChanged={refreshRoadmapList} />
+      <div style={{ flex: 1, minHeight: 0 }}>
+        <RoadmapIndex roadmaps={roadmaps ?? []} onRoadmapListChanged={refreshRoadmapList} />
+      </div>
 
       <ConcernCreateDialog
         isOpen={isDialogOpen}
