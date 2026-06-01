@@ -25,12 +25,12 @@ describe("IssueForm API 呼び出し", () => {
     render(<IssueForm concernId={1} onCreated={mockOnCreated} />);
 
     // タイトルを入力
-    fireEvent.change(screen.getByPlaceholderText("タイトル（任意）"), {
+    fireEvent.change(screen.getByLabelText("タイトル（任意）"), {
       target: { value: "テストのタイトル" },
     });
 
     // 問題を入力
-    fireEvent.change(screen.getByPlaceholderText("問題（必須）"), {
+    fireEvent.change(screen.getByLabelText("問題（必須）"), {
       target: { value: "テストの問題" },
     });
 
@@ -79,7 +79,7 @@ describe("IssueForm 異常系", () => {
 
     const longText = "a".repeat(1001);
 
-    fireEvent.change(screen.getByPlaceholderText("問題（必須）"), {
+    fireEvent.change(screen.getByLabelText("問題（必須）"), {
       target: { value: longText },
     });
 
@@ -95,11 +95,11 @@ describe("IssueForm 異常系", () => {
 
     const longText = "a".repeat(121);
 
-    fireEvent.change(screen.getByPlaceholderText("タイトル（任意）"), {
+    fireEvent.change(screen.getByLabelText("タイトル（任意）"), {
       target: { value: longText },
     });
 
-    fireEvent.change(screen.getByPlaceholderText("問題（必須）"), {
+    fireEvent.change(screen.getByLabelText("問題（必須）"), {
       target: { value: "問題" },
     });
 
@@ -127,10 +127,10 @@ describe("IssueForm 異常系", () => {
     const mockOnCreated = jest.fn();
     render(<IssueForm concernId={1} onCreated={mockOnCreated} />);
 
-    fireEvent.change(screen.getByPlaceholderText("タイトル（任意）"), {
+    fireEvent.change(screen.getByLabelText("タイトル（任意）"), {
       target: { value: "テストのタイトル" },
     });
-    fireEvent.change(screen.getByPlaceholderText("問題（必須）"), {
+    fireEvent.change(screen.getByLabelText("問題（必須）"), {
       target: { value: "テストの問題" },
     });
 
@@ -171,10 +171,10 @@ describe("IssueForm 異常系", () => {
     render(<IssueForm concernId={1} onCreated={mockOnCreated} />);
 
     // フロントの必須チェックは通し、サーバーの422表示だけを検証する
-    fireEvent.change(screen.getByPlaceholderText("タイトル（任意）"), {
+    fireEvent.change(screen.getByLabelText("タイトル（任意）"), {
       target: { value: "テストのタイトル" },
     });
-    fireEvent.change(screen.getByPlaceholderText("問題（必須）"), {
+    fireEvent.change(screen.getByLabelText("問題（必須）"), {
       target: { value: "テストの問題" },
     });
 

@@ -25,12 +25,12 @@ describe("RoadmapForm API 呼び出し", () => {
     render(<RoadmapForm concernId={1} onCreated={mockOnCreated} />);
 
     // ゴールを入力
-    fireEvent.change(screen.getByPlaceholderText("ゴール（任意）"), {
+    fireEvent.change(screen.getByLabelText("ゴール（任意）"), {
       target: { value: "テストのゴール" },
     });
 
     // ロードマップを入力
-    fireEvent.change(screen.getByPlaceholderText("ロードマップ（必須）"), {
+    fireEvent.change(screen.getByLabelText("ロードマップ（必須）"), {
       target: { value: "テストのロードマップ" },
     });
 
@@ -79,7 +79,7 @@ describe("RoadmapForm 異常系", () => {
 
     const longText = "a".repeat(1001);
 
-    fireEvent.change(screen.getByPlaceholderText("ロードマップ（必須）"), {
+    fireEvent.change(screen.getByLabelText("ロードマップ（必須）"), {
       target: { value: longText },
     });
 
@@ -95,11 +95,11 @@ describe("RoadmapForm 異常系", () => {
 
     const longText = "a".repeat(121);
 
-    fireEvent.change(screen.getByPlaceholderText("ゴール（任意）"), {
+    fireEvent.change(screen.getByLabelText("ゴール（任意）"), {
       target: { value: longText },
     });
 
-    fireEvent.change(screen.getByPlaceholderText("ロードマップ（必須）"), {
+    fireEvent.change(screen.getByLabelText("ロードマップ（必須）"), {
       target: { value: "ロードマップ" },
     });
 
@@ -127,10 +127,10 @@ describe("RoadmapForm 異常系", () => {
     const mockOnCreated = jest.fn();
     render(<RoadmapForm concernId={1} onCreated={mockOnCreated} />);
 
-    fireEvent.change(screen.getByPlaceholderText("ゴール（任意）"), {
+    fireEvent.change(screen.getByLabelText("ゴール（任意）"), {
       target: { value: "テストのゴール" },
     });
-    fireEvent.change(screen.getByPlaceholderText("ロードマップ（必須）"), {
+    fireEvent.change(screen.getByLabelText("ロードマップ（必須）"), {
       target: { value: "テストのロードマップ" },
     });
 
@@ -171,10 +171,10 @@ describe("RoadmapForm 異常系", () => {
     render(<RoadmapForm concernId={1} onCreated={mockOnCreated} />);
 
     // フロントの必須チェックは通し、サーバーの422表示だけを検証する
-    fireEvent.change(screen.getByPlaceholderText("ゴール（任意）"), {
+    fireEvent.change(screen.getByLabelText("ゴール（任意）"), {
       target: { value: "テストのゴール" },
     });
-    fireEvent.change(screen.getByPlaceholderText("ロードマップ（必須）"), {
+    fireEvent.change(screen.getByLabelText("ロードマップ（必須）"), {
       target: { value: "テストのロードマップ" },
     });
 

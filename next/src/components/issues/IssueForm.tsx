@@ -1,6 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import Alert from "@mui/material/Alert";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
 
 import { normalizeApiError } from "@/lib/api/error";
 import { issueApi } from "@/lib/api/issue";
@@ -35,7 +40,6 @@ const IssueForm = ({ concernId, onCreated }: IssueFormProps) => {
   const requiredErrors = submitted ? validateRequired(values) : {};
 
   const titleError = serverErrors.title ?? requiredErrors.title ?? lengthErrors.title;
-
   const contentError = serverErrors.content ?? requiredErrors.content ?? lengthErrors.content;
 
   const overTrigger = Boolean(lengthErrors.title);
@@ -80,65 +84,54 @@ const IssueForm = ({ concernId, onCreated }: IssueFormProps) => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      {apiError && (
-        <p role="alert" style={{ color: "tomato", fontSize: 12 }}>
-          {apiError}
-        </p>
-      )}
+    <Box component="form" onSubmit={handleSubmit} sx={{ width: "100%" }}>
+      <Stack spacing={2}>
+        {apiError && (
+          <Alert severity="error" onClose={() => setApiError(null)}>
+            {apiError}
+          </Alert>
+        )}
 
-      <textarea
-        placeholder="タイトル（任意）"
-        value={title}
-        onChange={(e) => {
-          setTitle(e.target.value);
-          setServerErrors((prev) => ({ ...prev, title: undefined }));
-        }}
-        rows={4}
-        style={{
-          width: "600px",
-          padding: "8px",
-          fontSize: "16px",
-        }}
-      />
+        <TextField
+          label="タイトル（任意）"
+          value={title}
+          onChange={(e) => {
+            setTitle(e.target.value);
+            setServerErrors((prev) => ({ ...prev, title: undefined }));
+          }}
+          multiline
+          minRows={2}
+          maxRows={4}
+          fullWidth
+          error={Boolean(titleError)}
+          helperText={titleError ?? `${title.length} / ${CONCERN_LIMITS.title}`}
+        />
 
-      {titleError && <p style={{ color: "tomato", fontSize: 12 }}>{titleError}</p>}
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {title.length}/{CONCERN_LIMITS.title}
-      </p>
+        <TextField
+          label="問題（必須）"
+          value={content}
+          onChange={(e) => {
+            setContent(e.target.value);
+            setServerErrors((prev) => ({ ...prev, content: undefined }));
+          }}
+          multiline
+          minRows={5}
+          maxRows={10}
+          fullWidth
+          error={Boolean(contentError)}
+          helperText={contentError ?? `${content.length} / ${CONCERN_LIMITS.content}`}
+        />
 
-      <textarea
-        placeholder="問題（必須）"
-        value={content}
-        onChange={(e) => {
-          setContent(e.target.value);
-          setServerErrors((prev) => ({ ...prev, content: undefined }));
-        }}
-        rows={4}
-        style={{
-          width: "600px",
-          padding: "8px",
-          fontSize: "16px",
-        }}
-      />
-
-      {contentError && <p style={{ color: "tomato", fontSize: 12 }}>{contentError}</p>}
-      <p style={{ fontSize: 12, opacity: 0.8 }}>
-        {content.length}/{CONCERN_LIMITS.content}
-      </p>
-
-      <button
-        type="submit"
-        disabled={isSubmitting || overTrigger || overContent}
-        style={{
-          marginLeft: "8px",
-          padding: "8px 16px",
-          fontSize: "16px",
-        }}
-      >
-        {isSubmitting ? "追加中..." : "追加"}
-      </button>
-    </form>
+        <Button
+          type="submit"
+          variant="contained"
+          disabled={isSubmitting || overTrigger || overContent}
+          sx={{ alignSelf: "flex-end" }}
+        >
+          {isSubmitting ? "追加中..." : "追加"}
+        </Button>
+      </Stack>
+    </Box>
   );
 };
 
