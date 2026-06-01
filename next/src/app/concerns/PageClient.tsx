@@ -45,7 +45,6 @@ export default function ConcernPageClient() {
         display: "flex",
         flexDirection: "column",
         height: "100%",
-        paddingBottom: isDialogOpen ? 160 : 0,
       }}
     >
       <header style={{ display: "flex", justifyContent: "space-between", marginBottom: 16 }}>
