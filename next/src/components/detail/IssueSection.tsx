@@ -1,10 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import Stack from "@mui/material/Stack";
+import Typography from "@mui/material/Typography";
 
-import IssueCreateSheet from "../issues/IssueCreateSheet";
-import IssueDeleteButton from "../issues/IssueDeleteButton";
 import IssueArchiveButton from "../issues/IssueArchiveButton";
+import IssueDeleteButton from "../issues/IssueDeleteButton";
+import IssueForm from "../issues/IssueForm";
 
 import IssueEditor from "./IssueEditor";
 
@@ -18,13 +22,8 @@ type Props = {
 };
 
 export default function IssueSection({ concernId, issue, onIssueChanged, onIssueArchived }: Props) {
-  const [isSheetOpen, setIsSheetOpen] = useState(false);
+  const [isCreating, setIsCreating] = useState(false);
   const [isEditing, setIsEditing] = useState(false);
-
-  const startEditing = () => {
-    if (!issue) return;
-    setIsEditing(true);
-  };
 
   const handleSaved = async () => {
     setIsEditing(false);
@@ -33,59 +32,73 @@ export default function IssueSection({ concernId, issue, onIssueChanged, onIssue
     await onIssueChanged?.();
   };
 
-  const handleCancelEdit = () => {
-    setIsEditing(false);
-  };
-
   const handleCreated = async () => {
-    setIsSheetOpen(false);
+    setIsCreating(false);
 
     // issueページ / 詳細のissueを更新
     await onIssueChanged?.();
   };
 
   return (
-    <div>
-      <h3>Issue</h3>
+    <Box>
+      <Typography variant="h6" gutterBottom>
+        問題
+      </Typography>
 
       {!issue ? (
-        <div>
-          <p>issue はありません</p>
-          <button onClick={() => setIsSheetOpen(true)}>新規作成</button>
-
-          <IssueCreateSheet
-            concernId={concernId}
-            isOpen={isSheetOpen}
-            onClose={() => setIsSheetOpen(false)}
-            onCreated={handleCreated}
-          />
-        </div>
+        <>
+          {!isCreating ? (
+            <Box>
+              <Typography sx={{ mb: 1 }}>問題はありません</Typography>
+              <Button variant="outlined" size="small" onClick={() => setIsCreating(true)}>
+                新規作成
+              </Button>
+            </Box>
+          ) : (
+            <IssueForm concernId={concernId} onCreated={handleCreated} />
+          )}
+        </>
       ) : isEditing ? (
         <IssueEditor
           concernId={concernId}
           issue={issue}
           onSaved={handleSaved}
-          onCancel={handleCancelEdit}
+          onCancel={() => setIsEditing(false)}
         />
       ) : (
-        <div>
-          <IssueArchiveButton
-            issueId={issue.id}
-            archivedAt={issue.archivedAt}
-            onArchiveChanged={onIssueArchived}
-          />
-          <ul>
-            <li>タイトル: {issue.title || "なし"}</li>
-            <li>内容: {issue.content || "なし"}</li>
-          </ul>
+        <Box>
+          <Stack direction="row" spacing={1} sx={{ mb: 2 }}>
+            <IssueArchiveButton
+              issueId={issue.id}
+              archivedAt={issue.archivedAt}
+              onArchiveChanged={onIssueArchived}
+            />
+            <IssueDeleteButton concernId={concernId} onDeleted={onIssueChanged} />
+            <Button variant="outlined" size="small" onClick={() => setIsEditing(true)}>
+              編集
+            </Button>
+          </Stack>
 
-          <button onClick={startEditing}>編集</button>
-          <IssueDeleteButton
-            concernId={concernId}
-            onDeleted={onIssueChanged} // 削除成功時も一覧更新
-          />
-        </div>
+          <Stack spacing={1}>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                タイトル
+              </Typography>
+              <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                {issue.title || "なし"}
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="caption" color="text.secondary">
+                内容
+              </Typography>
+              <Typography variant="body2" sx={{ whiteSpace: "pre-wrap" }}>
+                {issue.content}
+              </Typography>
+            </Box>
+          </Stack>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }

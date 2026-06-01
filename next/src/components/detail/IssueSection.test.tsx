@@ -3,7 +3,17 @@ import { fireEvent, render, screen } from "@testing-library/react";
 
 import IssueSection from "./IssueSection";
 
+jest.mock("../issues/IssueForm", () => () => <div data-testid="issue-form" />);
+
 describe("IssueSection", () => {
+  test("新規作成を押すとIssueFormが表示される", () => {
+    render(<IssueSection concernId={1} issue={null} />);
+
+    fireEvent.click(screen.getByRole("button", { name: "新規作成" }));
+
+    expect(screen.getByTestId("issue-form")).toBeInTheDocument();
+  });
+
   test("編集を押すと編集モードに切り替わる", () => {
     render(
       <IssueSection
