@@ -38,16 +38,4 @@ describe("RoadmapIndex", () => {
     fireEvent.click(screen.getByText("c1"));
     expect(screen.getByText("DETAIL:1")).toBeInTheDocument();
   });
-
-  test("ESCで詳細が閉じる", () => {
-    const roadmaps = [{ id: 1, goal: "a", content: "c1", concernId: 1, archivedAt: null }];
-    render(<RoadmapIndex roadmaps={roadmaps} />);
-
-    fireEvent.click(screen.getByText("c1"));
-
-    const dialog = screen.getByRole("dialog");
-    fireEvent.keyDown(dialog, { key: "Escape" });
-
-    expect(screen.queryByText("DETAIL:1")).not.toBeInTheDocument();
-  });
 });

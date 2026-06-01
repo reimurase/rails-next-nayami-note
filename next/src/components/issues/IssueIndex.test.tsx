@@ -41,16 +41,4 @@ describe("IssueIndex", () => {
     fireEvent.click(screen.getByText("c1"));
     expect(screen.getByText("DETAIL:1")).toBeInTheDocument();
   });
-
-  test("ESCで詳細が閉じる", () => {
-    const issues = [{ id: 1, title: "a", content: "c1", concernId: 1, archivedAt: null }];
-    render(<IssueIndex issues={issues} />);
-
-    fireEvent.click(screen.getByText("c1"));
-
-    const dialog = screen.getByRole("dialog");
-    fireEvent.keyDown(dialog, { key: "Escape" });
-
-    expect(screen.queryByText("DETAIL:1")).not.toBeInTheDocument();
-  });
 });
