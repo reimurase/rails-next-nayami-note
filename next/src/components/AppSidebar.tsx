@@ -84,6 +84,11 @@ export function AppSidebar() {
     router.push(dest);
   };
 
+  const handleDeleted = async () => {
+    await mutate();
+    setSelectedConcernId(null);
+  };
+
   const items = NAV_ITEMS[mode];
 
   return (
@@ -180,6 +185,7 @@ export function AppSidebar() {
               }}
               onIssueListChanged={() => globalMutate("/api/v1/issues")}
               onRoadmapListChanged={() => globalMutate("/api/v1/roadmaps")}
+              onConcernDeleted={handleDeleted}
             />
           )}
         </DialogContent>
