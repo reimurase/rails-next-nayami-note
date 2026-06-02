@@ -20,6 +20,9 @@ import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
 import useSWR, { mutate as globalMutate } from "swr";
 import { useRouter, usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
@@ -161,7 +164,13 @@ export function AppSidebar() {
         open={selectedConcernId !== null}
         onClose={() => setSelectedConcernId(null)}
         fullWidth
+        maxWidth="lg"
       >
+        <DialogTitle sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
+          <IconButton onClick={() => setSelectedConcernId(null)}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
           {selectedConcernId !== null && (
             <ConcernDetailView
