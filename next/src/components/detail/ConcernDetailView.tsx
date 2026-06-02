@@ -88,7 +88,6 @@ export default function ConcernDetailView({
         concernId={detail.concern.id}
         issue={detail.issue}
         onIssueChanged={handleIssueChanged}
-        onIssueArchived={handleIssueChanged}
       />
     );
   };
@@ -101,7 +100,6 @@ export default function ConcernDetailView({
         concernId={detail.concern.id}
         roadmap={detail.roadmap}
         onRoadmapChanged={handleRoadmapChanged}
-        onRoadmapArchived={handleRoadmapChanged}
       />
     );
   };
