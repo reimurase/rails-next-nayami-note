@@ -20,7 +20,10 @@ import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import useSWR from "swr";
+import DialogTitle from "@mui/material/DialogTitle";
+import IconButton from "@mui/material/IconButton";
+import CloseIcon from "@mui/icons-material/Close";
+import useSWR, { mutate as globalMutate } from "swr";
 import { useRouter, usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
@@ -79,6 +82,11 @@ export function AppSidebar() {
 
     const dest = newMode === "library" ? `/library/${resource}` : `/${resource}`;
     router.push(dest);
+  };
+
+  const handleDeleted = async () => {
+    await mutate();
+    setSelectedConcernId(null);
   };
 
   const items = NAV_ITEMS[mode];
@@ -161,7 +169,13 @@ export function AppSidebar() {
         open={selectedConcernId !== null}
         onClose={() => setSelectedConcernId(null)}
         fullWidth
+        maxWidth="lg"
       >
+        <DialogTitle sx={{ display: "flex", justifyContent: "flex-end", p: 1 }}>
+          <IconButton onClick={() => setSelectedConcernId(null)}>
+            <CloseIcon />
+          </IconButton>
+        </DialogTitle>
         <DialogContent>
           {selectedConcernId !== null && (
             <ConcernDetailView
@@ -169,6 +183,9 @@ export function AppSidebar() {
               onConcernListChanged={() => {
                 mutate();
               }}
+              onIssueListChanged={() => globalMutate("/api/v1/issues")}
+              onRoadmapListChanged={() => globalMutate("/api/v1/roadmaps")}
+              onConcernDeleted={handleDeleted}
             />
           )}
         </DialogContent>
