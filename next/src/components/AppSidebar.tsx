@@ -20,7 +20,7 @@ import AddIcon from "@mui/icons-material/Add";
 import CircularProgress from "@mui/material/CircularProgress";
 import Dialog from "@mui/material/Dialog";
 import DialogContent from "@mui/material/DialogContent";
-import useSWR from "swr";
+import useSWR, { mutate as globalMutate } from "swr";
 import { useRouter, usePathname } from "next/navigation";
 import { type ReactNode, useState } from "react";
 
@@ -169,6 +169,8 @@ export function AppSidebar() {
               onConcernListChanged={() => {
                 mutate();
               }}
+              onIssueListChanged={() => globalMutate("/api/v1/issues")}
+              onRoadmapListChanged={() => globalMutate("/api/v1/roadmaps")}
             />
           )}
         </DialogContent>
