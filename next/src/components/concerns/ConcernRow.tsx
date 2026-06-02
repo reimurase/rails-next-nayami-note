@@ -24,7 +24,12 @@ const ConcernRow = ({ concern, onConcernListChanged, onOpenDetail }: Props) => {
   const isArchived = concern.archivedAt !== null;
 
   const handleDelete = async () => {
-    if (!window.confirm("本当に削除しますか？")) return;
+    if (
+      !window.confirm(
+        "このなやみを削除すると、関連する問題やロードマップもすべて削除されます。よろしいですか？"
+      )
+    )
+      return;
     try {
       setIsProcessing(true);
       setApiError(null);
