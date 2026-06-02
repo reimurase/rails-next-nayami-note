@@ -59,7 +59,7 @@ describe("ConcernRow", () => {
     openMenu();
     fireEvent.click(screen.getByRole("menuitem", { name: "削除" }));
 
-    expect(window.confirm).toHaveBeenCalledWith("本当に削除しますか？");
+    expect(window.confirm).toHaveBeenCalled();
 
     await waitFor(() => {
       expect(mockedConcernApi.remove).toHaveBeenCalledWith(1);

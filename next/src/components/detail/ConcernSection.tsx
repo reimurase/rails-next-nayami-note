@@ -37,7 +37,12 @@ export default function ConcernSection({
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("本当に削除しますか？")) return;
+    if (
+      !window.confirm(
+        "このなやみを削除すると、関連する問題やロードマップもすべて削除されます。よろしいですか？"
+      )
+    )
+      return;
     try {
       setIsProcessing(true);
       setApiError(null);
