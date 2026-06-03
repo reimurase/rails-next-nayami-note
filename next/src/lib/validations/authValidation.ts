@@ -75,6 +75,34 @@ export const validateLoginOnSubmit = (v: LoginValues): AuthErrors => ({
   ...validateLoginRequired(v),
 });
 
+export const validateResetPasswordOnSubmit = (
+  password: string,
+  passwordConfirmation: string
+): AuthErrors => {
+  const errors: AuthErrors = {};
+
+  if (!password) {
+    errors.password = "パスワードは必須です";
+    return errors; // passwordがなければconfirmationチェック不要
+  }
+
+  if (password.length < AUTH_LIMITS.password.min) {
+    errors.password = `パスワードは${AUTH_LIMITS.password.min}文字以上です`;
+  }
+
+  if (password.length > AUTH_LIMITS.password.max) {
+    errors.password = `パスワードは${AUTH_LIMITS.password.max}文字以内です`;
+  }
+
+  if (!passwordConfirmation) {
+    errors.passwordConfirmation = "パスワード確認は必須です";
+  } else if (password !== passwordConfirmation) {
+    errors.passwordConfirmation = "パスワードが一致しません";
+  }
+
+  return errors;
+};
+
 const getMin = (meta: Record<string, unknown> | undefined): number | undefined => {
   const min = meta?.min;
   return typeof min === "number" ? min : undefined;
