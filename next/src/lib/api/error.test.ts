@@ -8,6 +8,45 @@ jest.mock("axios", () => ({
 }));
 
 describe("normalizeApiError", () => {
+  test("Axiosエラーでないときunknownを返す", () => {
+    expect(normalizeApiError(new Error("unexpected"))).toMatchObject({ type: "unknown" });
+  });
+
+  test("responseがないときnetworkを返す", () => {
+    const error = { isAxiosError: true, response: undefined };
+    expect(normalizeApiError(error)).toMatchObject({ type: "network" });
+  });
+
+  test("401はunauthorizedを返す", () => {
+    const error = { isAxiosError: true, response: { status: 401, data: {} } };
+    expect(normalizeApiError(error)).toMatchObject({ type: "unauthorized", status: 401 });
+  });
+
+  test("403はforbiddenを返す", () => {
+    const error = { isAxiosError: true, response: { status: 403, data: {} } };
+    expect(normalizeApiError(error)).toMatchObject({ type: "forbidden", status: 403 });
+  });
+
+  test("404はnot_foundを返す", () => {
+    const error = { isAxiosError: true, response: { status: 404, data: {} } };
+    expect(normalizeApiError(error)).toMatchObject({ type: "not_found", status: 404 });
+  });
+
+  test("422はvalidationを返しerrorsを含む", () => {
+    const error = {
+      isAxiosError: true,
+      response: {
+        status: 422,
+        data: { errors: { password: [{ code: "too_short" }] } },
+      },
+    };
+    expect(normalizeApiError(error)).toMatchObject({
+      type: "validation",
+      status: 422,
+      errors: { password: [{ code: "too_short" }] },
+    });
+  });
+
   test("429はrate_limitedを返し、メッセージを含む", () => {
     const error = { isAxiosError: true, response: { status: 429, data: {} } };
     const result = normalizeApiError(error);

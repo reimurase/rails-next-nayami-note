@@ -3,7 +3,13 @@
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
+import {
+  type AuthErrors,
+  hasErrors,
+  validateResetPasswordOnSubmit,
+} from "@/lib/validations/authValidation";
 import { passwordApi } from "@/lib/api/auth";
+import { normalizeApiError } from "@/lib/api/error";
 
 export const ResetPasswordForm = () => {
   const router = useRouter();
@@ -13,24 +19,27 @@ export const ResetPasswordForm = () => {
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
   const [submitting, setSubmitting] = useState(false);
-  const [error, setError] = useState<string | null>(null);
+  const [errors, setErrors] = useState<AuthErrors>({});
+  const [apiError, setApiError] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitting(true);
-    setError(null);
 
-    if (password !== passwordConfirmation) {
-      setError("パスワードが一致しません。");
-      setSubmitting(false);
+    const validationErrors = validateResetPasswordOnSubmit(password, passwordConfirmation);
+    if (hasErrors(validationErrors)) {
+      setErrors(validationErrors);
       return;
     }
+
+    setErrors({});
+    setApiError(null);
+    setSubmitting(true);
 
     try {
       await passwordApi.reset(token, password);
       router.replace("/login");
-    } catch {
-      setError("Failed. Please try again.");
+    } catch (err) {
+      setApiError(normalizeApiError(err).message);
     } finally {
       setSubmitting(false);
     }
@@ -53,6 +62,7 @@ export const ResetPasswordForm = () => {
           onChange={(e) => setPassword(e.target.value)}
           autoComplete="new-password"
         />
+        {errors.password && <p role="alert">{errors.password}</p>}
       </label>
 
       <label>
@@ -64,9 +74,10 @@ export const ResetPasswordForm = () => {
           onChange={(e) => setPasswordConfirmation(e.target.value)}
           autoComplete="new-password"
         />
+        {errors.passwordConfirmation && <p role="alert">{errors.passwordConfirmation}</p>}
       </label>
 
-      {error && <p role="alert">{error}</p>}
+      {apiError && <p role="alert">{apiError}</p>}
 
       <button type="submit" disabled={submitting}>
         {submitting ? "Submitting..." : "再設定する"}
