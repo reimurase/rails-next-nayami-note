@@ -1,5 +1,5 @@
 // src/components/auth/AuthForm.test.tsx
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
 import { AuthForm } from "./AuthForm";
@@ -53,13 +53,13 @@ const setupSignupForm = async (fields: SignupFields) => {
   render(<AuthForm mode="signup" />);
 
   if (fields.email !== undefined) {
-    await user.type(screen.getByLabelText("Email"), fields.email);
+    await user.type(screen.getByLabelText("メールアドレス"), fields.email);
   }
   if (fields.password !== undefined) {
-    await user.type(screen.getByLabelText("Password"), fields.password);
+    await user.type(screen.getByLabelText("パスワード"), fields.password);
   }
   if (fields.passwordConfirmation !== undefined) {
-    await user.type(screen.getByLabelText("Password confirmation"), fields.passwordConfirmation);
+    await user.type(screen.getByLabelText("パスワード（確認）"), fields.passwordConfirmation);
   }
 
   return user;
@@ -73,7 +73,7 @@ beforeEach(() => {
 describe("AuthForm 正常系", () => {
   test("サインアップページが表示される", () => {
     render(<AuthForm mode="signup" />);
-    expect(screen.getByRole("heading", { name: "Signup" })).toBeInTheDocument();
+    expect(screen.getByRole("heading", { name: "アカウントを作成" })).toBeInTheDocument();
   });
 
   test("サインアップ成功後、/concernsに遷移する", async () => {
@@ -84,7 +84,7 @@ describe("AuthForm 正常系", () => {
       password: "password",
       passwordConfirmation: "password",
     });
-    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await user.click(screen.getByRole("button", { name: "アカウントを作成" }));
 
     expect(authApi.signup).toHaveBeenCalledWith({
       email: "test@example.com",
@@ -106,7 +106,7 @@ describe("AuthForm 異常系", () => {
 
   test("何も入力せずCreate accountを押すと全フィールドの必須エラーが表示され、authApi.signupは呼ばれないこと", async () => {
     const user = await setupSignupForm({});
-    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await user.click(screen.getByRole("button", { name: "アカウントを作成" }));
 
     expect(await screen.findByText("メールアドレスは必須です")).toBeInTheDocument();
     expect(screen.getByText("パスワードは必須です")).toBeInTheDocument();
@@ -116,11 +116,13 @@ describe("AuthForm 異常系", () => {
 
   test("メールアドレスが256文字だと文字数エラーが表示され、送信できないこと", async () => {
     const user = await setupSignupForm({
-      email: "a".repeat(250) + "@b.com",
       password: "password",
       passwordConfirmation: "password",
     });
-    await user.click(screen.getByRole("button", { name: "Create account" }));
+    fireEvent.change(screen.getByLabelText("メールアドレス"), {
+      target: { value: "a".repeat(250) + "@b.com" },
+    });
+    await user.click(screen.getByRole("button", { name: "アカウントを作成" }));
 
     expect(await screen.findByText("メールアドレスは255文字以内です")).toBeInTheDocument();
     expect(mockedAuthApi.signup).not.toHaveBeenCalled();
@@ -132,7 +134,7 @@ describe("AuthForm 異常系", () => {
       password: "password",
       passwordConfirmation: "password",
     });
-    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await user.click(screen.getByRole("button", { name: "アカウントを作成" }));
 
     expect(await screen.findByText("メールアドレスの形式が正しくありません")).toBeInTheDocument();
     expect(mockedAuthApi.signup).not.toHaveBeenCalled();
@@ -144,7 +146,7 @@ describe("AuthForm 異常系", () => {
       password: "a".repeat(7),
       passwordConfirmation: "a".repeat(7),
     });
-    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await user.click(screen.getByRole("button", { name: "アカウントを作成" }));
 
     expect(await screen.findByText("パスワードは8文字以上です")).toBeInTheDocument();
     expect(mockedAuthApi.signup).not.toHaveBeenCalled();
@@ -156,7 +158,7 @@ describe("AuthForm 異常系", () => {
       password: "password",
       passwordConfirmation: "wrong-password",
     });
-    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await user.click(screen.getByRole("button", { name: "アカウントを作成" }));
 
     expect(await screen.findByText("パスワードが一致しません")).toBeInTheDocument();
     expect(mockedAuthApi.signup).not.toHaveBeenCalled();
@@ -173,7 +175,7 @@ describe("AuthForm 異常系", () => {
       password: "password",
       passwordConfirmation: "password",
     });
-    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await user.click(screen.getByRole("button", { name: "アカウントを作成" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent("通信に失敗しました");
     expect(replaceMock).not.toHaveBeenCalled();
@@ -190,7 +192,7 @@ describe("AuthForm 異常系", () => {
       password: "password",
       passwordConfirmation: "password",
     });
-    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await user.click(screen.getByRole("button", { name: "アカウントを作成" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(
       "エラーが発生しました。時間を置いて再度お試しください。"
@@ -209,7 +211,7 @@ describe("AuthForm 異常系", () => {
       password: "password",
       passwordConfirmation: "password",
     });
-    await user.click(screen.getByRole("button", { name: "Create account" }));
+    await user.click(screen.getByRole("button", { name: "アカウントを作成" }));
 
     expect(await screen.findByRole("alert")).toBeInTheDocument();
     expect(replaceMock).not.toHaveBeenCalled();
@@ -223,9 +225,9 @@ describe("AuthForm 異常系", () => {
     });
 
     render(<AuthForm mode="login" />);
-    await user.type(screen.getByLabelText("Email"), "test@example.com");
-    await user.type(screen.getByLabelText("Password"), "wrong-password");
-    await user.click(screen.getByRole("button", { name: "Login" }));
+    await user.type(screen.getByLabelText("メールアドレス"), "test@example.com");
+    await user.type(screen.getByLabelText("パスワード"), "wrong-password");
+    await user.click(screen.getByRole("button", { name: "ログイン" }));
 
     expect(await screen.findByRole("alert")).toHaveTextContent(LOGIN_CREDENTIAL_ERROR);
     expect(replaceMock).not.toHaveBeenCalled();
@@ -238,7 +240,7 @@ describe("AuthForm 異常系", () => {
     });
 
     const user = userEvent.setup();
-    render(<AuthForm mode="login" />);
+    render(<AuthForm mode="signup" />);
     await user.click(screen.getByRole("button", { name: "ゲストとして試す" }));
 
     expect(await screen.findByRole("alert")).toBeInTheDocument();
