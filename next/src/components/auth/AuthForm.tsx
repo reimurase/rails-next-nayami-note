@@ -2,8 +2,23 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import Link from "next/link";
+import NextLink from "next/link";
 import { mutate } from "swr";
+import Alert from "@mui/material/Alert";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import MuiLink from "@mui/material/Link";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import LockIcon from "@mui/icons-material/Lock";
+import PersonAddIcon from "@mui/icons-material/PersonAdd";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import { authApi } from "@/lib/api/auth";
 import { clearCsrfTokenCache } from "@/lib/api/csrf";
@@ -33,13 +48,15 @@ export const AuthForm = ({ mode }: Props) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
   const [apiError, setApiError] = useState<string | null>(null);
   const [serverErrors, setServerErrors] = useState<AuthErrors>({});
 
-  const title = mode === "signup" ? "Signup" : "Login";
-  const buttonLabel = mode === "signup" ? "Create account" : "Login";
+  const title = mode === "signup" ? "アカウントを作成" : "ログイン";
+  const buttonLabel = mode === "signup" ? "アカウントを作成" : "ログイン";
 
   const signupValues: SignupValues = { email, password, passwordConfirmation };
   const loginValues: LoginValues = { email, password };
@@ -128,68 +145,135 @@ export const AuthForm = ({ mode }: Props) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} noValidate>
-      <h1>{title}</h1>
+    <Box display="flex" justifyContent="center" pt={12}>
+      <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 400 }}>
+        <Stack spacing={3} alignItems="center">
+          <Avatar sx={{ bgcolor: "primary.main" }}>
+            {mode === "signup" ? <PersonAddIcon /> : <LockIcon />}
+          </Avatar>
 
-      {apiError && <p role="alert">{apiError}</p>}
+          <Typography variant="h6" fontWeight="bold">
+            {title}
+          </Typography>
 
-      <label>
-        Email
-        <input
-          name="email"
-          type="email"
-          value={email}
-          onChange={(e) => {
-            setEmail(e.target.value);
-            setServerErrors((prev) => ({ ...prev, email: undefined }));
-          }}
-          autoComplete="email"
-        />
-      </label>
-      {emailError && <p role="alert">{emailError}</p>}
-
-      <label>
-        Password
-        <input
-          name="password"
-          type="password"
-          value={password}
-          onChange={(e) => {
-            setPassword(e.target.value);
-            setServerErrors((prev) => ({ ...prev, password: undefined }));
-          }}
-          autoComplete={mode === "signup" ? "new-password" : "current-password"}
-        />
-      </label>
-      {passwordError && <p role="alert">{passwordError}</p>}
-
-      {mode === "signup" && (
-        <>
-          <label>
-            Password confirmation
-            <input
-              name="password_confirmation"
-              type="password"
-              value={passwordConfirmation}
+          <Stack component="form" onSubmit={handleSubmit} noValidate spacing={4} width="100%">
+            <TextField
+              label="メールアドレス"
+              name="email"
+              type="email"
+              value={email}
               onChange={(e) => {
-                setPasswordConfirmation(e.target.value);
-                setServerErrors((prev) => ({ ...prev, passwordConfirmation: undefined }));
+                setEmail(e.target.value);
+                setServerErrors((prev) => ({ ...prev, email: undefined }));
               }}
-              autoComplete="new-password"
+              autoComplete="email"
+              error={!!emailError}
+              helperText={emailError}
+              fullWidth
             />
-          </label>
-          {passwordConfirmationError && <p role="alert">{passwordConfirmationError}</p>}
-        </>
-      )}
 
-      <button type="submit" disabled={submitting}>
-        {submitting ? "Submitting..." : buttonLabel}
-      </button>
+            <TextField
+              label="パスワード"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => {
+                setPassword(e.target.value);
+                setServerErrors((prev) => ({ ...prev, password: undefined }));
+              }}
+              autoComplete={mode === "signup" ? "new-password" : "current-password"}
+              error={!!passwordError}
+              helperText={
+                passwordError ?? (mode === "signup" ? "8文字以上で入力してください" : undefined)
+              }
+              fullWidth
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword((v) => !v)}
+                        edge="end"
+                        aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示する"}
+                      >
+                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
 
-      {mode === "login" && <Link href="/reset-password">パスワードを忘れた方はこちら</Link>}
-      <button type="button" onClick={handleGuestLogin} disabled={submitting}>
-        ゲストとして試す
-      </button>
-    </form>
+            {mode === "signup" && (
+              <TextField
+                label="パスワード（確認）"
+                name="password_confirmation"
+                type={showPasswordConfirmation ? "text" : "password"}
+                value={passwordConfirmation}
+                onChange={(e) => {
+                  setPasswordConfirmation(e.target.value);
+                  setServerErrors((prev) => ({ ...prev, passwordConfirmation: undefined }));
+                }}
+                autoComplete="new-password"
+                error={!!passwordConfirmationError}
+                helperText={passwordConfirmationError}
+                fullWidth
+                slotProps={{
+                  input: {
+                    endAdornment: (
+                      <InputAdornment position="end">
+                        <IconButton
+                          onClick={() => setShowPasswordConfirmation((v) => !v)}
+                          edge="end"
+                          aria-label={
+                            showPasswordConfirmation ? "パスワードを隠す" : "パスワードを表示する"
+                          }
+                        >
+                          {showPasswordConfirmation ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                        </IconButton>
+                      </InputAdornment>
+                    ),
+                  },
+                }}
+              />
+            )}
+
+            {apiError && <Alert severity="error">{apiError}</Alert>}
+
+            <Button type="submit" variant="contained" disabled={submitting} fullWidth>
+              {submitting ? "Submitting..." : buttonLabel}
+            </Button>
+
+            {mode === "login" && (
+              <>
+                <MuiLink
+                  component={NextLink}
+                  href="/reset-password"
+                  variant="body2"
+                  textAlign="center"
+                >
+                  パスワードを忘れた方はこちら
+                </MuiLink>
+                <Button component={NextLink} href="/signup" variant="outlined" fullWidth>
+                  アカウントを作成
+                </Button>
+              </>
+            )}
+
+            {mode === "signup" && (
+              <Button
+                type="button"
+                variant="outlined"
+                onClick={handleGuestLogin}
+                disabled={submitting}
+                fullWidth
+              >
+                ゲストとして試す
+              </Button>
+            )}
+          </Stack>
+        </Stack>
+      </Paper>
+    </Box>
   );
 };
