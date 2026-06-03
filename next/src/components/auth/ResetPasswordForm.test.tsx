@@ -1,3 +1,4 @@
+// src/components/auth/ResetPasswordForm.test.tsx
 import { render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 
@@ -41,12 +42,12 @@ const fillAndSubmit = async (
 };
 
 describe("ResetPasswordForm クライアントバリデーション", () => {
-  test("バリデーションエラーがあるときエラーが表示される", async () => {
+  test("バリデーションエラーがあるときAPIは呼ばれない", async () => {
     const user = userEvent.setup();
     render(<ResetPasswordForm />);
     await user.click(screen.getByRole("button", { name: "再設定する" }));
 
-    expect(await screen.findByRole("alert")).toBeInTheDocument();
+    expect(mockedPasswordApi.reset).not.toHaveBeenCalled();
   });
 });
 

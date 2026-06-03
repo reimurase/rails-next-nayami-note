@@ -2,6 +2,19 @@
 
 import { useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
+import Alert from "@mui/material/Alert";
+import Avatar from "@mui/material/Avatar";
+import Box from "@mui/material/Box";
+import Button from "@mui/material/Button";
+import IconButton from "@mui/material/IconButton";
+import InputAdornment from "@mui/material/InputAdornment";
+import Paper from "@mui/material/Paper";
+import Stack from "@mui/material/Stack";
+import TextField from "@mui/material/TextField";
+import Typography from "@mui/material/Typography";
+import LockResetIcon from "@mui/icons-material/LockReset";
+import VisibilityIcon from "@mui/icons-material/Visibility";
+import VisibilityOffIcon from "@mui/icons-material/VisibilityOff";
 
 import {
   type AuthErrors,
@@ -18,6 +31,8 @@ export const ResetPasswordForm = () => {
 
   const [password, setPassword] = useState("");
   const [passwordConfirmation, setPasswordConfirmation] = useState("");
+  const [showPassword, setShowPassword] = useState(false);
+  const [showPasswordConfirmation, setShowPasswordConfirmation] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<AuthErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
@@ -46,42 +61,108 @@ export const ResetPasswordForm = () => {
   };
 
   if (!token) {
-    return <p>無効なリンクです。</p>;
+    return (
+      <Box display="flex" justifyContent="center" pt={12}>
+        <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 400, textAlign: "center" }}>
+          <Stack spacing={2} alignItems="center">
+            <Typography variant="h6" fontWeight="bold">
+              リンクが無効です
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              リンクの有効期限が切れているか、すでに使用済みの可能性があります。
+              もう一度最初からやり直してください。
+            </Typography>
+            <Button variant="contained" href="/reset-password">
+              再設定メールを送り直す
+            </Button>
+          </Stack>
+        </Paper>
+      </Box>
+    );
   }
 
   return (
-    <form onSubmit={handleSubmit}>
-      <h1>新しいパスワードを設定</h1>
+    <Box display="flex" justifyContent="center" pt={12}>
+      <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 400 }}>
+        <Stack spacing={3} alignItems="center">
+          <Avatar sx={{ bgcolor: "primary.main" }}>
+            <LockResetIcon />
+          </Avatar>
 
-      <label>
-        新しいパスワード
-        <input
-          name="password"
-          type="password"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
-          autoComplete="new-password"
-        />
-        {errors.password && <p role="alert">{errors.password}</p>}
-      </label>
+          <Stack spacing={0.5} alignItems="center">
+            <Typography variant="h6" fontWeight="bold">
+              新しいパスワードを設定
+            </Typography>
+            <Typography variant="body2" color="text.secondary">
+              8文字以上で入力してください
+            </Typography>
+          </Stack>
 
-      <label>
-        新しいパスワード（確認）
-        <input
-          name="password_confirmation"
-          type="password"
-          value={passwordConfirmation}
-          onChange={(e) => setPasswordConfirmation(e.target.value)}
-          autoComplete="new-password"
-        />
-        {errors.passwordConfirmation && <p role="alert">{errors.passwordConfirmation}</p>}
-      </label>
+          <Stack component="form" onSubmit={handleSubmit} spacing={2} width="100%">
+            <TextField
+              label="新しいパスワード"
+              name="password"
+              type={showPassword ? "text" : "password"}
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              autoComplete="new-password"
+              error={!!errors.password}
+              helperText={errors.password}
+              fullWidth
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPassword((v) => !v)}
+                        edge="end"
+                        aria-label={showPassword ? "パスワードを隠す" : "パスワードを表示する"}
+                      >
+                        {showPassword ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
 
-      {apiError && <p role="alert">{apiError}</p>}
+            <TextField
+              label="新しいパスワード（確認）"
+              name="password_confirmation"
+              type={showPasswordConfirmation ? "text" : "password"}
+              value={passwordConfirmation}
+              onChange={(e) => setPasswordConfirmation(e.target.value)}
+              autoComplete="new-password"
+              error={!!errors.passwordConfirmation}
+              helperText={errors.passwordConfirmation}
+              fullWidth
+              slotProps={{
+                input: {
+                  endAdornment: (
+                    <InputAdornment position="end">
+                      <IconButton
+                        onClick={() => setShowPasswordConfirmation((v) => !v)}
+                        edge="end"
+                        aria-label={
+                          showPasswordConfirmation ? "パスワードを隠す" : "パスワードを表示する"
+                        }
+                      >
+                        {showPasswordConfirmation ? <VisibilityOffIcon /> : <VisibilityIcon />}
+                      </IconButton>
+                    </InputAdornment>
+                  ),
+                },
+              }}
+            />
 
-      <button type="submit" disabled={submitting}>
-        {submitting ? "Submitting..." : "再設定する"}
-      </button>
-    </form>
+            {apiError && <Alert severity="error">{apiError}</Alert>}
+
+            <Button type="submit" variant="contained" disabled={submitting} fullWidth>
+              {submitting ? "送信中..." : "再設定する"}
+            </Button>
+          </Stack>
+        </Stack>
+      </Paper>
+    </Box>
   );
 };
