@@ -38,6 +38,7 @@ class Api::V1::SessionsController < ApplicationController
     user = User.create_guest
     reset_session
     session[:user_id] = user.id
+    session[:session_version] = user.session_version
     head :ok
   end
 
