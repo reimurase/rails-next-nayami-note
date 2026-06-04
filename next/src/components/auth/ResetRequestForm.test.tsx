@@ -33,7 +33,7 @@ describe("ResetRequestForm 異常系", () => {
 
     const user = userEvent.setup();
     render(<ResetRequestForm />);
-    await user.type(screen.getByLabelText("Email"), "test@example.com");
+    await user.type(screen.getByRole("textbox", { name: /email/i }), "test@example.com");
     await user.click(screen.getByRole("button", { name: "送信する" }));
 
     expect(await screen.findByRole("alert")).toBeInTheDocument();
