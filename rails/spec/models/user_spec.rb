@@ -188,4 +188,24 @@ RSpec.describe User, type: :model do
       end
     end
   end
+
+  describe ".create_guest" do
+    let(:user) { User.create_guest }
+
+    it "concern が4件作られる" do
+      expect(user.concerns.count).to eq(4)
+    end
+
+    it "1件が archived（ライブラリ行き）になっている" do
+      expect(user.concerns.where.not(archived_at: nil).count).to eq(1)
+    end
+
+    it "issue が2件作られる" do
+      expect(user.issues.count).to eq(2)
+    end
+
+    it "roadmap が1件作られる" do
+      expect(user.roadmaps.count).to eq(1)
+    end
+  end
 end
