@@ -17,11 +17,27 @@ class User < ApplicationRecord
 
   # ゲストログイン用メソッド
   def self.create_guest
-    User.create!(
+    user = User.create!(
       email: "guest_#{SecureRandom.hex(8)}@example.com",
       password: SecureRandom.hex(16),
       guest: true,
     )
+    create_guest_sample_data(user)
+    user
+  end
+
+  # ゲストの初期サンプルデータを生成する内部メソッド
+  def self.create_guest_sample_data(user)
+    data = YAML.load_file(Rails.root.join("config/guest_sample_data.yml"))
+    data["concerns"].each do |c|
+      concern = user.concerns.create!(
+        trigger_event: c["trigger_event"],
+        content: c["content"],
+        archived_at: c["archived"] ? 1.month.ago : nil,
+      )
+      user.issues.create!(concern: concern, **c["issue"].symbolize_keys) if c["issue"]
+      user.roadmaps.create!(concern: concern, **c["roadmap"].symbolize_keys) if c["roadmap"]
+    end
   end
 
   # パスワードリセット用メソッド
