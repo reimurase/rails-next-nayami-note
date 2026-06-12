@@ -20,7 +20,7 @@ class Api::V1::PasswordsController < ApplicationController
       UserMailer.reset_password(user, token).deliver_later
     end
 
-    render json: { message: "入力されたメールアドレスに再設定用のメールを送信しました。" }, status: :ok
+    head :ok
   end
 
   def reset
@@ -29,11 +29,11 @@ class Api::V1::PasswordsController < ApplicationController
     )
 
     if user.nil?
-      return render json: { message: "無効なトークンです" }, status: :unprocessable_content
+      return render json: { error: { code: "invalid_token", message: "invalid_token" } }, status: :unprocessable_content
     end
 
     if user.reset_password_token_expired?
-      return render json: { message: "トークンの有効期限が切れています" }, status: :unprocessable_content
+      return render json: { error: { code: "token_expired", message: "token_expired" } }, status: :unprocessable_content
     end
 
     user.update!(
@@ -42,6 +42,6 @@ class Api::V1::PasswordsController < ApplicationController
       reset_password_sent_at: nil,
       session_version: user.session_version + 1,
     )
-    render json: { message: "パスワードを再設定しました" }, status: :ok
+    head :ok
   end
 end
