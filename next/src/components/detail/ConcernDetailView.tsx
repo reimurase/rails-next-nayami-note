@@ -72,6 +72,7 @@ export default function ConcernDetailView({
     if (!detail) return <Typography color="text.secondary">データがありません</Typography>;
     return (
       <ConcernSection
+        key={detail.concern.id}
         concern={detail.concern}
         onConcernUpdated={handleConcernChanged}
         onConcernDeleted={handleConcernDeleted}
@@ -85,6 +86,7 @@ export default function ConcernDetailView({
       return <Typography color="text.secondary">—</Typography>;
     return (
       <IssueSection
+        key={detail.concern.id}
         concernId={detail.concern.id}
         issue={detail.issue}
         onIssueChanged={handleIssueChanged}
@@ -97,6 +99,7 @@ export default function ConcernDetailView({
       return <Typography color="text.secondary">—</Typography>;
     return (
       <RoadmapSection
+        key={detail.concern.id}
         concernId={detail.concern.id}
         roadmap={detail.roadmap}
         onRoadmapChanged={handleRoadmapChanged}
