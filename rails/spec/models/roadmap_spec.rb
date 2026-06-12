@@ -79,7 +79,7 @@ RSpec.describe Roadmap, type: :model do
       let!(:archived_roadmap) { create(:roadmap, user: user, archived_at: Time.current, concern: archived_concern) }
 
       it "未アーカイブの roadmap のみを返すこと" do
-        expect(Roadmap.active).to contain_exactly(active_roadmap)
+        expect(user.roadmaps.active).to contain_exactly(active_roadmap)
       end
     end
 
@@ -88,7 +88,7 @@ RSpec.describe Roadmap, type: :model do
       let!(:archived_roadmap) { create(:roadmap, user: user, archived_at: Time.current, concern: archived_concern) }
 
       it "アーカイブ済みの roadmap のみを返すこと" do
-        expect(Roadmap.archived).to contain_exactly(archived_roadmap)
+        expect(user.roadmaps.archived).to contain_exactly(archived_roadmap)
       end
     end
 
