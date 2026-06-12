@@ -1,6 +1,16 @@
 class Api::V1::PasswordsController < ApplicationController
   skip_before_action :require_login, only: [:reset_request, :reset]
 
+  rate_limit to: 5, within: 5.minutes, only: :reset_request,
+             by: -> { request.remote_ip },
+             store: Rails.cache,
+             with: -> { render_rate_limited }
+
+  rate_limit to: 4, within: 1.hour, only: :reset_request,
+             by: -> { params[:email].to_s.strip.downcase },
+             store: Rails.cache,
+             with: -> { render_rate_limited }
+
   def reset_request
     normalized_email = params[:email].to_s.strip.downcase
     user = User.find_by(email: normalized_email)
