@@ -27,6 +27,44 @@ RSpec.describe "Api::V1::Passwords", type: :request do
       end
     end
 
+    context "email の文字の大きさが違う場合" do
+      let!(:user) { create(:user) }
+
+      let(:email) { "TEST@Email.COM" }
+
+      it "200 を返す" do
+        request_api
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "メールが送信されること" do
+        perform_enqueued_jobs do
+          request_api
+        end
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+      end
+    end
+
+    context "email の前後に空白がある場合" do
+      let!(:user) { create(:user) }
+
+      let(:email) { " test@email.com " }
+
+      it "200 を返す" do
+        request_api
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "メールが送信されること" do
+        perform_enqueued_jobs do
+          request_api
+        end
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+      end
+    end
+
     context "未登録のメールアドレスの場合" do
       let(:email) { "notfound@example.com" }
       it "200を返すこと" do

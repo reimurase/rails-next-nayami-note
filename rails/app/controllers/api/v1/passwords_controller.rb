@@ -2,7 +2,8 @@ class Api::V1::PasswordsController < ApplicationController
   skip_before_action :require_login, only: [:reset_request, :reset]
 
   def reset_request
-    user = User.find_by(email: params[:email])
+    normalized_email = params[:email].to_s.strip.downcase
+    user = User.find_by(email: normalized_email)
 
     if user
       token = user.generate_reset_password_token
