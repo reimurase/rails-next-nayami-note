@@ -77,7 +77,7 @@ RSpec.describe Concern, type: :model do
       let!(:archived_concern) { create(:concern, user: user, archived_at: Time.current) }
 
       it "未アーカイブの concern のみを返すこと" do
-        expect(Concern.active).to contain_exactly(active_concern)
+        expect(user.concerns.active).to contain_exactly(active_concern)
       end
     end
 
@@ -86,7 +86,7 @@ RSpec.describe Concern, type: :model do
       let!(:archived_concern) { create(:concern, user: user, archived_at: Time.current) }
 
       it "アーカイブ済みの concern のみを返すこと" do
-        expect(Concern.archived).to contain_exactly(archived_concern)
+        expect(user.concerns.archived).to contain_exactly(archived_concern)
       end
     end
 

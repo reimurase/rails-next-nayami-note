@@ -79,7 +79,7 @@ RSpec.describe Issue, type: :model do
       let!(:archived_issue) { create(:issue, user: user, archived_at: Time.current, concern: archived_concern) }
 
       it "未アーカイブの issue のみを返すこと" do
-        expect(Issue.active).to contain_exactly(active_issue)
+        expect(user.issues.active).to contain_exactly(active_issue)
       end
     end
 
@@ -88,7 +88,7 @@ RSpec.describe Issue, type: :model do
       let!(:archived_issue) { create(:issue, user: user, archived_at: Time.current, concern: archived_concern) }
 
       it "アーカイブ済みの issue のみを返すこと" do
-        expect(Issue.archived).to contain_exactly(archived_issue)
+        expect(user.issues.archived).to contain_exactly(archived_issue)
       end
     end
 

@@ -6,7 +6,7 @@ RSpec.describe "Api::V1::Passwords", type: :request do
     subject(:request_api) {
       post "/api/v1/password/reset_request",
            params: { email: email }.to_json,
-           headers: json_headers
+           headers: csrf_headers
     }
 
     context "登録済みのメールアドレスの場合" do
@@ -16,6 +16,44 @@ RSpec.describe "Api::V1::Passwords", type: :request do
 
       it "200を返すこと" do
         request_api
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "メールが送信されること" do
+        perform_enqueued_jobs do
+          request_api
+        end
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+      end
+    end
+
+    context "email の文字の大きさが違う場合" do
+      let!(:user) { create(:user) }
+
+      let(:email) { "TEST@Email.COM" }
+
+      it "200 を返す" do
+        request_api
+
+        expect(response).to have_http_status(:ok)
+      end
+
+      it "メールが送信されること" do
+        perform_enqueued_jobs do
+          request_api
+        end
+        expect(ActionMailer::Base.deliveries.count).to eq(1)
+      end
+    end
+
+    context "email の前後に空白がある場合" do
+      let!(:user) { create(:user) }
+
+      let(:email) { " test@email.com " }
+
+      it "200 を返す" do
+        request_api
+
         expect(response).to have_http_status(:ok)
       end
 
@@ -46,7 +84,7 @@ RSpec.describe "Api::V1::Passwords", type: :request do
     subject(:request_api) {
       post "/api/v1/password/reset",
            params: { token: token, password: "new_password" }.to_json,
-           headers: json_headers
+           headers: csrf_headers
     }
 
     let!(:user) { create(:user) }
@@ -85,7 +123,7 @@ RSpec.describe "Api::V1::Passwords", type: :request do
       post "/api/v1/password/reset", params: {
         token: valid_token,
         password: "new_password123",
-      }.to_json, headers: json_headers
+      }.to_json, headers: csrf_headers
 
       # 旧セッションでのアクセスが弾かれること
       get "/api/v1/me"
@@ -94,6 +132,15 @@ RSpec.describe "Api::V1::Passwords", type: :request do
 
     context "無効なトークンの場合" do
       let(:token) { invalid_token }
+
+      it "422を返すこと" do
+        request_api
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
+    context "トークンが nil の場合" do
+      let(:token) { nil }
 
       it "422を返すこと" do
         request_api

@@ -84,10 +84,10 @@ RSpec.describe "Api::V1::Sessions", type: :request do
     end
 
     it "呼ぶたびに別のguestユーザーが生成されること" do
-      post "/api/v1/guest_login", headers: csrf_headers
-      post "/api/v1/guest_login", headers: csrf_headers
-
-      expect(User.where(guest: true).count).to eq(2)
+      expect {
+        post "/api/v1/guest_login", headers: csrf_headers
+        post "/api/v1/guest_login", headers: csrf_headers
+      }.to change { User.where(guest: true).count }.by(2)
     end
   end
 end
