@@ -36,11 +36,12 @@ class Api::V1::PasswordsController < ApplicationController
       return render json: { message: "トークンの有効期限が切れています" }, status: :unprocessable_content
     end
 
-    if user.update(password: params[:password], reset_password_digest: nil, reset_password_sent_at: nil)
-      user.update!(session_version: user.session_version + 1)
-      render json: { message: "パスワードを再設定しました" }, status: :ok
-    else
-      render json: { errors: user.errors }, status: :unprocessable_content
-    end
+    user.update!(
+      password: params[:password],
+      reset_password_digest: nil,
+      reset_password_sent_at: nil,
+      session_version: user.session_version + 1,
+    )
+    render json: { message: "パスワードを再設定しました" }, status: :ok
   end
 end

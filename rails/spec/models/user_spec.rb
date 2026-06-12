@@ -134,18 +134,6 @@ RSpec.describe User, type: :model do
       end
     end
 
-    describe "#reset_password_token_valid?" do
-      it "正しいトークンならtrueを返すこと" do
-        token = user.generate_reset_password_token
-        expect(user.reset_password_token_valid?(token)).to be true
-      end
-
-      it "間違ったトークンならfalseを返すこと" do
-        user.generate_reset_password_token
-        expect(user.reset_password_token_valid?("wrong_token")).to be false
-      end
-    end
-
     describe "#reset_password_token_expired?" do
       it "1時間以内ならfalseを返すこと" do
         user.generate_reset_password_token

@@ -49,10 +49,6 @@ class User < ApplicationRecord
     token
   end
 
-  def reset_password_token_valid?(token)
-    Digest::SHA256.hexdigest(token) == reset_password_digest
-  end
-
   def reset_password_token_expired?
     # true は期限切れ false は有効
     return true if reset_password_sent_at.nil?
