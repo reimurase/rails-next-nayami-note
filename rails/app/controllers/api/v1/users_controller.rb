@@ -5,9 +5,6 @@ class Api::V1::UsersController < ApplicationController
              store: Rails.cache,
              with: -> { render_rate_limited }
 
-  def show
-  end
-
   def create
     user = User.new(user_params)
     user.save!
@@ -15,9 +12,6 @@ class Api::V1::UsersController < ApplicationController
     session[:user_id] = user.id
     session[:session_version] = user.session_version
     head :created
-  end
-
-  def destroy
   end
 
   private

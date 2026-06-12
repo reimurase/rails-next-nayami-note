@@ -139,6 +139,15 @@ RSpec.describe "Api::V1::Passwords", type: :request do
       end
     end
 
+    context "トークンが nil の場合" do
+      let(:token) { nil }
+
+      it "422を返すこと" do
+        request_api
+        expect(response).to have_http_status(:unprocessable_content)
+      end
+    end
+
     context "期限切れのトークンの場合" do
       let(:token) { valid_token }
 

@@ -25,7 +25,7 @@ class Api::V1::PasswordsController < ApplicationController
 
   def reset
     user = User.find_by(
-      reset_password_digest: Digest::SHA256.hexdigest(params[:token]),
+      reset_password_digest: Digest::SHA256.hexdigest(params[:token].to_s),
     )
 
     if user.nil?
