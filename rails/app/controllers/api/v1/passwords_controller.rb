@@ -1,6 +1,5 @@
 class Api::V1::PasswordsController < ApplicationController
   skip_before_action :require_login, only: [:reset_request, :reset]
-  skip_before_action :verify_authenticity_token, only: [:reset_request, :reset]
 
   def reset_request
     user = User.find_by(email: params[:email])

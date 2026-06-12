@@ -6,7 +6,7 @@ RSpec.describe "Api::V1::Passwords", type: :request do
     subject(:request_api) {
       post "/api/v1/password/reset_request",
            params: { email: email }.to_json,
-           headers: json_headers
+           headers: csrf_headers
     }
 
     context "登録済みのメールアドレスの場合" do
@@ -46,7 +46,7 @@ RSpec.describe "Api::V1::Passwords", type: :request do
     subject(:request_api) {
       post "/api/v1/password/reset",
            params: { token: token, password: "new_password" }.to_json,
-           headers: json_headers
+           headers: csrf_headers
     }
 
     let!(:user) { create(:user) }
@@ -85,7 +85,7 @@ RSpec.describe "Api::V1::Passwords", type: :request do
       post "/api/v1/password/reset", params: {
         token: valid_token,
         password: "new_password123",
-      }.to_json, headers: json_headers
+      }.to_json, headers: csrf_headers
 
       # 旧セッションでのアクセスが弾かれること
       get "/api/v1/me"
