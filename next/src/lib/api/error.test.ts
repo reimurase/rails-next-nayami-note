@@ -47,6 +47,22 @@ describe("normalizeApiError", () => {
     });
   });
 
+  test("422でerror.code=invalid_tokenのときtoken_errorを返す", () => {
+    const error = {
+      isAxiosError: true,
+      response: { status: 422, data: { error: { code: "invalid_token" } } },
+    };
+    expect(normalizeApiError(error)).toMatchObject({ type: "token_error", code: "invalid_token" });
+  });
+
+  test("422でerror.code=token_expiredのときtoken_errorを返す", () => {
+    const error = {
+      isAxiosError: true,
+      response: { status: 422, data: { error: { code: "token_expired" } } },
+    };
+    expect(normalizeApiError(error)).toMatchObject({ type: "token_error", code: "token_expired" });
+  });
+
   test("429はrate_limitedを返し、メッセージを含む", () => {
     const error = { isAxiosError: true, response: { status: 429, data: {} } };
     const result = normalizeApiError(error);

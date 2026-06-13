@@ -36,6 +36,7 @@ export const ResetPasswordForm = () => {
   const [submitting, setSubmitting] = useState(false);
   const [errors, setErrors] = useState<AuthErrors>({});
   const [apiError, setApiError] = useState<string | null>(null);
+  const [tokenErrorType, setTokenErrorType] = useState<"invalid" | "expired" | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -54,23 +55,34 @@ export const ResetPasswordForm = () => {
       await passwordApi.reset(token, password);
       router.replace("/login");
     } catch (err) {
-      setApiError(normalizeApiError(err).message);
+      const normalized = normalizeApiError(err);
+      if (normalized.type === "token_error") {
+        setTokenErrorType(normalized.code === "token_expired" ? "expired" : "invalid");
+      } else {
+        setApiError(normalized.message);
+      }
     } finally {
       setSubmitting(false);
     }
   };
 
-  if (!token) {
+  if (!token || tokenErrorType) {
+    const heading =
+      tokenErrorType === "expired" ? "リンクの有効期限が切れています" : "リンクが無効です";
+    const description =
+      tokenErrorType === "expired"
+        ? "パスワード再設定リンクの有効期限（1時間）が切れています。もう一度やり直してください。"
+        : "リンクが無効か、すでに使用済みの可能性があります。もう一度やり直してください。";
+
     return (
       <Box display="flex" justifyContent="center" pt={12}>
         <Paper elevation={3} sx={{ p: 4, width: "100%", maxWidth: 400, textAlign: "center" }}>
           <Stack spacing={2} alignItems="center">
             <Typography variant="h6" fontWeight="bold">
-              リンクが無効です
+              {heading}
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              リンクの有効期限が切れているか、すでに使用済みの可能性があります。
-              もう一度最初からやり直してください。
+              {description}
             </Typography>
             <Button variant="contained" href="/reset-password">
               再設定メールを送り直す
