@@ -8,6 +8,7 @@ export type ApiFieldError = {
 
 export type AppApiError =
   | { type: "validation"; status: 422; message: string; errors: Record<string, ApiFieldError[]> }
+  | { type: "token_error"; status: 422; code: "invalid_token" | "token_expired"; message: string }
   | { type: "unauthorized"; status: 401; message: string }
   | { type: "forbidden"; status: 403; message: string }
   | { type: "not_found"; status: 404; message: string }
@@ -37,13 +38,28 @@ export function normalizeApiError(error: unknown): AppApiError {
 
   const { status, data } = error.response;
 
-  if (status === 422 && isRecord(data) && isValidationErrors(data.errors)) {
-    return {
-      type: "validation",
-      status: 422,
-      message: "入力内容を確認してください",
-      errors: data.errors,
-    };
+  if (status === 422) {
+    if (
+      isRecord(data) &&
+      isRecord(data.error) &&
+      (data.error.code === "invalid_token" || data.error.code === "token_expired")
+    ) {
+      return {
+        type: "token_error",
+        status: 422,
+        code: data.error.code as "invalid_token" | "token_expired",
+        message: data.error.code as string,
+      };
+    }
+
+    if (isRecord(data) && isValidationErrors(data.errors)) {
+      return {
+        type: "validation",
+        status: 422,
+        message: "入力内容を確認してください",
+        errors: data.errors,
+      };
+    }
   }
 
   if (status === 401) {
