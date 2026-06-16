@@ -2,7 +2,11 @@
 > 書いて発見。書いて発展。そして、さっさと忘れよう。
 
 ## 概要
-なやみノートは思考の可視化や発展をサポートし、なやみをストレスなく忘れるためのサービスです。もやもやを抱えている人や考えが整理できない人が構造的になやみを扱えるようにしています。RailsとNext.jsで構成されるポートフォリオ用サービスです。
+なやみノートは、頭の中で堂々巡りする悩みを書き出し、
+構造化して整理するためのサービスです。
+悩みを「問題」と「ロードマップ」に分解することで、
+抱え込まずに前へ進める状態をつくります。
+ToDoリストでは扱いきれない、思考の流れに沿った設計を目指しました。
 
 ## リンク
 
@@ -58,10 +62,68 @@
 | GitHub Actions | CI（Rails / Next.js） |
 
 ## アーキテクチャ概要
+ER図
+```mermaid
+erDiagram
+  USERS ||--o{ CONCERNS : has
+  USERS ||--o{ ISSUES : has
+  USERS ||--o{ ROADMAPS : has
+  CONCERNS ||--|| ISSUES : "has one"
+  CONCERNS ||--|| ROADMAPS : "has one"
+  USERS {
+    bigint id PK
+    string email UK
+    string password_digest
+    boolean auto_archive_enabled
+    string reset_password_digest UK
+    datetime reset_password_sent_at
+    boolean guest
+    integer session_version
+    datetime created_at
+    datetime updated_at
+  }
+  CONCERNS {
+    bigint id PK
+    text content
+    string trigger_event
+    bigint user_id FK
+    datetime archived_at
+    datetime auto_archive_at
+    datetime created_at
+    datetime updated_at
+  }
+  ISSUES {
+    bigint id PK
+    string title
+    text content
+    bigint user_id FK
+    bigint concern_id FK
+    datetime archived_at
+    datetime created_at
+    datetime updated_at
+  }
+  ROADMAPS {
+    bigint id PK
+    string goal
+    text content
+    bigint user_id FK
+    bigint concern_id FK
+    datetime archived_at
+    datetime created_at
+    datetime updated_at
+  }
+```
 
 ## 工夫した点
+なやみを起点にした1対1の階層構造
+なやみノートは当初、なやみ、問題、ロードマップのどこからでも始められて、関連付けができることを想定していた。人の悩みは必ずしも、もやもやした曖昧ななやみから始まるわけではないから、思考の自由さをできるだけ阻害しないようにと考えた。しかし、起点や関連付けの自由度が高いと、どこから始める化やどれと関連付けるかという管理に思考が奪われてしまうことに気づいた。だとすると、多少自由度を制限したとしても、道筋を示して、一つのことに集中できる方が、方向性としてはあっていると考えた。そのため、なやみを起点にした1対1の階層構造に絞り、問題やロードマップはなやみからしかつくれないUIにした。
 
+自動アーカイブによる「忘れる」の仕組み化
+悩みは時間経過によって価値が薄れて流れていきます。これをサービス上でも再現したいと考えました。ほとんどのサービスでは悩みや問題が溜まっていき、整理する必要が出てきます。それを自動で行うようにできれば、整理に時間やコストを奪われることなく、より自然な状態で悩みを手放すことができます。なやみは１週間後にライブラリへ移動する機能を実装しました。indexの取得時に指定時間を越えたなやみを検索して、更新しています。将来的には、裏側でライブラリへ移動するようにしていきます。
 ## 今後実装したい機能
+AWSへの移行
+本番相当のセキュリティ拡張（IDaaSの導入によるMFA・パスキー対応など）
+アーカイブUIの実装（日付軸・アルバム形式）
 
 ## ローカル環境構築手順
 
