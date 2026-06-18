@@ -1,0 +1,28 @@
+# VCS / CI
+.git
+.gitignore
+.github/
+
+# 秘密・ローカル専用
+config/master.key
+config/ssl/
+.env*
+*.cookie
+cookie.txt
+cookies.txt
+
+# ランタイム生成物
+tmp/
+log/
+storage/
+/.bundle
+vendor/bundle
+
+# 不要物
+node_modules/
+test/
+spec/
+coverage/
+.DS_Store
+.vscode/
+.idea/
