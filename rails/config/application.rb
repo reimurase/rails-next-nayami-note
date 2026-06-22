@@ -55,7 +55,7 @@ module RailsNextNayamiNote
         {
           key: "_rails_next_nayami_note_session",
           secure: true,
-          same_site: :none,
+          same_site: :lax,
           httponly: true,
         }
       end
