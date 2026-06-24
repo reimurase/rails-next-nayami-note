@@ -7,6 +7,11 @@ class Api::V1::SessionsController < ApplicationController
              store: Rails.cache,
              with: -> { render_rate_limited }
 
+  rate_limit to: 10, within: 15.minutes, only: :create,
+             by: -> { session_params[:email].to_s.strip.downcase },
+             store: Rails.cache,
+             with: -> { render_rate_limited }
+
   rate_limit to: 3, within: 5.minutes, only: :guest_login,
              by: -> { request.remote_ip },
              store: Rails.cache,
