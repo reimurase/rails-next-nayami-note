@@ -2,6 +2,7 @@ class Api::V1::SessionsController < ApplicationController
   DUMMY_DIGEST = BCrypt::Password.create("dummy", cost: BCrypt::Engine::DEFAULT_COST).freeze
 
   skip_before_action :require_login, only: [:create, :guest_login]
+  before_action :log_request_ip, only: [:create]
   rate_limit to: 10, within: 3.minutes, only: :create,
              by: -> { request.remote_ip },
              store: Rails.cache,
@@ -56,5 +57,15 @@ class Api::V1::SessionsController < ApplicationController
 
     def session_params
       params.require(:session).permit(:email, :password)
+    end
+
+    def log_request_ip
+      Rails.logger.info({
+        remote_ip: request.remote_ip,
+        remote_addr: request.env["REMOTE_ADDR"],
+        x_forwarded_for: request.get_header("HTTP_X_FORWARDED_FOR"),
+        x_real_ip: request.get_header("HTTP_X_REAL_IP"),
+        x_vercel_forwarded_for: request.get_header("HTTP_X_VERCEL_FORWARDED_FOR"),
+      }.inspect)
     end
 end
