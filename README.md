@@ -1,14 +1,50 @@
 # なやみノート
 > 書いて発見。書いて発展。そして、さっさと忘れよう。
 
+## 目次
+- [概要](#概要)
+- [リンク](#リンク)
+- [画面](#画面)
+- [機能](#機能)
+- [技術スタック](#技術スタック)
+- [選定理由](#選定理由)
+- [アーキテクチャ概要](#アーキテクチャ概要)
+- [ER図](#er図)
+- [プロダクト設計の判断](#プロダクト設計の判断)
+- [セキュリティ上の工夫](#セキュリティ上の工夫)
+- [今後実装したい機能](#今後実装したい機能)
+- [ローカル環境構築手順](#ローカル環境構築手順)
+
 ## 概要
-なやみノートは思考の可視化や発展をサポートし、なやみをストレスなく忘れるためのサービスです。もやもやを抱えている人や考えが整理できない人が構造的になやみを扱えるようにしています。RailsとNext.jsで構成されるポートフォリオ用サービスです。
+なやみノートは、頭の中で堂々巡りする悩みを書き出し、
+構造化して整理するためのプロダクトです。
+
+ToDoリストは「やること」が明確になった後のためのツールであり、
+その手前のもやもやして不明瞭な悩みを抱えている人にはハードルが高くなっています。
+
+なやみノートは、まずは悩みを書き出し、それから「問題」と「ロードマップ」に発展させることで、
+考えがまとまらず何度も悩んでしまう状態から、前へ進める状態をつくります。
+
+道筋が見えた悩みは、頭の中で抱え続けることなく手放すことができます。
 
 ## リンク
+- プロダクト: https://rails-next-nayami-note.vercel.app/
+- API: https://rails-next-nayami-note.onrender.com
+- GitHub: https://github.com/reimurase/rails-next-nayami-note
 
-## サービス概要 / 作成背景
-興味がある方はご覧ください
-(https://github.com/reimurase/rails-next-nayami-note/issues/54)
+## 画面
+
+### サインアップ（ゲストログイン可能）
+
+<img src="docs/images/signup.png" width="400" alt="サインアップ画面">
+
+### なやみページ例
+
+<img src="docs/images/detail.png" width="900" alt="なやみページの画面">
+
+### 作成デモ
+
+![なやみ作成のデモ](docs/images/nayami-note-demo-16s.gif)
 
 ## 機能
 
@@ -17,51 +53,204 @@
 | ユーザー登録・ログイン・ログアウト | メールアドレスとパスワードによる認証 |
 | ゲストログイン | 登録不要ですぐに試せる |
 | パスワードリセット | メールによるトークン認証でリセット |
-| なやみの作成・編集・削除 | トリガーとなった出来事とともになやみを記録 |
+| なやみの作成・編集・削除 | きっかけとなった出来事とともになやみを記録 |
 | なやみのアーカイブ | 解消したなやみをアーカイブして手放す |
 | 自動アーカイブ | 設定した日数（7日）後になやみを自動でアーカイブ |
-| 問題（Issue）の作成・編集・削除 | なやみから問題を抽出して整理 |
-| ロードマップの作成・編集・削除 | 問題への対処方針を記録 |
+| 問題の作成・編集・削除 | なやみから問題を抽出して整理 |
+| ロードマップの作成・編集・削除 | 目標とそれを達成するためのマイルストーンを記録 |
 | ライブラリ | アーカイブ済みのなやみ・問題・ロードマップの一覧 |
 
 ## 技術スタック
 
 ### バックエンド
 
-| 技術 | バージョン |
-|------|-----------|
-| Ruby | 3.4.6 |
-| Ruby on Rails | 8.0.3 |
-| MySQL | 9.4.0 |
-| Puma | ~6.4 |
-| bcrypt（has_secure_password） | ~3.1 |
-| rack-cors | - |
+- Ruby 3
+- Rails 8 — API モード
+- mysql2 — MySQL 互換アダプタ
+- Solid Cache — DB ベースのキャッシュ／セッションストア
+- bcrypt — パスワードハッシュ化
 
 ### フロントエンド
 
-| 技術 | バージョン |
-|------|-----------|
-| Node.js | 20.18.0 |
-| Next.js | 15.5.6 |
-| React | 19.1.0 |
-| TypeScript | ~5.6.3 |
-| MUI（Material UI） | 7.3.5 |
-| Axios | 1.13.2 |
-| SWR | 2.3.6 |
+- Node.js 20
+- Next.js 15 — App Router
+- React 19
+- TypeScript 5
+- MUI（Material UI）
+- SWR — データフェッチ・キャッシュ
 
-### テスト・開発
+### インフラ
 
-| 技術 | 用途 |
-|------|------|
-| RSpec | Rails のテスト |
-| Jest + Testing Library | Next.js のテスト |
-| GitHub Actions | CI（Rails / Next.js） |
+- Vercel — フロントエンド（Next.js）のホスティング
+- Render — バックエンド（Rails API）のホスティング（Docker デプロイ）
+- TiDB Cloud — MySQL 互換のマネージド DB（本番、SSL 接続）
+
+### テスト・品質管理
+
+- RSpec — Rails のテスト
+- Jest + Testing Library — Next.js のテスト
+- RuboCop — Ruby の静的解析・スタイル統一
+- ESLint + Prettier — JS/TS の静的解析・整形
+
+### その他
+
+- Docker — マルチステージビルドによる本番イメージの軽量化
+- GitHub Actions — CI（Rails / Next.js）
+
+## 選定理由
+
+### Rails API × Next.js の分離構成
+
+フロントエンドとバックエンドを分離し、Rails は JSON API に専念、Next.js が UI を担う構成を採用しました。API とフロントを独立してデプロイ・スケールでき、責務が明確になります。実務で主流の構成であり、この分離をゼロから設計・実装できることで自走力を示す狙いもあります。
+
+- **バックエンド（Rails）**：未経験向けの教材が豊富で独学で体系的に学びやすく、求人数も多いことが理由です。Active Record によるDB操作、認証、セッション管理などWebアプリに必要な機能が標準で揃っており、一人での開発を進めやすい点も採用の決め手です。
+- **フロントエンド（Next.js）**：現在活発な React エコシステムの中で、ファイルベースのルーティングやビルド設定などフレームワークとしてのサポートが揃っており、初心者でも一人で開発を進めやすいことが理由です。素の React ではこれらを自前で構築・管理する必要があります。
+
+### TiDB Cloud
+
+本番データベースに TiDB Cloud を採用しました。無料枠があり個人開発のコストを抑えられること、MySQL 互換で扱いやすいことが主な理由です。
+
+MySQL 互換の範囲で利用しているため特定サービスへのロックインが弱く、将来 AWS（RDS / Aurora）などへ移行する際も載せ替えの負担が小さいと考えています。
+
+### SWR
+
+データ取得ライブラリに SWR を採用しました。導入当初に明確な比較検討をしたわけではありませんが、結果として以下の役割を担っています。
+
+- **コンポーネント間のデータ共有（認証状態）**：`"me"` キーで、fetcher を持たず既存キャッシュを読むだけの参照を行い、認証情報を複数コンポーネントで共有します。props で受け渡さずに同じ値を参照でき、更新時は `mutate("me")` で再検証します。
+- **一覧の取得・キャッシュ・更新反映（concern / issue / roadmap）**：一覧データを取得・キャッシュし、子コンポーネントには props で渡します。作成・更新時は子から渡したコールバック（`onCreated` など）経由で `mutate` を呼び、再取得して表示を更新します。
+
+### MUI（Material UI）
+
+UI コンポーネントライブラリに MUI を採用しました。理由は二点あります。一点目は、Dialog・Card・メニューなど必要なコンポーネントが揃っており、自前実装を減らせることです。二点目は、デザインは今回の開発で優先度を高く置いていない領域であり、そこに時間をかけず一定の見た目を担保したかったことです。ロジックやデータモデリング、セキュリティ設計にリソースを集中させる判断として MUI を選びました。
 
 ## アーキテクチャ概要
 
-## 工夫した点
+### インフラ構成図（本番）
+
+<img src="docs/images/infrastructureDiagram.png" width="600" alt="本番のインフラ構成図">
+
+### リクエストの流れ
+
+1. ユーザーのデバイスから Vercel 上の Next.js へ HTTPS でアクセスします。
+2. Next.js は `/api/*` などのパスへのリクエストを、rewrites を通じて Render 上の Rails API へ転送します。ブラウザからは同一オリジンへのリクエストとして扱われます。
+3. Rails API は TiDB Cloud（MySQL 互換）へ SSL 接続してデータを読み書きします。
+4. パスワードリセットなどのメール送信は、Rails から Gmail SMTP 経由で行います。
+
+### デプロイの流れ
+
+1. developer が変更を GitHub の main ブランチへ push / merge します。
+2. push をトリガーに GitHub Actions の CI（RSpec・RuboCop・ESLint・TypeScript typecheck・next-build・Jest）が実行されます。
+3. Vercel（Next.js）は Deployment Checks を設定しており、フロント関連のジョブ（ESLint・TypeScript typecheck・next-build・Jest）が成功するまで本番への昇格をブロックします。
+4. Render（Rails API）は Auto-Deploy を「After CI Checks Pass」に設定しており、CI 成功後にデプロイします。
+5. CI が失敗した場合、フロント・バックともに本番へは反映されません。
+
+## ER図
+
+データ構造は user を起点に、concern → issue・roadmap という展開で成り立っています。
+
+- **user と各テーブルは 1:多**：一人の user が複数の concern・issue・roadmap を持ちます。
+- **concern と issue・roadmap は 1:1**：一つの concern に対して issue・roadmap がそれぞれ一つ対応します。曖昧な悩み（concern）を、問題（issue）とロードマップ（roadmap）へ展開する構造を表しています。
+- **issue・roadmap は user_id を直接持つ**：concern 経由でも user にたどれますが、concern を介さず user 単位で直接クエリできるよう user_id を保持しています。
+- **archived_at による論理削除**：concern・issue・roadmap は物理削除せず archived_at で論理削除し、ライブラリ機能として扱います。
+
+```mermaid
+erDiagram
+  USERS ||--o{ CONCERNS : has
+  USERS ||--o{ ISSUES : has
+  USERS ||--o{ ROADMAPS : has
+  CONCERNS ||--|| ISSUES : "has one"
+  CONCERNS ||--|| ROADMAPS : "has one"
+  USERS {
+    bigint id PK
+    string email UK
+    string password_digest
+    boolean auto_archive_enabled
+    string reset_password_digest UK
+    datetime reset_password_sent_at
+    boolean guest
+    integer session_version
+    datetime created_at
+    datetime updated_at
+  }
+  CONCERNS {
+    bigint id PK
+    text content
+    string trigger_event
+    bigint user_id FK
+    datetime archived_at
+    datetime auto_archive_at
+    datetime created_at
+    datetime updated_at
+  }
+  ISSUES {
+    bigint id PK
+    string title
+    text content
+    bigint user_id FK
+    bigint concern_id FK
+    datetime archived_at
+    datetime created_at
+    datetime updated_at
+  }
+  ROADMAPS {
+    bigint id PK
+    string goal
+    text content
+    bigint user_id FK
+    bigint concern_id FK
+    datetime archived_at
+    datetime created_at
+    datetime updated_at
+  }
+```
+
+## プロダクト設計の判断
+
+### なやみを起点にした1対1の階層構造
+
+当初、なやみノートは「なやみ」、「問題」、「ロードマップ」のどこからでも始められ、関連付けができることを想定していました。人の悩みは必ずしも、もやもやした曖昧ななやみから始まるわけではないため、思考の自由さをできるだけ阻害しない設計にしたかったからです。
+
+しかし、起点や関連付けの自由度が高いと、どこから始めるかやどれと関連付けるかという判断や選択に思考が奪われてしまうことに気づきました。そうであるならば、多少自由度を制限したとしても、道筋を示して、一つのことに集中できる方が、方向性としてはあっていると考えました。そのため、なやみを起点にした1対1の階層構造に絞り、問題やロードマップはなやみからしかつくれないUIにしました。
+
+### 自動アーカイブによる「忘れる」の仕組み化
+
+悩みは時間経過によって価値が薄れて忘れていきます。これをサービス上でも再現したいと考えました。ほとんどのサービスでは悩みや問題が溜まっていき、整理する必要が出てきます。それを自動で行うようにできれば、整理に時間やコストを奪われることなく、より自然な状態で悩みを手放すことができます。なやみは1週間後にライブラリへ移動する機能を実装しました。index の取得時に指定時間を越えたなやみを検索して、更新しています。将来的には、裏側でライブラリへ移動するようにしていきます。
+
+## セキュリティ上の工夫
+
+### レート制限
+
+認証エンドポイントは email + password のみで認証するため、総当たり攻撃への耐性をレート制限で補強しています。あわせて過剰リクエストによる DB 負荷の抑制も目的としています。
+
+制限は二層で設計しています。
+
+- **メールアドレス単位**（主防御）：同一アカウントへの試行を制限します。
+- **IP 単位**（副次防御）：同一クライアントからの試行を制限します。
+
+**既知の制約**：本番環境（Render）は多段プロキシ構成のため、`request.remote_ip` が実クライアントIPを返しません。このため IP 単位の制限は実効性を持たず、現状はメールアドレス単位を主防御として運用しています。
+
+**対応方針**：AWS 移行時に ALB を経由する構成へ変更し、VPC 内の既知IP範囲を trusted proxy として扱うことで `remote_ip` の解決を正常化します。これにより IP 単位を副次防御として機能させます。
+
+### タイミング攻撃対策
+
+メールアドレスが未登録の場合と登録済みの場合で、パスワード照合処理の有無により応答時間に差が出ます。この差から、攻撃者はメールアドレスの登録有無を推測できます（タイミング攻撃）。
+
+原因は、メールアドレスが登録されていない場合に即座にエラーを返しており、パスワード照合を行う成功時との間で処理時間に差が生じていたことです。ダミーの bcrypt 照合を挟むことで、失敗時もパスワード照合分の時間を待ってからエラーを返し、応答時間を揃えて対策しました。
+
+応答時間の差が情報漏洩につながること、対策には成功・失敗で処理時間を揃える必要があることを理解しました。
+
+### session_version によるセッション無効化
+
+パスワードを再設定しても古いセッション Cookie が有効なままで、悪意のある他者がそれをそのまま利用できる状態になっていました。
+
+原因は、パスワード再設定後に古いセッションを無効化する処理を実装していなかったことです。再設定後に `session_version` をインクリメントし、`session_version` が一致しないセッション Cookie をすべて無効化するよう実装しました。
+
+認証情報の変更時には、データを更新するだけでなく既存セッションの破棄も必要だと理解しました。この考えはログアウトやアカウント削除でも応用できます。
 
 ## 今後実装したい機能
+- AWSへの移行
+- 本番相当のセキュリティ拡張（IDaaSの導入によるMFA・パスキー対応など）
+- アーカイブUIの実装（日付軸・アルバム形式）
 
 ## ローカル環境構築手順
 
@@ -178,14 +367,3 @@ npm run dev
 > Next.js は `--experimental-https` で起動するため、初回はオレオレ証明書の警告が出ます。ブラウザで「詳細設定 → 続行」を選択してください。
 
 </details>
-
-### GitHub Actionsの設定
-- GitHub Actions では MySQL の root 接続を許可するため
-MYSQL_ROOT_HOST: "%" と ports: 3306:3306 を設定しています。
-- rails,nextでフォルダが別構成のため、working-directoryでジョブの動く環境を明示しています。
-
-### rails-next疎通確認
-- サーバーコンポーネントの疎通はトップページに表示し、一時的な確認とする
-- クライアントコンポーネントの疎通はコード参考の観点から残す
-
-
