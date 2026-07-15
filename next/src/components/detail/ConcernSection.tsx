@@ -14,15 +14,15 @@ import type { Concern } from "@/types/concern";
 
 type Props = {
   concern: Concern;
+  onConcernDelete: () => Promise<void>;
   onConcernUpdated?: () => void | Promise<void>;
-  onConcernDeleted?: () => void | Promise<void>;
   onConcernArchived?: () => void | Promise<void>;
 };
 
 export default function ConcernSection({
   concern,
+  onConcernDelete,
   onConcernUpdated,
-  onConcernDeleted,
   onConcernArchived,
 }: Props) {
   const [isEditing, setIsEditing] = useState(false);
@@ -43,17 +43,8 @@ export default function ConcernSection({
       )
     )
       return;
-    try {
-      setIsProcessing(true);
-      setApiError(null);
-      await concernApi.remove(concern.id);
-      await onConcernDeleted?.();
-    } catch (error) {
-      console.error(error);
-      setApiError("削除に失敗しました");
-    } finally {
-      setIsProcessing(false);
-    }
+    setIsProcessing(true);
+    await onConcernDelete();
   };
 
   const handleArchive = async () => {

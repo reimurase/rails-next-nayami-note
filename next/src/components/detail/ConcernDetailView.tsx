@@ -1,11 +1,13 @@
 "use client";
 
 import useSWR from "swr";
+import { useState } from "react";
 import Box from "@mui/material/Box";
 import Card from "@mui/material/Card";
 import CardContent from "@mui/material/CardContent";
 import Typography from "@mui/material/Typography";
 import CircularProgress from "@mui/material/CircularProgress";
+import Alert from "@mui/material/Alert";
 
 import ConcernSection from "./ConcernSection";
 import IssueSection from "./IssueSection";
@@ -29,14 +31,30 @@ export default function ConcernDetailView({
   onRoadmapListChanged,
   onConcernDeleted,
 }: Props) {
+  const [deletingId, setDeletingId] = useState<number | null>(null);
+  const [deleteError, setDeleteError] = useState<string | null>(null);
+
+  const swrKey = concernId && concernId !== deletingId ? `/api/v1/concerns/${concernId}` : null;
+
   const {
     data: detail,
     error,
     isLoading,
     mutate,
-  } = useSWR<ConcernDetail>(concernId ? `/api/v1/concerns/${concernId}` : null, () =>
-    concernApi.getConcern(concernId!)
-  );
+  } = useSWR<ConcernDetail>(swrKey, () => concernApi.getConcern(concernId!));
+
+  // SWR の revalidateOnFocus との競合を避けるため
+  const deleteConcern = async (id: number) => {
+    setDeletingId(id); // 購読を切る
+    try {
+      await concernApi.remove(id);
+      await onConcernDeleted?.();
+    } catch (e) {
+      console.error(e);
+      setDeletingId(null);
+      setDeleteError("削除に失敗しました");
+    }
+  };
 
   const refreshDetail = async () => {
     await mutate();
@@ -46,10 +64,6 @@ export default function ConcernDetailView({
   const handleConcernChanged = async () => {
     await refreshDetail();
     await onConcernListChanged?.();
-  };
-
-  const handleConcernDeleted = async () => {
-    await onConcernDeleted?.();
   };
 
   // issueの一覧と詳細を更新
@@ -74,8 +88,8 @@ export default function ConcernDetailView({
       <ConcernSection
         key={detail.concern.id}
         concern={detail.concern}
+        onConcernDelete={() => deleteConcern(detail.concern.id)}
         onConcernUpdated={handleConcernChanged}
-        onConcernDeleted={handleConcernDeleted}
         onConcernArchived={handleConcernChanged}
       />
     );
@@ -117,6 +131,11 @@ export default function ConcernDetailView({
       }}
     >
       <Card variant="outlined" sx={{ borderRadius: 3, overflow: "auto" }}>
+        {deleteError && (
+          <Alert severity="error" onClose={() => setDeleteError(null)} sx={{ mb: 2 }}>
+            {deleteError}
+          </Alert>
+        )}
         <CardContent>{renderConcernContent()}</CardContent>
       </Card>
 
