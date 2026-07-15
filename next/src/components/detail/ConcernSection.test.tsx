@@ -8,7 +8,6 @@ import type { Concern } from "@/types/concern";
 
 jest.mock("@/lib/api/concern", () => ({
   concernApi: {
-    remove: jest.fn(),
     archiveConcern: jest.fn(),
     unarchiveConcern: jest.fn(),
   },
@@ -26,7 +25,6 @@ const baseConcern: Concern = {
 describe("ConcernSection", () => {
   beforeEach(() => {
     window.confirm = jest.fn().mockReturnValue(true);
-    mockedConcernApi.remove.mockReset();
     mockedConcernApi.archiveConcern.mockReset();
     mockedConcernApi.unarchiveConcern.mockReset();
   });
@@ -41,6 +39,7 @@ describe("ConcernSection", () => {
           archivedAt: null,
           createdAt: "2025-01-01T00:00:00Z",
         }}
+        onConcernDelete={jest.fn()}
       />
     );
 
@@ -52,21 +51,17 @@ describe("ConcernSection", () => {
     expect(screen.getByRole("button", { name: "キャンセル" })).toBeInTheDocument();
   });
 
-  test("削除するとAPIが呼ばれ、onConcernDeletedも呼ばれる", async () => {
-    mockedConcernApi.remove.mockResolvedValue({} as any);
-    const onConcernDeleted = jest.fn();
+  test("削除するとonConcernDeleteが呼ばれる", async () => {
+    const onConcernDelete = jest.fn().mockResolvedValue(undefined);
 
-    render(<ConcernSection concern={baseConcern} onConcernDeleted={onConcernDeleted} />);
+    render(<ConcernSection concern={baseConcern} onConcernDelete={onConcernDelete} />);
 
     fireEvent.click(screen.getByRole("button", { name: "削除" }));
 
     expect(window.confirm).toHaveBeenCalled();
 
     await waitFor(() => {
-      expect(mockedConcernApi.remove).toHaveBeenCalledWith(1);
-    });
-    await waitFor(() => {
-      expect(onConcernDeleted).toHaveBeenCalledTimes(1);
+      expect(onConcernDelete).toHaveBeenCalledTimes(1);
     });
   });
 
@@ -74,7 +69,13 @@ describe("ConcernSection", () => {
     mockedConcernApi.archiveConcern.mockResolvedValue({} as any);
     const onConcernArchived = jest.fn();
 
-    render(<ConcernSection concern={baseConcern} onConcernArchived={onConcernArchived} />);
+    render(
+      <ConcernSection
+        concern={baseConcern}
+        onConcernDelete={jest.fn()}
+        onConcernArchived={onConcernArchived}
+      />
+    );
 
     fireEvent.click(screen.getByRole("button", { name: "ライブラリへ" }));
 
@@ -92,7 +93,7 @@ describe("ConcernSection", () => {
     mockedConcernApi.unarchiveConcern.mockResolvedValue({} as any);
     const archivedConcern: Concern = { ...baseConcern, archivedAt: "2024-01-02T00:00:00Z" };
 
-    render(<ConcernSection concern={archivedConcern} />);
+    render(<ConcernSection concern={archivedConcern} onConcernDelete={jest.fn()} />);
 
     fireEvent.click(screen.getByRole("button", { name: "ノートへ戻す" }));
 
@@ -101,20 +102,5 @@ describe("ConcernSection", () => {
     await waitFor(() => {
       expect(mockedConcernApi.unarchiveConcern).toHaveBeenCalledWith(1);
     });
-  });
-
-  test("削除が失敗したらエラーが表示され、onConcernDeletedは呼ばれない", async () => {
-    const consoleSpy = jest.spyOn(console, "error").mockImplementation(() => {});
-    mockedConcernApi.remove.mockRejectedValueOnce(new Error("remove failed"));
-    const onConcernDeleted = jest.fn();
-
-    render(<ConcernSection concern={baseConcern} onConcernDeleted={onConcernDeleted} />);
-
-    fireEvent.click(screen.getByRole("button", { name: "削除" }));
-
-    expect(await screen.findByRole("alert")).toHaveTextContent("削除に失敗しました");
-    expect(onConcernDeleted).not.toHaveBeenCalled();
-
-    consoleSpy.mockRestore();
   });
 });
