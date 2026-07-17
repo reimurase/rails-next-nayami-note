@@ -14,9 +14,12 @@ class Api::V1::MeController < ApplicationController
     current_user.update!(auto_archive_enabled: enabled)
 
     if enabled == false
-      current_user.concerns.active.where.not(auto_archive_at: nil).find_each do |concern|
-        concern.update!(auto_archive_at: nil)
-      end
+      # 自動アーカイブオフは auto_archive_at / updated_at のみを更新し、
+      # これらに関わるバリデーション・コールバックは存在しないため update_all を使用する
+      # rubocop:disable Rails/SkipsModelValidations
+      current_user.concerns.active.where.not(auto_archive_at: nil).
+        update_all(auto_archive_at: nil, updated_at: Time.current)
+      # rubocop:enable Rails/SkipsModelValidations
     end
 
     render json: {
