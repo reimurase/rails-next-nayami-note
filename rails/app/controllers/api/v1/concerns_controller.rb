@@ -1,6 +1,12 @@
 class Api::V1::ConcernsController < ApplicationController
   def index
-    current_user.concerns.auto_archivable.find_each(&:archive!)
+    now = Time.current
+    # 自動アーカイブは archived_at / auto_archive_at のみを更新し、
+    # これらに関わるバリデーション・コールバックは存在しないため update_all を使用する
+    # rubocop:disable Rails/SkipsModelValidations
+    current_user.concerns.auto_archivable.
+      update_all(archived_at: now, auto_archive_at: nil, updated_at: now)
+    # rubocop:enable Rails/SkipsModelValidations
 
     concerns = current_user.concerns.active.order(created_at: :desc, id: :desc)
     render json: concerns
