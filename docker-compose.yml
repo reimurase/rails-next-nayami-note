@@ -40,7 +40,7 @@ services:
     depends_on:
       - rails
     environment:
-      NEXT_PUBLIC_API_BASE_URL: https://localhost:3000
+      API_BASE_URL: https://localhost:3000
 
 volumes:
   mysql_data:
