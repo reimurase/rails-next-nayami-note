@@ -342,7 +342,7 @@ npm install
 `.env.local` を作成します。
 
 ```
-API_BASE_URL=https://localhost:3000
+API_BASE_URL=http://localhost:3000
 ```
 
 #### 4. 起動

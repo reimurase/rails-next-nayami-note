@@ -44,7 +44,7 @@ module RailsNextNayamiNote
     config.middleware.use ActionDispatch::Cookies
 
     cookie_opts =
-      if Rails.env.test?
+      if Rails.env.test? || Rails.env.development?
         {
           key: "_rails_next_nayami_note_session",
           secure: false,
