@@ -281,6 +281,7 @@ GEM
       rubocop (~> 1.72, >= 1.72.1)
     ruby-progressbar (1.13.0)
     securerandom (0.4.1)
+    simplecov (1.0.3)
     solid_cache (1.0.10)
       activejob (>= 7.2)
       activerecord (>= 7.2)
@@ -327,6 +328,7 @@ DEPENDENCIES
   rubocop-faker
   rubocop-rails
   rubocop-rspec
+  simplecov
   solid_cache (~> 1.0, >= 1.0.10)
   tzinfo-data
 
