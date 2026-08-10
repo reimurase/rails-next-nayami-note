@@ -33,6 +33,9 @@ gem "rails-i18n", "~> 8.1"
 # キャッシュをデータベースに保存する
 gem "solid_cache", "~> 1.0", ">= 1.0.10"
 
+# Active Jobのキューバックエンド（DBベース）
+gem "solid_queue", "~> 1.0", ">= 1.6"
+
 group :development, :test do
   # テスト用データを作成する
   gem "factory_bot_rails"

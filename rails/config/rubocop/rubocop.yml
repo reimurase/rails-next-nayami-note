@@ -4,6 +4,7 @@ AllCops:
     - "node_modules/**/*" # rubocop config/default.yml
     - "vendor/**/*" # rubocop config/default.yml
     - "db/schema.rb"
+    - "db/*_schema.rb"
     - "db/migrate/*"
     - "bin/**"
     - "spec/rails_helper.rb"
