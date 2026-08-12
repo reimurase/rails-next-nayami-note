@@ -68,6 +68,7 @@ ToDoリストは「やること」が明確になった後のためのツール�
 - Rails 8 — API モード
 - mysql2 — MySQL 互換アダプタ
 - Solid Cache — DB ベースのキャッシュ／セッションストア
+- Solid Queue - Active Jobのキューバックエンド
 - bcrypt — パスワードハッシュ化
 
 ### フロントエンド
@@ -222,14 +223,21 @@ erDiagram
 
 認証エンドポイントは email + password のみで認証するため、総当たり攻撃への耐性をレート制限で補強しています。あわせて過剰リクエストによる DB 負荷の抑制も目的としています。
 
-制限は二層で設計しています。
-
-- **メールアドレス単位**（主防御）：同一アカウントへの試行を制限します。
-- **IP 単位**（副次防御）：同一クライアントからの試行を制限します。
+制限はメールアドレス単位（主防御）と IP 単位（副次防御）の二層で設計しています。
 
 **既知の制約**：本番環境（Render）は多段プロキシ構成のため、`request.remote_ip` が実クライアントIPを返しません。このため IP 単位の制限は実効性を持たず、現状はメールアドレス単位を主防御として運用しています。
 
 **対応方針**：AWS 移行時に ALB を経由する構成へ変更し、VPC 内の既知IP範囲を trusted proxy として扱うことで `remote_ip` の解決を正常化します。これにより IP 単位を副次防御として機能させます。
+
+### Github Actions で参照するアクションをコミットSHAで固定
+
+アクションをGitタグやブランチで指定すると、その指定は可変な参照となり、指し先のコミットを後から書き換えられる余地があります。
+
+仮に、アクション提供元のリポジトリが乗っ取られ、タグの参照先が悪意のあるコミットに書き換えられた場合、悪意あるコードが実行される可能性がありました。
+
+対策として、`pinact`を導入してアクション参照先のコミットをSHAで固定しました。
+
+また、参照するコミット先を固定するとバージョン更新の恩恵を受けられないため、`dependabot`を導入して安全性を担保したまま、更新できるようにしました。
 
 ### タイミング攻撃対策
 
@@ -247,6 +255,10 @@ erDiagram
 
 認証情報の変更時には、データを更新するだけでなく既存セッションの破棄も必要だと理解しました。この考えはログアウトやアカウント削除でも応用できます。
 
+---
+
+そのほか、**CSRF対策**（SameSite=Lax + CSRFトークン）を実装しています。
+
 ## 今後実装したい機能
 - AWSへの移行
 - 本番相当のセキュリティ拡張（IDaaSの導入によるMFA・パスキー対応など）
@@ -258,6 +270,7 @@ erDiagram
 
 #### 前提
 - Docker / Docker Compose
+- mkcert
 
 #### 1. リポジトリをクローン
 
@@ -280,19 +293,38 @@ DB_NAME_DEV=nayami_note_development
 DB_NAME_TEST=nayami_note_test
 ```
 
-#### 3. イメージをビルド
+#### 3. 証明書を生成（mkcert）
+
+ローカル CA を信頼ストアに登録します（初回のみ）。
+
+```bash
+mkcert -install
+```
+
+プロジェクトのルートで証明書を生成します。
+
+```bash
+mkdir -p next/certificates
+mkcert -key-file next/certificates/localhost-key.pem -cert-file next/certificates/localhost.pem localhost 127.0.0.1 ::1
+```
+
+`localhost.pem`（証明書）と `localhost-key.pem`（秘密鍵）が生成され、`compose.yml` でコンテナにマウントされます。
+
+> 秘密鍵は `.gitignore` 済みです。証明書はリポジトリで共有せず、各自の環境で生成してください。
+
+#### 4. イメージをビルド
 
 ```bash
 docker compose build
 ```
 
-#### 4. DB のセットアップ
+#### 5. DB のセットアップ
 
 ```bash
-docker compose run --rm rails rails db:create db:migrate db:seed
+docker compose run --rm rails rails db:create db:schema:load db:seed
 ```
 
-#### 5. 起動
+#### 6. 起動
 
 ```bash
 docker compose up
@@ -300,7 +332,7 @@ docker compose up
 
 ブラウザで `https://localhost:3001` にアクセスします。
 
-> Next.js は HTTPS で起動するため、初回はオレオレ証明書の警告が出ます。「詳細設定 → 続行」を選択してください。
+> mkcert の証明書が信頼済みのため、警告は出ません。
 
 ---
 
@@ -311,6 +343,7 @@ docker compose up
 - Ruby 3.4.6
 - Node.js 20.18.0
 - MySQL 9.4.0
+- mkcert
 
 #### 1. リポジトリをクローン
 
@@ -319,7 +352,19 @@ git clone https://github.com/reimurase/rails-next-nayami-note.git
 cd rails-next-nayami-note
 ```
 
-#### 2. Rails セットアップ
+#### 2. 証明書を生成（mkcert）
+
+ローカル CA を信頼ストアに登録し（初回のみ）、証明書を生成します。
+
+```bash
+mkcert -install
+mkdir -p next/certificates
+mkcert -key-file next/certificates/localhost-key.pem -cert-file next/certificates/localhost.pem localhost 127.0.0.1 ::1
+```
+
+`localhost.pem` と `localhost-key.pem` が生成されます（秘密鍵は `.gitignore` 済み、各自の環境で生成）。
+
+#### 3. Rails セットアップ
 
 ```bash
 cd rails
@@ -329,10 +374,10 @@ bundle install
 `config/master.key` を用意した上で、必要に応じて環境変数を設定します（デフォルトは `root` / パスワードなし / `127.0.0.1:3306`）。
 
 ```bash
-rails db:create db:migrate db:seed
+rails db:create db:schema:load db:seed
 ```
 
-#### 3. Next.js セットアップ
+#### 4. Next.js セットアップ
 
 ```bash
 cd ../next
@@ -345,7 +390,7 @@ npm install
 API_BASE_URL=http://localhost:3000
 ```
 
-#### 4. 起動
+#### 5. 起動
 
 ターミナルを2つ使って、それぞれ起動します。
 
@@ -363,6 +408,6 @@ npm run dev
 
 ブラウザで `https://localhost:3001` にアクセスします。
 
-> Next.js は `--experimental-https` で起動するため、初回はオレオレ証明書の警告が出ます。ブラウザで「詳細設定 → 続行」を選択してください。
+> mkcert の証明書が信頼済みのため、警告は出ません。
 
 </details>
