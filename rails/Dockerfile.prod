@@ -14,6 +14,7 @@ ENV RAILS_ENV=production \
 FROM base AS build
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
     build-essential default-libmysqlclient-dev pkg-config git libyaml-dev \
+    libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
 COPY Gemfile Gemfile.lock ./
@@ -27,7 +28,7 @@ RUN bundle exec bootsnap precompile app/ lib/
 # ---- runtime ----
 FROM base
 RUN apt-get update -qq && apt-get install -y --no-install-recommends \
-    libmariadb3 ca-certificates \
+    libmariadb3 libpq5 ca-certificates \
     && rm -rf /var/lib/apt/lists/*
 
 COPY --from=build /usr/local/bundle /usr/local/bundle
