@@ -5,7 +5,7 @@ default: &default
   pool: <%= ENV["RAILS_MAX_THREADS"] || 5 %>
   username: <%= ENV["DB_USERNAME"] || "root" %>
   password: <%= ENV["DB_PASSWORD"] || "" %>
-  host:     <%= ENV["DB_HOST"] || "127.0.0.1" %>   # ローカルはTCP
+  host:     <%= ENV["DB_HOST"] || "127.0.0.1" %>
   port:     <%= ENV["DB_PORT"] || "3306" %>
 
 development:
@@ -20,21 +20,17 @@ production:
   primary:
     <<: *default
     database: <%= ENV["DB_NAME"] || "myapp_production" %>
-    username: <%= ENV["DB_USERNAME"] || "root" %>
-    password: <%= ENV["DB_PASSWORD"] || "" %>
-    host:     <%= ENV["DB_HOST"] || "127.0.0.1" %>
-    port:     <%= ENV["DB_PORT"] || "3306" %>
     ssl_mode: verify_identity
     ssl_ca:   /etc/ssl/certs/ca-certificates.crt
   cache:
-    <<: *default
-    database: <%= ENV["DB_NAME"] || "myapp_production" %>
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV["RAILS_MAX_THREADS"] || 5 %>
+    url:  <%= ENV["SOLID_DATABASE_URL"] %>
     migrations_paths: db/cache_migrate
-    ssl_mode: verify_identity
-    ssl_ca:   /etc/ssl/certs/ca-certificates.crt
   queue:
-    <<: *default
-    database: <%= ENV["DB_NAME"] || "myapp_production" %>
+    adapter: postgresql
+    encoding: unicode
+    pool: <%= ENV["RAILS_MAX_THREADS"] || 5 %>
+    url:  <%= ENV["SOLID_DATABASE_URL"] %>
     migrations_paths: db/queue_migrate
-    ssl_mode: verify_identity
-    ssl_ca:   /etc/ssl/certs/ca-certificates.crt

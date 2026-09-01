@@ -64,3 +64,8 @@ group :test do
   # テストカバレッジを導入
   gem "simplecov", require: false
 end
+
+group :production do
+  # PostgreSQLに接続する（キャッシュ・キュー用）
+  gem "pg", "~> 1.6"
+end

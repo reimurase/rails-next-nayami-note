@@ -165,6 +165,9 @@ GEM
     parser (3.3.9.0)
       ast (~> 2.4.1)
       racc
+    pg (1.6.3-aarch64-linux)
+    pg (1.6.3-arm64-darwin)
+    pg (1.6.3-x86_64-linux)
     pp (0.6.3)
       prettyprint
     prettyprint (0.2.0)
@@ -330,6 +333,7 @@ DEPENDENCIES
   faker
   letter_opener
   mysql2 (~> 0.5.7)
+  pg (~> 1.6)
   pry-byebug
   pry-doc
   pry-rails
