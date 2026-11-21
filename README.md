@@ -391,7 +391,7 @@ docker compose up
 <summary>手動セットアップ（Docker を使わない場合）</summary>
 
 #### 前提
-- Ruby 3.4.6
+- Ruby 3.4.13
 - Node.js 20.18.0
 - MySQL 9.4.0
 - mkcert

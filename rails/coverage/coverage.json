@@ -5,9 +5,9 @@
     "simplecov_version": "1.0.3",
     "command_name": "RSpec",
     "project_name": "Rails",
-    "timestamp": "2026-08-06T15:28:22.575+09:00",
+    "timestamp": "2026-11-21T22:18:24.323+09:00",
     "root": "/Users/muraserei/project/rails-next/rails-next-nayami-note/rails",
-    "commit": "0df6ebea8cd185f83da51111f005df0147dcf859",
+    "commit": "7c7915fd93b8d2ad39d02af6732d0d29f207d478",
     "primary_coverage": "line",
     "line_coverage": true,
     "branch_coverage": false,
@@ -1038,7 +1038,7 @@
     "app/mailers/application_mailer.rb": {
       "source": [
         "class ApplicationMailer < ActionMailer::Base",
-        "  default from: \"from@example.com\"",
+        "  default from: \"nayaminote.noreply@gmail.com\"",
         "  layout \"mailer\"",
         "end"
       ],

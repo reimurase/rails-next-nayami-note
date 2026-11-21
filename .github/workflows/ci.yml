@@ -38,10 +38,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y libmysqlclient-dev
 
-      - name: Set up Ruby 3.4.6 (bundle cache ON)
-        uses: ruby/setup-ruby@e81a8fa391b11a595c1b7ed84177cc0fe02faf83 # v1.328.0
+      - name: Set up Ruby 3.4.13 (bundle cache ON)
+        uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1.343.0
         with:
-          ruby-version: 3.4.6
+          ruby-version: 3.4.13
           bundler-cache: true
           working-directory: rails
 
@@ -67,10 +67,10 @@ jobs:
       - name: Checkout
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
-      - name: Set up Ruby 3.4.6 (bundle cache ON)
-        uses: ruby/setup-ruby@e81a8fa391b11a595c1b7ed84177cc0fe02faf83 # v1.328.0
+      - name: Set up Ruby 3.4.13 (bundle cache ON)
+        uses: ruby/setup-ruby@be3c7df29b3349ec6bcfc6b4792f1cf9f5237d18 # v1.343.0
         with:
-          ruby-version: 3.4.6
+          ruby-version: 3.4.13
           bundler-cache: true
           working-directory: rails
 
