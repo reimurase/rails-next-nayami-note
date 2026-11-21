@@ -7,4 +7,4 @@ inherit_from:
   - config/rubocop/rspec.yml
 
 AllCops:
-  TargetRubyVersion: 3.4.6
+  TargetRubyVersion: 3.4.13
